@@ -363,8 +363,8 @@ namespace TMath {
 #      define isnan  _isnan
 #   endif
 #endif
-#if defined(R__AIX) || defined(R__SOLARIS_CC50) || \
-    defined(R__HPUX11) || defined(R__GLIBC) || \
+#if defined(R__AIX) || defined(R__SOLARIS_CC50) \
+    || defined(R__HPUX11) || defined(R__GLIBC) || \
     (defined(R__MACOSX) && (defined(__INTEL_COMPILER) || defined(__arm__)))
 // math functions are defined inline so we have to include them here
 #   include <math.h>
