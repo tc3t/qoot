@@ -3,6 +3,8 @@
 # @author Pere Mato, CERN
 ############################################################################
 
+if(mceg)
+
 set(libname EG)
 
 ROOT_USE_PACKAGE(graf2d/gpad)
@@ -15,3 +17,5 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF LinkDef.h DEPENDENCIES Graf3d Graf Gpad
 
 ROOT_LINKER_LIBRARY(${libname} *.cxx G__${libname}.cxx DEPENDENCIES Graf3d Graf Gpad MathCore )
 ROOT_INSTALL_HEADERS()
+
+endif()

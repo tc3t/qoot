@@ -3,6 +3,8 @@
 # @author Pere Mato, CERN
 ############################################################################
 
+if(geombuilder)
+
 set(libname GeomBuilder)
 
 ROOT_USE_PACKAGE(geom/geom)
@@ -23,3 +25,4 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF LinkDef.h DEPENDENCIES Geom Graf3d Gpad
 ROOT_LINKER_LIBRARY(${libname} *.cxx G__${libname}.cxx DEPENDENCIES Geom Graf3d Gpad Graf Gui Ged)
 ROOT_INSTALL_HEADERS()
 
+endif()

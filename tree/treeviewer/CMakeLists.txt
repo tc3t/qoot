@@ -3,6 +3,8 @@
 # @author Pere Mato, CERN
 ############################################################################
 
+if(treeviewer)
+
 set(libname TreeViewer)
 
 ROOT_USE_PACKAGE(tree/treeplayer)
@@ -28,3 +30,4 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF ${linkdef} DEPENDENCIES  Tree Gpad Graf
 ROOT_LINKER_LIBRARY(${libname} ${sources} G__${libname}.cxx LIBRARIES TreePlayer DEPENDENCIES Gui Ged)
 ROOT_INSTALL_HEADERS()
 
+endif()

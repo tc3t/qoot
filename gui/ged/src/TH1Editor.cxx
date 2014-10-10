@@ -141,8 +141,7 @@
 #include "TGSlider.h"
 #include "TView.h"
 #include "TCanvas.h"
-#include "TTreePlayer.h"
-#include "TSelectorDraw.h"
+#include "detail/THEditorTreeDependencies.h"
 #include "TGMsgBox.h"
 #include "TGTab.h"
 #include "TROOT.h"
@@ -844,7 +843,7 @@ void TH1Editor::SetModel(TObject* obj)
  
    if (fDelaydraw->GetState()!=kButtonDown) fDelaydraw->SetState(kButtonUp);
 
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    
    // Check if histogram is from ntupla/tree or not.
    // If it is a standard histogram or a ntupla based histogram  
@@ -1583,7 +1582,7 @@ void TH1Editor::DoSliderMoved()
       fClient->NeedRedraw(fSlider,kTRUE);  
       Update();   
    }
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();   
+   TTreePlayer *player = GetCurrentTreePlayer();   
    if (player && player->GetHistogram() == fHist) {
       Int_t last = fHist->GetXaxis()->GetLast();
       Int_t first = fHist->GetXaxis()->GetFirst();
@@ -1666,7 +1665,7 @@ void TH1Editor::DoSliderReleased()
       fSldMax->SetNumber(fHist->GetXaxis()->GetBinUpEdge(fHist->GetXaxis()->GetLast()));
       Update();
    } 
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();   
+   TTreePlayer *player = GetCurrentTreePlayer();   
    if (player) if (player->GetHistogram() == fHist) {
       Int_t last = fHist->GetXaxis()->GetLast();
       Int_t first = fHist->GetXaxis()->GetFirst();
@@ -1849,7 +1848,7 @@ void TH1Editor::DoBinReleased1()
    // "compute" the scaling factor:
    if (number > 5) fact = number - 4;
    else fact = number - 6;
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (!player) return;
    Int_t first = xaxis->GetFirst();
    Int_t last = xaxis->GetLast();
@@ -1877,7 +1876,7 @@ void TH1Editor::DoBinReleased1()
    sel->TakeAction();
 
    // restore and set all the attributes which were changed by TakeAction() 
-   fHist = (TH1*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+   fHist = (TH1*)(GetCurrentTreePlayer())->GetHistogram();
    fSlider->SetRange(1,binNumber);
    Double_t binWidth = fHist->GetXaxis()->GetBinWidth(1);
    fSlider->SetPosition(xaxis->FindBin(rmin), xaxis->FindBin(rmax));
@@ -1958,7 +1957,7 @@ void TH1Editor::DoBinLabel1()
    Double_t oldOffset = fOffsetNumberEntry->GetNumber();
    Int_t num = (Int_t)fBinNumberEntry1->GetNumber();   
    TAxis* xaxis = fHist->GetXaxis();
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (!player) return;
    Int_t first = xaxis->GetFirst();
    Int_t last = xaxis->GetLast();
@@ -1985,7 +1984,7 @@ void TH1Editor::DoBinLabel1()
    sel->TakeAction();
 
 // Restore and set all the attributes which were changed by TakeAction() 
-   fHist = (TH1*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+   fHist = (TH1*)(GetCurrentTreePlayer())->GetHistogram();
    fSlider->SetRange(1,binNumber);
    Double_t binWidth = xaxis->GetBinWidth(1);
    fSlider->SetPosition(xaxis->FindBin(rmin), xaxis->FindBin(rmax));
@@ -2027,7 +2026,7 @@ void TH1Editor::DoOffsetReleased()
       Double_t offset =  1.*num/100*binWidth;
       Double_t oldOffset = fOldOffset;
       Int_t nx = xaxis->GetNbins();   
-      TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+      TTreePlayer *player = GetCurrentTreePlayer();
       if (!player) return;
       Int_t first = xaxis->GetFirst();
       Int_t last = xaxis->GetLast();
@@ -2047,7 +2046,7 @@ void TH1Editor::DoOffsetReleased()
       sel->TakeAction();
  
       // Restore all the attributes which were changed by TakeAction() 
-      fHist = (TH1*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+      fHist = (TH1*)(GetCurrentTreePlayer())->GetHistogram();
       xaxis->SetRange(xaxis->FindBin(rmin+offset-oldOffset+binWidth/2), 
                       xaxis->FindBin(rmax+offset-oldOffset-binWidth/2)); // in binNumbers!
       fSldMin->SetNumber(xaxis->GetBinLowEdge(xaxis->GetFirst()));
@@ -2074,7 +2073,7 @@ void TH1Editor::DoOffsetMoved(Int_t num)
    if (fDelaydraw->GetState()==kButtonUp) {
       Double_t oldOffset = fOffsetNumberEntry->GetNumber();
       Int_t nx = xaxis->GetNbins();   
-      TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+      TTreePlayer *player = GetCurrentTreePlayer();
       if (!player) return;
       Int_t first = xaxis->GetFirst();
       Int_t last = xaxis->GetLast();
@@ -2094,7 +2093,7 @@ void TH1Editor::DoOffsetMoved(Int_t num)
       sel->TakeAction();
  
    // Restore all the attributes which were changed by TakeAction() 
-      fHist = (TH1*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+      fHist = (TH1*)(GetCurrentTreePlayer())->GetHistogram();
       xaxis->SetRange(xaxis->FindBin(rmin+offset-oldOffset+binWidth/2), 
                       xaxis->FindBin(rmax+offset-oldOffset-binWidth/2)); // in binNumbers!
       fSldMin->SetNumber(xaxis->GetBinLowEdge(xaxis->GetFirst()));
@@ -2118,7 +2117,7 @@ void TH1Editor::DoBinOffset()
    Double_t offset =  fOffsetNumberEntry->GetNumber();
    Double_t oldOffset = 1.*fBinOffsetSld->GetPosition()/100*binWidth;
    Int_t nx = xaxis->GetNbins();   
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (!player) return;
    Int_t first = xaxis->GetFirst();
    Int_t last = xaxis->GetLast();
@@ -2138,7 +2137,7 @@ void TH1Editor::DoBinOffset()
    sel->TakeAction();
 
     // Restore all the attributes which were changed by TakeAction() 
-   fHist = (TH1*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+   fHist = (TH1*)(GetCurrentTreePlayer())->GetHistogram();
    xaxis->SetRange(xaxis->FindBin(rmin+offset-oldOffset+binWidth/2),
                    xaxis->FindBin(rmax+offset-oldOffset-binWidth/2)); // in binNumbers!
    fSldMin->SetNumber(xaxis->GetBinLowEdge(xaxis->GetFirst()));

@@ -141,12 +141,12 @@
 #include "TGedPatternSelect.h"
 #include "TGColorSelect.h"
 #include "TColor.h"
-#include "TTreePlayer.h"
-#include "TSelectorDraw.h"
+#include "detail/THEditorTreeDependencies.h"
 #include "TGTab.h"
 #include "TGMsgBox.h"
 #include "TH2.h"
 #include "TROOT.h"
+#include "TClass.h"
 
 
 ClassImp(TH2Editor)
@@ -975,7 +975,7 @@ void TH2Editor::SetModel(TObject* obj)
    fFrameColor->SetColor(TColor::Number2Pixel(fGedEditor->GetPad()->GetFrameFillColor()));
    fFramePattern->SetPattern(fGedEditor->GetPad()->GetFrameFillStyle());
 
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
 
 
    // Check if histogram is from ntupla/tree or not.
@@ -1908,7 +1908,7 @@ void TH2Editor::DoBinReleased1()
    else xfact = xnumber - 6;
    if (ynumber >= 5) yfact = ynumber - 4;
    else yfact = ynumber - 6;
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (!player) return;
    Int_t nx = xaxis->GetNbins();
    Int_t ny = yaxis->GetNbins();
@@ -1950,7 +1950,7 @@ void TH2Editor::DoBinReleased1()
    sel->TakeAction();
 
    // Restore and set all the attributes which were changed by TakeAction()
-   fHist = (TH2*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+   fHist = (TH2*)(GetCurrentTreePlayer())->GetHistogram();
    fSliderX->SetRange(1,xBinNumber);
    fSliderY->SetRange(1,yBinNumber);
    Double_t xBinWidth = xaxis->GetBinWidth(1);
@@ -2040,7 +2040,7 @@ void TH2Editor::DoBinLabel1()
    Int_t numy = (Int_t)fBinYNumberEntry1->GetNumber();
    TAxis* xaxis = fHist->GetXaxis();
    TAxis* yaxis = fHist->GetYaxis();
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (!player) return;
    Int_t firstx = xaxis->GetFirst();
    Int_t lastx = xaxis->GetLast();
@@ -2079,7 +2079,7 @@ void TH2Editor::DoBinLabel1()
    sel->TakeAction();
 
    // Restore and set all the attributes which were changed by TakeAction()
-   fHist = (TH2*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+   fHist = (TH2*)(GetCurrentTreePlayer())->GetHistogram();
    fSliderX->SetRange(1,xBinNumber);
    fSliderY->SetRange(1,yBinNumber);
    Double_t xBinWidth = xaxis->GetBinWidth(1);
@@ -2141,7 +2141,7 @@ void TH2Editor::DoOffsetReleased()
       Int_t nx = xaxis->GetNbins();
       Int_t ny = yaxis->GetNbins();
 
-      TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+      TTreePlayer *player = GetCurrentTreePlayer();
       if (!player) return;
 
       Int_t firstx = xaxis->GetFirst();
@@ -2169,7 +2169,7 @@ void TH2Editor::DoOffsetReleased()
       sel->TakeAction();
 
       // Restore all the attributes which were changed by TakeAction()
-      fHist = (TH2*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+      fHist = (TH2*)(GetCurrentTreePlayer())->GetHistogram();
 
       // SetRange in BinNumbers along x and y!
       xaxis->SetRange(xaxis->FindBin(rminx+xOffset-oldXOffset+xBinWidth/2),
@@ -2209,7 +2209,7 @@ void TH2Editor::DoOffsetMoved()
       Int_t nx = xaxis->GetNbins();
       Int_t ny = yaxis->GetNbins();
 
-      TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+      TTreePlayer *player = GetCurrentTreePlayer();
       if (!player) return;
 
       Int_t firstx = xaxis->GetFirst();
@@ -2237,7 +2237,7 @@ void TH2Editor::DoOffsetMoved()
       sel->TakeAction();
 
       // Restore all the attributes which were changed by TakeAction()
-      fHist = (TH2*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+      fHist = (TH2*)(GetCurrentTreePlayer())->GetHistogram();
 
       // SetRange in BinNumbers along x and y!
       xaxis->SetRange(xaxis->FindBin(rminx+xOffset-oldXOffset+xBinWidth/2),
@@ -2275,7 +2275,7 @@ void TH2Editor::DoBinOffset()
    Double_t oldYOffset = 1.*fYBinOffsetSld->GetPosition()/100*yBinWidth;
    Int_t nx = xaxis->GetNbins();
    Int_t ny = yaxis->GetNbins();
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (!player) return;
    Int_t firstx = xaxis->GetFirst();
    Int_t lastx = xaxis->GetLast();
@@ -2302,7 +2302,7 @@ void TH2Editor::DoBinOffset()
    sel->TakeAction();
 
    // Restore all the attributes which were changed by TakeAction()
-   fHist = (TH2*)((TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer())->GetHistogram();
+   fHist = (TH2*)(GetCurrentTreePlayer())->GetHistogram();
 
    // SetRange in BinNumbers along x and y!
    xaxis->SetRange(xaxis->FindBin(rminx+xOffset-oldXOffset+xBinWidth/2),
@@ -2477,7 +2477,7 @@ void TH2Editor::DoSliderXReleased()
       fSldXMax->SetNumber(fHist->GetXaxis()->GetBinUpEdge(fHist->GetXaxis()->GetLast()));
       Update();
    }
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (player) if (player->GetHistogram() == fHist) {
       Int_t last = fHist->GetXaxis()->GetLast();
       Int_t first = fHist->GetXaxis()->GetFirst();
@@ -2665,7 +2665,7 @@ void TH2Editor::DoSliderYReleased()
       Update();
    }
 
-   TTreePlayer *player = (TTreePlayer*)TVirtualTreePlayer::GetCurrentPlayer();
+   TTreePlayer *player = GetCurrentTreePlayer();
    if (player) if (player->GetHistogram() == fHist) {
       Int_t last = fHist->GetYaxis()->GetLast();
       Int_t first = fHist->GetYaxis()->GetFirst();

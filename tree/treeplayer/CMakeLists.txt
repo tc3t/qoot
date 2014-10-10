@@ -3,6 +3,8 @@
 # @author Pere Mato, CERN
 ############################################################################
 
+if(treeplayer)
+
 set(libname TreePlayer)
 
 ROOT_USE_PACKAGE(tree/tree)
@@ -27,3 +29,4 @@ if(APPLE)
   endif()
 endif()
 
+endif()

@@ -152,9 +152,15 @@
 #include "Fit/BinData.h"
 #include "Fit/BinData.h"
 #include "TMultiGraph.h"
-#include "TTree.h"
-#include "TTreePlayer.h"
-#include "TTreeInput.h"
+
+#ifdef FITPANEL_NO_TREE_DEPENDENCY
+  class TTree {};
+#else
+  #include "TTree.h"
+  #include "TTreePlayer.h"
+  #include "TTreeInput.h"
+#endif
+
 #include "TAdvancedGraphicsDialog.h"
 
 #include "RConfigure.h"
@@ -2033,6 +2039,7 @@ void TFitEditor::DoFit()
          break;
       }
       case kObjectTree:  {
+#ifndef FITPANEL_NO_TREE_DEPENDENCY
          // The three is a much more special case. The steps for
          // fitting have to be done manually here until they are
          // properly implemented within a FitObject method in
@@ -2112,6 +2119,7 @@ void TFitEditor::DoFit()
          ROOT::Fit::UnBinFit(fitdata, fitFunc, fitOption, minOption);
          
          break;
+#endif
       }
    }
 
@@ -2262,6 +2270,7 @@ void TFitEditor::DoDataSet(Int_t selected)
    }
 
    // If it is a tree, and there are no variables selected, show a dialog
+#ifndef FITPANEL_NO_TREE_DEPENDENCY
    if ( objSelected->InheritsFrom(TTree::Class()) && 
         name.First(' ') == kNPOS ) {
       char variables[256] = {0}; char cuts[256] = {0};
@@ -2273,6 +2282,7 @@ void TFitEditor::DoDataSet(Int_t selected)
       }
       ProcessTreeInput(objSelected, selected, variables, cuts);
    }
+#endif
 
    // Search the canvas where the object is drawn, if any
    TPad* currentPad = NULL;
@@ -2803,6 +2813,7 @@ Bool_t TFitEditor::SetObjectType(TObject* obj)
       fMethodList->RemoveAll();
       fMethodList->AddEntry("Chi-square", kFP_MCHIS);
       fMethodList->Select(kFP_MCHIS, kFALSE);
+#ifndef FITPANEL_NO_TREE_DEPENDENCY
    } else if (obj->InheritsFrom(TTree::Class())) {
       fType = kObjectTree;
       set = kTRUE;
@@ -2818,6 +2829,7 @@ Bool_t TFitEditor::SetObjectType(TObject* obj)
       fMethodList->RemoveAll();
       fMethodList->AddEntry("Unbinned Likelihood", kFP_MUBIN);
       fMethodList->Select(kFP_MUBIN, kFALSE);      
+#endif
    } else if (obj->InheritsFrom(TH1::Class())){
       fType = kObjectHisto;
       set = kTRUE;

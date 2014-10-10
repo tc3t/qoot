@@ -1,4 +1,6 @@
 
+if(net)
+
 add_subdirectory(net)
 add_subdirectory(auth)  # special CMakeListst.txt
 
@@ -42,4 +44,6 @@ endif()
 
 if(http)
    add_subdirectory(http)
+endif()
+
 endif()

@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building ROOT graf3d/eve package
 ############################################################################
 
+if(eve)
+
 ROOT_USE_PACKAGE(gui/ged)
 ROOT_USE_PACKAGE(graf3d/gl)
 ROOT_USE_PACKAGE(geom/geom)
@@ -37,3 +39,5 @@ ROOT_GENERATE_ROOTMAP(Eve LINKDEF LinkDef1.h LinkDef2.h DEPENDENCIES Geom GeomPa
 ROOT_LINKER_LIBRARY(Eve *.cxx G__Eve1.cxx G__Eve2.cxx LIBRARIES ${OPENGL_LIBRARIES} GLEW ${FTGL_LIBRARIES} Cint Core DEPENDENCIES Geom Ged RGL Physics EG)
 
 ROOT_INSTALL_HEADERS()
+
+endif()

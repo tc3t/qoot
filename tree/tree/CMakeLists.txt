@@ -3,6 +3,8 @@
 # @author Pere Mato, CERN
 ############################################################################
 
+if(tree)
+
 set(libname Tree)
 
 ROOT_USE_PACKAGE(io/io)
@@ -19,4 +21,6 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF LinkDef.h DEPENDENCIES Net RIO Thread )
 
 ROOT_LINKER_LIBRARY(${libname} *.cxx G__${libname}.cxx DEPENDENCIES Net RIO Thread)
 ROOT_INSTALL_HEADERS()
+
+endif()
 

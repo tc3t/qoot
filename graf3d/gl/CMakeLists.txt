@@ -1,6 +1,9 @@
 ############################################################################
 # CMakeLists.txt file for building ROOT graf3d/gl package
 ############################################################################
+
+if(rgl)
+
 ROOT_USE_PACKAGE(gui/ged)
 if(builtin_glew)
   ROOT_USE_PACKAGE(graf3d/glew)
@@ -38,3 +41,5 @@ ROOT_GENERATE_ROOTMAP(RGL LINKDEF LinkDef.h DEPENDENCIES Graf3d Gui Graf Hist Ge
 ROOT_LINKER_LIBRARY(RGL ${sources} G__GL.cxx  LIBRARIES ${gllibs} GLEW ${FTGL_LIBRARIES} DEPENDENCIES Hist Gui Ged)
 
 ROOT_INSTALL_HEADERS()
+
+endif()

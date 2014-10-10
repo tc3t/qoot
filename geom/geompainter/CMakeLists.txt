@@ -3,6 +3,8 @@
 # @author Pere Mato, CERN
 ############################################################################
 
+if(geompainter)
+
 set(libname GeomPainter)
 
 ROOT_USE_PACKAGE(geom/geom)
@@ -16,3 +18,4 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF LinkDef.h DEPENDENCIES Geom Tree Graf3d
 ROOT_LINKER_LIBRARY(${libname} *.cxx G__${libname}.cxx DEPENDENCIES Geom Tree Graf3d Hist Gpad RIO)
 ROOT_INSTALL_HEADERS()
 
+endif()
