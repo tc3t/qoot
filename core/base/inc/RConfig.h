@@ -28,8 +28,8 @@
 
 #define R__USE_SHADOW_CLASS
 
-/* Do not #define nullptr if the code is compiled in c++11 mode. */
-#if __cplusplus > 199711L
+/* Do not #define nullptr if the code is compiled in c++11 mode or if the compiler is otherwise known to support the keyword. */
+#if (__cplusplus > 199711L) || (defined(_MSC_VER) && _MSC_VER >= 1600 /*1600 == VC2010*/)
 #define R__NULLPTR
 #endif
 
