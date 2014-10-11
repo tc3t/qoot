@@ -106,6 +106,8 @@ const Handle_t kNone = 0;
 const Handle_t kCopyFromParent = 0;
 const Handle_t kParentRelative = 1;
 
+inline bool IsHandleNonNull(Handle_t h) { return h != kNone; }
+
 // Attributes that can be used when creating or changing a window
 struct SetWindowAttributes_t {
    Pixmap_t   fBackgroundPixmap;     // background or kNone or kParentRelative

@@ -1757,7 +1757,8 @@ const TGPicture *TGMainFrame::SetIconPixmap(const char *iconName)
    const TGPicture *iconPic = fClient->GetPicture(iconName);
    if (iconPic) {
       Pixmap_t pic = iconPic->GetPicture();
-      gVirtualX->SetIconPixmap(fId, pic);
+      if (IsHandleNonNull(pic))
+        gVirtualX->SetIconPixmap(fId, pic);
       return iconPic;
    } else
       return 0;

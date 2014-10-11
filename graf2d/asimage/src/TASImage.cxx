@@ -1040,7 +1040,7 @@ void TASImage::FromPad(TVirtualPad *pad, Int_t x, Int_t y, UInt_t w, UInt_t h)
       gVirtualPS->Open(pad->GetName(), 114); // in memory
       gVirtualPS->SetBit(BIT(11)); //kPrintingPS
 
-      TASImage *itmp = (TASImage*)gVirtualPS->GetStream();
+      auto itmp = reinterpret_cast<TASImage*>(gVirtualPS->GetStream());
 
       if (itmp && itmp->fImage) {
          itmp->BeginPaint();
@@ -2236,7 +2236,7 @@ Pixmap_t TASImage::GetPixmap()
       return 0;
    }
 
-   Pixmap_t ret;
+   Pixmap_t ret = kNone;
 
    ASImage *img = fScaledImage ? fScaledImage->fImage : fImage;
 
@@ -2246,8 +2246,8 @@ Pixmap_t TASImage::GetPixmap()
    if (x11) {   // use builtin version
       ret = (Pixmap_t)asimage2pixmap(fgVisual, gVirtualX->GetDefaultRootWindow(),
                                        img, 0, kTRUE);
-   } else {
-      if (!fImage->alt.argb32) {
+   } else if(fImage) {
+      if (fImage && !fImage->alt.argb32) {
          BeginPaint();
       }
       ret = gVirtualX->CreatePixmapFromData((unsigned char*)fImage->alt.argb32,
