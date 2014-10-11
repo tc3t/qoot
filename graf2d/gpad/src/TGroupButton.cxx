@@ -49,7 +49,7 @@ TGroupButton::TGroupButton(const char *groupname, const char *title, const char 
 {
    // GroupButton normal constructor.
 
-   SetName((char*)groupname);
+   SetName(groupname);
    SetFraming();
 }
 

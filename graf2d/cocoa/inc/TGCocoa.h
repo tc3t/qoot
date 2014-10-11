@@ -392,8 +392,8 @@ public:
 
    virtual void      Sync(Int_t mode);
    virtual void      Warp(Int_t ix, Int_t iy, Window_t wid);
-   virtual Int_t     WriteGIF(char *name);
-   virtual void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, char *pxname);
+   virtual Int_t     WriteGIF(const char *name) override;
+   virtual void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, const char *pxname) override;
 
    virtual Bool_t       NeedRedraw(ULong_t tgwindow, Bool_t force);
 

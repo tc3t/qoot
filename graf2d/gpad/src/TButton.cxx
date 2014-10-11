@@ -266,7 +266,7 @@ void TButton::SavePrimitive(ostream &out, Option_t * /*= ""*/)
    } else {
       out<<"   TButton *";
    }
-   char *cm = (char*)GetMethod();
+   const char *cm = GetMethod();
    Int_t nch = strlen(cm);
    char *cmethod = new char[nch+10];
    Int_t i = 0;

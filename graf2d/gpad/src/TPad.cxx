@@ -1349,7 +1349,7 @@ void TPad::DrawClassObject(const TObject *classobj, Option_t *option)
          TBox *box = pt->AddBox(0,(y1+0.01-v1)/dv,0,(v2-0.01-v1)/dv);
          if (box) box->SetFillColor(17);
          pt->AddLine(0,(y1-v1)/dv,0,(y1-v1)/dv);
-         TText *title = pt->AddText(0.5,(0.5*(y1+v2)-v1)/dv,(char*)cl->GetName());
+         TText *title = pt->AddText(0.5,(0.5*(y1+v2)-v1)/dv,cl->GetName());
          title->SetTextAlign(22);
          title->SetTextSize(0.6*(v2-y1)/ypad);
 
@@ -1411,7 +1411,7 @@ void TPad::DrawClassObject(const TObject *classobj, Option_t *option)
             // If yes, Change the color of the text to blue
             for (j=ilevel-1;j>=0;j--) {
                if (cl == clevel[ilevel]) {
-                  if (clevel[j]->GetMethodAny((char*)m->GetName())) {
+                  if (clevel[j]->GetMethodAny(m->GetName())) {
                      ptext->SetTextColor(15);
                      break;
                   }
@@ -4529,7 +4529,7 @@ void TPad::Print(const char *filenam, Option_t *option)
          gPad->Update();
          if (gVirtualX->InheritsFrom("TGQt")) {
             wid = (this == GetCanvas()) ? GetCanvas()->GetCanvasID() : GetPixmapID();
-            gVirtualX->WritePixmap(wid,UtoPixel(1.),VtoPixel(0.),(char *)psname.Data());
+            gVirtualX->WritePixmap(wid,UtoPixel(1.),VtoPixel(0.),psname.Data());
          } else {
             Int_t saver = gErrorIgnoreLevel;
             gErrorIgnoreLevel = kFatal;

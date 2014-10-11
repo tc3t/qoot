@@ -4150,7 +4150,7 @@ void TGCocoa::Warp(Int_t ix, Int_t iy, Window_t winID)
 }
 
 //______________________________________________________________________________
-Int_t TGCocoa::WriteGIF(char * /*name*/)
+Int_t TGCocoa::WriteGIF(const char * /*name*/)
 {
    // Writes the current window into GIF file.
    // Returns 1 in case of success, 0 otherwise.
@@ -4159,7 +4159,7 @@ Int_t TGCocoa::WriteGIF(char * /*name*/)
 }
 
 //______________________________________________________________________________
-void TGCocoa::WritePixmap(Int_t /*wid*/, UInt_t /*w*/, UInt_t /*h*/, char * /*pxname*/)
+void TGCocoa::WritePixmap(Int_t /*wid*/, UInt_t /*w*/, UInt_t /*h*/, const char * /*pxname*/)
 {
    // Writes the pixmap "wid" in the bitmap file "pxname".
    //

@@ -249,8 +249,8 @@ public:
    void      Sync(Int_t mode);
    void      UpdateWindow(Int_t mode);
    void      Warp(Int_t ix, Int_t iy, Window_t id = 0);
-   Int_t     WriteGIF(char *name);
-   void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, char *pxname);
+   Int_t     WriteGIF(const char *name) override;
+   void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, const char *pxname) override;
    Window_t  GetCurrentWindow() const;
    Int_t     SupportsExtension(const char *ext) const;
 

@@ -600,7 +600,7 @@ void TPadPainter::SaveImage(TVirtualPad *pad, const char *fileName, Int_t type) 
    }
  
    if (type == TImage::kGif) {
-      gVirtualX->WriteGIF((char*)fileName);
+      gVirtualX->WriteGIF(fileName);
    } else {
       const std::auto_ptr<TImage> img(TImage::Create());
       if (img.get()) {

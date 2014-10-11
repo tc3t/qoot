@@ -132,8 +132,8 @@ public:
    Float_t   GetTextSize()  const;
    void      UpdateWindow(Int_t mode);
    void      Warp(Int_t ix, Int_t iy, Window_t id = 0);
-   Int_t     WriteGIF(char *name);
-   void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, char *pxname);
+   Int_t     WriteGIF(const char *name) override;
+   void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, const char *pxname) override;
    void      GetWindowAttributes(Window_t id, WindowAttributes_t &attr);
    void      MapWindow(Window_t id);
    void      MapSubwindows(Window_t id);

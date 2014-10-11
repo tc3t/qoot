@@ -2948,7 +2948,7 @@ void TGX11::Warp(Int_t ix, Int_t iy, Window_t id)
 }
 
 //______________________________________________________________________________
-void TGX11::WritePixmap(int wid, unsigned int w, unsigned int h, char *pxname)
+void TGX11::WritePixmap(int wid, unsigned int w, unsigned int h, const char *pxname)
 {
    // Write the pixmap wid in the bitmap file pxname.
    // wid         : Pixmap address
@@ -3060,7 +3060,7 @@ void TGX11::ImgPickPalette(XImage *image, Int_t &ncol, Int_t *&R, Int_t *&G, Int
 }
 
 //______________________________________________________________________________
-Int_t TGX11::WriteGIF(char *name)
+Int_t TGX11::WriteGIF(const char *name)
 {
    // Writes the current window into GIF file. Returns 1 in case of success,
    // 0 otherwise.

@@ -66,45 +66,45 @@
 
 extern "C" {
 void gdk_win32_draw_rectangle (GdkDrawable    *drawable,
-				      GdkGC          *gc,
-				      gint            filled,
-				      gint            x,
-				      gint            y,
-				      gint            width,
-				      gint            height);
+                      GdkGC          *gc,
+                      gint            filled,
+                      gint            x,
+                      gint            y,
+                      gint            width,
+                      gint            height);
 void gdk_win32_draw_arc       (GdkDrawable    *drawable,
-				      GdkGC          *gc,
-				      gint            filled,
-				      gint            x,
-				      gint            y,
-				      gint            width,
-				      gint            height,
-				      gint            angle1,
-				      gint            angle2);
+                      GdkGC          *gc,
+                      gint            filled,
+                      gint            x,
+                      gint            y,
+                      gint            width,
+                      gint            height,
+                      gint            angle1,
+                      gint            angle2);
 void gdk_win32_draw_polygon   (GdkDrawable    *drawable,
-				      GdkGC          *gc,
-				      gint            filled,
-				      GdkPoint       *points,
-				      gint            npoints);
+                      GdkGC          *gc,
+                      gint            filled,
+                      GdkPoint       *points,
+                      gint            npoints);
 void gdk_win32_draw_text      (GdkDrawable    *drawable,
-				      GdkFont        *font,
-				      GdkGC          *gc,
-				      gint            x,
-				      gint            y,
-				      const gchar    *text,
-				      gint            text_length);
+                      GdkFont        *font,
+                      GdkGC          *gc,
+                      gint            x,
+                      gint            y,
+                      const gchar    *text,
+                      gint            text_length);
 void gdk_win32_draw_points    (GdkDrawable    *drawable,
-				      GdkGC          *gc,
-				      GdkPoint       *points,
-				      gint            npoints);
+                      GdkGC          *gc,
+                      GdkPoint       *points,
+                      gint            npoints);
 void gdk_win32_draw_segments  (GdkDrawable    *drawable,
-				      GdkGC          *gc,
-				      GdkSegment     *segs,
-				      gint            nsegs);
+                      GdkGC          *gc,
+                      GdkSegment     *segs,
+                      gint            nsegs);
 void gdk_win32_draw_lines     (GdkDrawable    *drawable,
-				      GdkGC          *gc,
-				      GdkPoint       *points,
-				      gint            npoints);
+                      GdkGC          *gc,
+                      GdkPoint       *points,
+                      gint            npoints);
 
 };
 
@@ -3986,7 +3986,7 @@ void TGWin32::Warp(int ix, int iy, Window_t id)
 
 //______________________________________________________________________________
 void TGWin32::WritePixmap(int wid, unsigned int w, unsigned int h,
-                          char *pxname)
+                          const char *pxname)
 {
    // Write the pixmap wid in the bitmap file pxname.
    // wid         : Pixmap address
@@ -4112,7 +4112,7 @@ void TGWin32::ImgPickPalette(GdkImage * image, Int_t & ncol, Int_t * &R,
 }
 
 //______________________________________________________________________________
-Int_t TGWin32::WriteGIF(char *name)
+Int_t TGWin32::WriteGIF(const char *name)
 {
    // Writes the current window into GIF file.
 
@@ -7314,7 +7314,7 @@ void TGWin32::DeleteProperty(Window_t win, Atom_t& prop)
    HWND hWnd = (HWND)GDK_DRAWABLE_XID((GdkWindow *)win);
    Atom_t atom = (Atom_t)GetProp(hWnd,(LPCTSTR)MAKELONG(prop,0));
    if (atom != 0) {
-	   GlobalDeleteAtom(atom);
+       GlobalDeleteAtom(atom);
    }
    RemoveProp(hWnd,(LPCTSTR)MAKELONG(prop,0));
 }

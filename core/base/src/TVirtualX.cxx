@@ -897,7 +897,7 @@ void TVirtualX::Warp(Int_t /*ix*/, Int_t /*iy*/, Window_t /*id*/)
 }
 
 //______________________________________________________________________________
-Int_t TVirtualX::WriteGIF(char * /*name*/)
+Int_t TVirtualX::WriteGIF(const char * /*name*/)
 {
    // Writes the current window into GIF file.
    // Returns 1 in case of success, 0 otherwise.
@@ -907,7 +907,7 @@ Int_t TVirtualX::WriteGIF(char * /*name*/)
 
 //______________________________________________________________________________
 void TVirtualX::WritePixmap(Int_t /*wid*/, UInt_t /*w*/, UInt_t /*h*/,
-                            char * /*pxname*/)
+                            const char * /*pxname*/)
 {
    // Writes the pixmap "wid" in the bitmap file "pxname".
    //
