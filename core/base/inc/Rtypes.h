@@ -65,15 +65,38 @@ typedef unsigned long  UInt_t;      //Unsigned integer 4 bytes
 typedef int            Int_t;       //Signed integer 4 bytes (int)
 typedef unsigned int   UInt_t;      //Unsigned integer 4 bytes (unsigned int)
 #endif
-#ifdef R__B64    // Note: Long_t and ULong_t are currently not portable types
-typedef int            Seek_t;      //File pointer (int)
-typedef long           Long_t;      //Signed long integer 8 bytes (long)
-typedef unsigned long  ULong_t;     //Unsigned long integer 8 bytes (unsigned long)
-#else
-typedef int            Seek_t;      //File pointer (int)
-typedef long           Long_t;      //Signed long integer 4 bytes (long)
-typedef unsigned long  ULong_t;     //Unsigned long integer 4 bytes (unsigned long)
+
+// CINT doesn't have intptr_t nor stdint.h
+#if defined(__CINT__)
+    #if defined(R__WIN32) && defined(R__INT64)
+        typedef long long           intptr_t;
+        typedef unsigned long long  uintptr_t;
+    #else	
+        typedef long           intptr_t;
+        typedef unsigned long  uintptr_t;
+    #endif
 #endif
+
+typedef intptr_t       IntPtr_t;
+typedef uintptr_t      UIntPtr_t;
+typedef IntPtr_t       Seek_t;      // File pointer
+
+// Long_t and Int_t are handled as separate types. Since intptr_t and int seems to be the same in 32-bit build (MSVC2012)
+// typedefing IntPtr_t to Long_t causes lots of "member function already defined or declared"-errors.
+// Due to pointer casts, (U)Long_t can't be (u)long generally, because sizeof(long) can be < sizeof(intptr_t) (e.g. Windows).
+#if defined(_WIN64)
+    typedef long long           Long_t;
+    typedef unsigned long long  ULong_t;
+#else
+    typedef long           Long_t;
+    typedef unsigned long  ULong_t;
+#endif
+
+#if !defined(__CINT__)
+    static_assert(sizeof(Long_t) == sizeof(IntPtr_t), "Long_t must have same size as IntPtr_t due to pointer <-> Long_t casts");
+    static_assert(sizeof(ULong_t) == sizeof(UIntPtr_t), "ULong_t must have same size as UIntPtr_t due to pointer <-> ULong_t casts");
+#endif
+
 typedef float          Float_t;     //Float 4 bytes (float)
 typedef float          Float16_t;   //Float 4 bytes written with a truncated mantissa
 typedef double         Double_t;    //Double 8 bytes
@@ -86,13 +109,25 @@ typedef short          Version_t;   //Class version identifier (short)
 typedef const char     Option_t;    //Option string (const char)
 typedef int            Ssiz_t;      //String size (int)
 typedef float          Real_t;      //TVector and TMatrix element type (float)
-#if defined(R__WIN32) && !defined(__CINT__)
-typedef __int64          Long64_t;  //Portable signed long integer 8 bytes
-typedef unsigned __int64 ULong64_t; //Portable unsigned long integer 8 bytes
-#else
+
+/* There seems to be some challenges in Long_t/Long64_t handling:
+    -Pointers are casted to Long_t
+        -> sizeof(Long_t) must be equal to sizeof(intptr_t)
+    -Functions are overloaded on both Long_t and Long64_t
+        -> Long_t and Long64_t must be distinct in order to avoid "already defined"-type of errors.
+        -> can't have Long_t == intptr_t and Long64_t == int64_t because intptr_t == int64_t == long long in Win64 (MSVC2012).
+*/
+
+// TODO: Use int64_t
 typedef long long          Long64_t; //Portable signed long integer 8 bytes
 typedef unsigned long long ULong64_t;//Portable unsigned long integer 8 bytes
+
+
+#if !defined(__CINT__)
+    static_assert(sizeof(Long64_t) == 8, "Long64_t has wrong size");
+    static_assert(sizeof(ULong64_t) == 8, "ULong64_t has wrong size");
 #endif
+
 typedef double         Axis_t;      //Axis values type (double)
 typedef double         Stat_t;      //Statistics type (double)
 
