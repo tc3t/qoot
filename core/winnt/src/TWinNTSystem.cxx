@@ -2120,7 +2120,8 @@ void *TWinNTSystem::OpenDirectory(const char *fdir)
       HANDLE searchFile;
       searchFile = ::FindFirstFile(entry, &fFindFileData);
       if (searchFile == INVALID_HANDLE_VALUE) {
-         ((TWinNTSystem *)gSystem)->Error( "Unable to find' for reading:", entry);
+         //((TWinNTSystem *)gSystem)->Error( "Unable to find' for reading:", entry);
+         gSystem->Error("TWinNTSystem::OpenDirectory", "Unable to find '%s' for reading.", entry);
          delete [] entry;
          delete [] dir;
          return 0;
@@ -2696,10 +2697,10 @@ int TWinNTSystem::Link(const char *from, const char *to)
    // Create a link from file1 to file2.
 
    struct   _stati64 finfo;
-   char     winDrive[256];
-   char     winDir[256];
-   char     winName[256];
-   char     winExt[256];
+   char     winDrive[_MAX_DRIVE];
+   char     winDir[_MAX_DIR];
+   char     winName[_MAX_FNAME];
+   char     winExt[_MAX_EXT];
    char     linkname[1024];
    LPTSTR   lpszFilePart;
    TCHAR    szPath[MAX_PATH];
@@ -4052,10 +4053,10 @@ const char *TWinNTSystem::GetLinkedLibraries()
 {
    // Get list of shared libraries loaded at the start of the executable.
    // Returns 0 in case list cannot be obtained or in case of error.
-   char winDrive[256];
-   char winDir[256];
-   char winName[256];
-   char winExt[256];
+   char winDrive[_MAX_DRIVE];
+   char winDir[_MAX_DIR];
+   char winName[_MAX_FNAME];
+   char winExt[_MAX_EXT];
 
    if (!gApplication) return 0;
 

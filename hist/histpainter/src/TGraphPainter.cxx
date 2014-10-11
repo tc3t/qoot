@@ -703,13 +703,18 @@ void TGraphPainter::DrawPanelHelper(TGraph *theGraph)
    End_html */
 
    if (!gPad) {
-      Error("DrawPanel", "need to draw graph first");
+      Error("DrawPanelHelper", "need to draw graph first");
       return;
    }
    TVirtualPadEditor *editor = TVirtualPadEditor::GetPadEditor();
-   editor->Show();
-   gROOT->ProcessLine(Form("((TCanvas*)0x%lx)->Selected((TVirtualPad*)0x%lx,(TObject*)0x%lx,1)",
+   if (editor)
+   {
+      editor->Show();
+      gROOT->ProcessLine(Form("((TCanvas*)0x%lx)->Selected((TVirtualPad*)0x%lx,(TObject*)0x%lx,1)",
                            (ULong_t)gPad->GetCanvas(), (ULong_t)gPad, (ULong_t)theGraph));
+   }
+   else
+       Error("DrawPanelHelper", "unable to open PadEditor");
 }
 
 

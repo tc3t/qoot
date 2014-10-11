@@ -652,6 +652,11 @@ void TGHScrollBar::SetRange(Int_t range, Int_t page_size)
 void TGHScrollBar::SetPosition(Int_t pos)
 {
    // Set logical slider position of horizontal scrollbar.
+   if (!fSlider)
+   {
+      Error("SetPosition", "fSlider is nullptr");
+      return;
+   }
 
    fPos = TMath::Max(pos, 0);
    fPos = TMath::Min(pos, fRange-fPsize);
@@ -914,6 +919,11 @@ void TGVScrollBar::SetRange(Int_t range, Int_t page_size)
 void TGVScrollBar::SetPosition(Int_t pos)
 {
    // Set logical slider position of vertical scrollbar.
+   if (!fSlider)
+   {
+      Error("SetPosition", "fSlider is nullptr");
+      return;
+   }
 
    fPos = TMath::Max(pos, 0);
    fPos = TMath::Min(pos, fRange-fPsize);
