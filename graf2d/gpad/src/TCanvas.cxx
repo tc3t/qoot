@@ -1697,14 +1697,14 @@ void TCanvas::SaveSource(const char *filename, Option_t *option)
    char quote = '"';
    ofstream out;
    Int_t lenfile = strlen(filename);
-   char * fname;
+   TString fname;
    char lcname[10];
    const char *cname = GetName();
    Bool_t invalid = kFALSE;
    //    if filename is given, open this file, otherwise create a file
    //    with a name equal to the canvasname.C
    if (lenfile) {
-      fname = (char*)filename;
+      fname = filename;
       out.open(fname, ios::out);
    } else {
       Int_t nch = strlen(cname);
@@ -1714,14 +1714,11 @@ void TCanvas::SaveSource(const char *filename, Option_t *option)
          if (lcname[0] == 0) {invalid = kTRUE; strlcpy(lcname,"c1",10); nch = 2;}
          cname = lcname;
       }
-      fname = new char[nch+3];
-      strlcpy(fname,cname,nch+3);
-      strncat(fname,".C",2);
+      fname.Form("%s.C", cname);
       out.open(fname, ios::out);
    }
    if (!out.good ()) {
-      Error("SaveSource", "Cannot open file: %s",fname);
-      if (!lenfile) delete [] fname;
+      Error("SaveSource", "Cannot open file: %s",fname.Data());
       return;
    }
 
@@ -1809,14 +1806,13 @@ void TCanvas::SaveSource(const char *filename, Option_t *option)
 
    out <<"}"<<endl;
    out.close();
-   Info("SaveSource","C++ Macro file: %s has been generated", fname);
+   Info("SaveSource","C++ Macro file: %s has been generated", fname.Data());
 
    //    reset bit TClass::kClassSaved for all classes
    next.Reset();
    while((cl = (TClass*)next())) {
       cl->ResetBit(TClass::kClassSaved);
    }
-   if (!lenfile) delete [] fname;
 }
 
 //______________________________________________________________________________
