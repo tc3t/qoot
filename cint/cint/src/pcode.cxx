@@ -635,6 +635,8 @@ void G__LD_pn_float(LDARGS) {G__ASM_GET_INT_PN<float>(LDARGCALL);}
 template <typename T>
 void G__ASM_GET_INT_P10(G__value* pbuf, int* psp, long offset, G__var_array* var, long ig15)
 {
+  if (psp == nullptr || *psp <= 0)
+    return;
   G__value *buf= &pbuf[*psp-1];
   buf->ref = *(long*)(var->p[ig15]+offset)+G__convertT<long>(buf)*sizeof(T);
   buf->tagnum = -1;
@@ -2219,10 +2221,10 @@ void G__OP2_divassign(G__value *bufm1,G__value *bufm2)
       }
 #endif
         if(G__isunsignedM(bufm1)) {
-	G__DivAssign(bufm2, G__convertT<unsigned long>(bufm1));
+    G__DivAssign(bufm2, G__convertT<unsigned long>(bufm1));
       }
       else {
-	G__DivAssign(bufm2, G__convertT<long>(bufm1));
+    G__DivAssign(bufm2, G__convertT<long>(bufm1));
       }
     }
     G__intassign(bufm2->ref,bufm2->obj.i,bufm2->type);

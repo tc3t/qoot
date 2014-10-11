@@ -286,21 +286,21 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                   , sp
                );
                if (isprint(G__asm_stack[sp-2].type)) {
-		  G__fprinterr(
-		       G__serr
-		     , "'%c' "
-		     , G__asm_stack[sp-2].type
+          G__fprinterr(
+               G__serr
+             , "'%c' "
+             , G__asm_stack[sp-2].type
                   );
                }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[sp-2].type
-		  , G__asm_stack[sp-2].tagnum
-		  , G__asm_stack[sp-2].typenum
-		  , G__asm_stack[sp-2].obj.reftype.reftype
-		  , G__asm_stack[sp-2].isconst
-	       ); 
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[sp-2].type
+          , G__asm_stack[sp-2].tagnum
+          , G__asm_stack[sp-2].typenum
+          , G__asm_stack[sp-2].obj.reftype.reftype
+          , G__asm_stack[sp-2].isconst
+           ); 
                G__fprinterr(
                     G__serr
                   , " val: 0x%08lx,%ld,%g"
@@ -313,21 +313,21 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                   , " arg2 type: ("
                );
                if (isprint(G__asm_stack[sp-1].type)) {
-		  G__fprinterr(
-		       G__serr
-		     , "'%c' "
-		     , G__asm_stack[sp-1].type
+          G__fprinterr(
+               G__serr
+             , "'%c' "
+             , G__asm_stack[sp-1].type
                   );
                }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[sp-1].type
-		  , G__asm_stack[sp-1].tagnum
-		  , G__asm_stack[sp-1].typenum
-		  , G__asm_stack[sp-1].obj.reftype.reftype
-		  , G__asm_stack[sp-1].isconst
-	       );
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[sp-1].type
+          , G__asm_stack[sp-1].tagnum
+          , G__asm_stack[sp-1].typenum
+          , G__asm_stack[sp-1].obj.reftype.reftype
+          , G__asm_stack[sp-1].isconst
+           );
                G__fprinterr(
                     G__serr
                   , " val: 0x%08lx,%ld,%g  %s:%d\n"
@@ -350,21 +350,21 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                   , "       : result: type: ("
                );
                if (isprint(G__asm_stack[sp-1].type)) {
-		  G__fprinterr(
-		       G__serr
-		     , "'%c' "
-		     , G__asm_stack[sp-1].type
+          G__fprinterr(
+               G__serr
+             , "'%c' "
+             , G__asm_stack[sp-1].type
                   );
                }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[sp-1].type
-		  , G__asm_stack[sp-1].tagnum
-		  , G__asm_stack[sp-1].typenum
-		  , G__asm_stack[sp-1].obj.reftype.reftype
-		  , G__asm_stack[sp-1].isconst
-	       );
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[sp-1].type
+          , G__asm_stack[sp-1].tagnum
+          , G__asm_stack[sp-1].typenum
+          , G__asm_stack[sp-1].obj.reftype.reftype
+          , G__asm_stack[sp-1].isconst
+           );
                G__fprinterr(
                     G__serr
                   , " val: 0x%08lx,%ld,%g  %s:%d\n"
@@ -430,36 +430,36 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                   , pc
                   , sp
                );
-	       G__fprinterr(
-		    G__serr
-		  , " type: ("
+           G__fprinterr(
+            G__serr
+          , " type: ("
                );
                if (isprint(G__asm_stack[G__asm_inst[pc+1]].type)) {
-		  G__fprinterr(
-		       G__serr
+          G__fprinterr(
+               G__serr
                      , "'%c' "
-		     , G__asm_stack[G__asm_inst[pc+1]].type
+             , G__asm_stack[G__asm_inst[pc+1]].type
                   );
                }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[G__asm_inst[pc+1]].type
-		  , G__asm_stack[G__asm_inst[pc+1]].tagnum
-		  , G__asm_stack[G__asm_inst[pc+1]].typenum
-		  , G__asm_stack[G__asm_inst[pc+1]].obj.reftype.reftype
-		  , G__asm_stack[G__asm_inst[pc+1]].isconst
-	       );
-	       G__fprinterr(
-		    G__serr
-		  , " val: 0x%08lx,%ld,%g at data stack index 0x%lx %s:%d\n"
-		  , G__int(G__asm_stack[G__asm_inst[pc+1]])
-		  , G__int(G__asm_stack[G__asm_inst[pc+1]])
-		  , G__double(G__asm_stack[G__asm_inst[pc+1]])
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[G__asm_inst[pc+1]].type
+          , G__asm_stack[G__asm_inst[pc+1]].tagnum
+          , G__asm_stack[G__asm_inst[pc+1]].typenum
+          , G__asm_stack[G__asm_inst[pc+1]].obj.reftype.reftype
+          , G__asm_stack[G__asm_inst[pc+1]].isconst
+           );
+           G__fprinterr(
+            G__serr
+          , " val: 0x%08lx,%ld,%g at data stack index 0x%lx %s:%d\n"
+          , G__int(G__asm_stack[G__asm_inst[pc+1]])
+          , G__int(G__asm_stack[G__asm_inst[pc+1]])
+          , G__double(G__asm_stack[G__asm_inst[pc+1]])
                   , G__asm_inst[pc+1]
                   , __FILE__
                   , __LINE__
-	       );
+           );
             }
 #endif // G__ASM_DBG
             G__asm_stack[sp] = G__asm_stack[G__asm_inst[pc+1]];
@@ -560,84 +560,84 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
             ***************************************/
 #ifdef G__ASM_DBG
             if (G__asm_dbg) {
-	       G__fprinterr(
-		    G__serr
-		  , "%3x,%3x: OP2"
-		  , pc
-		  , sp
+           G__fprinterr(
+            G__serr
+          , "%3x,%3x: OP2"
+          , pc
+          , sp
                );
                if (isprint(G__asm_inst[pc+1])) {
-		  G__fprinterr(
-		       G__serr
+          G__fprinterr(
+               G__serr
                      , " '%c'"
-		     , G__asm_inst[pc+1]
+             , G__asm_inst[pc+1]
                   );
                }
-	       G__fprinterr(
-		    G__serr
-		  , " %d  %s:%d\n"
-		  , G__asm_inst[pc+1]
+           G__fprinterr(
+            G__serr
+          , " %d  %s:%d\n"
+          , G__asm_inst[pc+1]
                   , __FILE__
                   , __LINE__
-	       );
-	       G__fprinterr(
-		    G__serr
-		  , "       : arg1 type: ("
+           );
+           G__fprinterr(
+            G__serr
+          , "       : arg1 type: ("
                );
                if (isprint(G__asm_stack[sp-2].type)) {
-		  G__fprinterr(
-		       G__serr
+          G__fprinterr(
+               G__serr
                      , "'%c' "
-		     , G__asm_stack[sp-2].type
+             , G__asm_stack[sp-2].type
                   );
                }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[sp-2].type
-		  , G__asm_stack[sp-2].tagnum
-		  , G__asm_stack[sp-2].typenum
-		  , G__asm_stack[sp-2].obj.reftype.reftype
-		  , G__asm_stack[sp-2].isconst
-	       );
-	       G__fprinterr(
-		    G__serr
-		  , " val: 0x%08lx,%ld,%g  %s:%d\n"
-		  , G__int(G__asm_stack[sp-2])
-		  , G__int(G__asm_stack[sp-2])
-		  , G__double(G__asm_stack[sp-2])
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[sp-2].type
+          , G__asm_stack[sp-2].tagnum
+          , G__asm_stack[sp-2].typenum
+          , G__asm_stack[sp-2].obj.reftype.reftype
+          , G__asm_stack[sp-2].isconst
+           );
+           G__fprinterr(
+            G__serr
+          , " val: 0x%08lx,%ld,%g  %s:%d\n"
+          , G__int(G__asm_stack[sp-2])
+          , G__int(G__asm_stack[sp-2])
+          , G__double(G__asm_stack[sp-2])
                   , __FILE__
                   , __LINE__
-	       );
-	       G__fprinterr(
-		    G__serr
-		  , "       : arg2 type: ("
+           );
+           G__fprinterr(
+            G__serr
+          , "       : arg2 type: ("
                );
                if (isprint(G__asm_stack[sp-1].type)) {
-		  G__fprinterr(
-		       G__serr
+          G__fprinterr(
+               G__serr
                      , "'%c' "
-		     , G__asm_stack[sp-1].type
+             , G__asm_stack[sp-1].type
                   );
                }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[sp-1].type
-		  , G__asm_stack[sp-1].tagnum
-		  , G__asm_stack[sp-1].typenum
-		  , G__asm_stack[sp-1].obj.reftype.reftype
-		  , G__asm_stack[sp-1].isconst
-	       );
-	       G__fprinterr(
-		    G__serr
-		  , " val: 0x%08lx,%ld,%g  %s:%d\n"
-		  , G__int(G__asm_stack[sp-1])
-		  , G__int(G__asm_stack[sp-1])
-		  , G__double(G__asm_stack[sp-1])
-		  , __FILE__
-		  , __LINE__
-	       );
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[sp-1].type
+          , G__asm_stack[sp-1].tagnum
+          , G__asm_stack[sp-1].typenum
+          , G__asm_stack[sp-1].obj.reftype.reftype
+          , G__asm_stack[sp-1].isconst
+           );
+           G__fprinterr(
+            G__serr
+          , " val: 0x%08lx,%ld,%g  %s:%d\n"
+          , G__int(G__asm_stack[sp-1])
+          , G__int(G__asm_stack[sp-1])
+          , G__double(G__asm_stack[sp-1])
+          , __FILE__
+          , __LINE__
+           );
             }
 #endif //  G__ASM_DBG
             G__bstore((char) G__asm_inst[pc+1], G__asm_stack[sp-1], &G__asm_stack[sp-2]);
@@ -648,21 +648,21 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                   , "       : result: type: ("
                );
                if (isprint(G__asm_stack[sp-2].type)) {
-		  G__fprinterr(
-		       G__serr
-		     , "'%c' "
-		     , G__asm_stack[sp-2].type
-		  );
+          G__fprinterr(
+               G__serr
+             , "'%c' "
+             , G__asm_stack[sp-2].type
+          );
                }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[sp-2].type
-		  , G__asm_stack[sp-2].tagnum
-		  , G__asm_stack[sp-2].typenum
-		  , G__asm_stack[sp-2].obj.reftype.reftype
-		  , G__asm_stack[sp-2].isconst
-	       );
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[sp-2].type
+          , G__asm_stack[sp-2].tagnum
+          , G__asm_stack[sp-2].typenum
+          , G__asm_stack[sp-2].obj.reftype.reftype
+          , G__asm_stack[sp-2].isconst
+           );
                G__fprinterr(
                     G__serr
                   , " val: 0x%08lx,%ld,%g  %s:%d\n"
@@ -972,21 +972,21 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                      , "       : result: type: ("
                   );
                   if (isprint(result->type)) {
-		     G__fprinterr(
-			  G__serr
-			, "'%c' "
-			, result->type
-		     );
+             G__fprinterr(
+              G__serr
+            , "'%c' "
+            , result->type
+             );
                   }
-		  G__fprinterr(
-		       G__serr
-		     , "%d, %d, %d, %d, %d)"
-		     , result->type
-		     , result->tagnum
-		     , result->typenum
+          G__fprinterr(
+               G__serr
+             , "%d, %d, %d, %d, %d)"
+             , result->type
+             , result->tagnum
+             , result->typenum
                      , result->obj.reftype.reftype
                      , result->isconst
-		  );
+          );
                   G__fprinterr(
                        G__serr
                      , " val: 0x%08lx,%ld,%g  %s:%d\n"
@@ -1312,17 +1312,17 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                   , "       : return: type:"
                );
                if (isprint(G__asm_stack[sp].type)) {
-		  G__fprinterr(
-		       G__serr
-		     , " '%c'"
-		     , G__asm_stack[sp].type
-		  );
+          G__fprinterr(
+               G__serr
+             , " '%c'"
+             , G__asm_stack[sp].type
+          );
                }
-	       G__fprinterr(
-		    G__serr
-		  , " %d"
-		  , G__asm_stack[sp].type
-	       );
+           G__fprinterr(
+            G__serr
+          , " %d"
+          , G__asm_stack[sp].type
+           );
                G__fprinterr(
                     G__serr
                   , " val: 0x%08lx,%ld,%g  %s:%d\n"
@@ -2351,7 +2351,8 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
             if (2 == G__asm_inst[pc+1]) return(1);
             G__asm_exec = 0;
             G__return = G__RETURN_NORMAL;
-            if (G__asm_inst[pc+1]) *presult = G__asm_stack[sp-1];
+            //if (G__asm_inst[pc+1]) *presult = G__asm_stack[sp-1];
+            if (G__asm_inst[pc+1] && sp >= 1) *presult = G__asm_stack[sp-1];
             else                  *presult = G__null;
             pc += 2;
             --sp;
@@ -2541,49 +2542,49 @@ int G__exec_asm(int start, int stack, G__value* presult, long localmem)
                pc += 2;
             }
 #ifdef G__ASM_DBG
-	    //if (G__asm_dbg) {
-	    //   G__FastAllocString tmp(G__ONELINE);
-	    //   G__fprinterr(
-	    //        G__serr
-	    //      , "       : result: %s  %s:%d\n"
-	    //      , G__valuemonitor(G__asm_stack[sp-1], tmp)
-	    //      , __FILE__
-	    //      , __LINE__
-	    //   );
-	    //}
-	    if (G__asm_dbg) {
-	       G__fprinterr(
-		    G__serr
-		  , "       : result: type: ("
-	       );
-	       if (isprint(result->type)) {
-		  G__fprinterr(
-		       G__serr
-		     , "'%c' "
-		     , G__asm_stack[sp-1].type
-		  );
-	       }
-	       G__fprinterr(
-		    G__serr
-		  , "%d, %d, %d, %d, %d)"
-		  , G__asm_stack[sp-1].type
-		  , G__asm_stack[sp-1].tagnum
-		  , G__asm_stack[sp-1].typenum
-		  , G__asm_stack[sp-1].obj.reftype.reftype
-		  , G__asm_stack[sp-1].isconst
-	       );
-	       G__fprinterr(
-		    G__serr
-		  , " val: 0x%08lx,%ld,%g  %s:%d\n"
-		  , G__int(G__asm_stack[sp-1])
-		  , G__int(G__asm_stack[sp-1])
-		  , G__double(G__asm_stack[sp-1])
-		  , __FILE__
-		  , __LINE__
-	       );
-	    }
+        //if (G__asm_dbg) {
+        //   G__FastAllocString tmp(G__ONELINE);
+        //   G__fprinterr(
+        //        G__serr
+        //      , "       : result: %s  %s:%d\n"
+        //      , G__valuemonitor(G__asm_stack[sp-1], tmp)
+        //      , __FILE__
+        //      , __LINE__
+        //   );
+        //}
+        if (G__asm_dbg) {
+           G__fprinterr(
+            G__serr
+          , "       : result: type: ("
+           );
+           if (isprint(result->type)) {
+          G__fprinterr(
+               G__serr
+             , "'%c' "
+             , G__asm_stack[sp-1].type
+          );
+           }
+           G__fprinterr(
+            G__serr
+          , "%d, %d, %d, %d, %d)"
+          , G__asm_stack[sp-1].type
+          , G__asm_stack[sp-1].tagnum
+          , G__asm_stack[sp-1].typenum
+          , G__asm_stack[sp-1].obj.reftype.reftype
+          , G__asm_stack[sp-1].isconst
+           );
+           G__fprinterr(
+            G__serr
+          , " val: 0x%08lx,%ld,%g  %s:%d\n"
+          , G__int(G__asm_stack[sp-1])
+          , G__int(G__asm_stack[sp-1])
+          , G__double(G__asm_stack[sp-1])
+          , __FILE__
+          , __LINE__
+           );
+        }
 #endif // G__ASM_DBG
-	    // --
+        // --
 #ifdef G__ASM_DBG
             break;
 #else // G__ASM_DBG
