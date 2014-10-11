@@ -184,8 +184,7 @@ void TGLOutput::CloseEmbeddedPS()
 {
    //this function used by gl-in-pad
    // Restore the gVirtualPS output stream
-   ofstream *fs = new ofstream(gVirtualPS->GetName(),ios::app);
-   gVirtualPS->SetStream(fs);
+   gVirtualPS->SetStream(new ofstream(gVirtualPS->GetName(), ios::app));
    gVirtualPS->PrintStr("@");
    gVirtualPS->PrintStr("cleartomark@");
    gVirtualPS->PrintStr("countdictstack exch sub { end } repeat@");

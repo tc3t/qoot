@@ -106,7 +106,6 @@ TPDF::TPDF() : TVirtualPS()
 {
    // Default PDF constructor
 
-   fStream          = 0;
    fCompress        = kFALSE;
    fPageNotEmpty    = kFALSE;
    gVirtualPS       = this;
@@ -141,7 +140,6 @@ TPDF::TPDF(const char *fname, Int_t wtype) : TVirtualPS(fname, wtype)
    //          necessary to specify this parameter at creation time because it
    //          has a default value (which is ignore in the PDF case).
 
-   fStream          = 0;
    fCompress        = kFALSE;
    fPageNotEmpty    = kFALSE;
    fRed             = 0.;
@@ -347,7 +345,7 @@ void TPDF::Close(Option_t *)
    PrintStr("%%EOF@");
 
    // Close file stream
-   if (fStream) { fStream->close(); delete fStream; fStream = 0;}
+   CloseStream();
 
    gVirtualPS = 0;
 }

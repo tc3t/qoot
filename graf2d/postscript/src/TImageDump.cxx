@@ -56,7 +56,6 @@ TImageDump::TImageDump() : TVirtualPS()
 {
    // Default SVG constructor
 
-   fStream    = 0;
    fImage     = 0;
    gVirtualPS = this;
    fType      = 0;

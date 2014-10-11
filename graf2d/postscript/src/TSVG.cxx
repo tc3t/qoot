@@ -77,7 +77,6 @@ TSVG::TSVG() : TVirtualPS()
 {
    // Default SVG constructor
 
-   fStream      = 0;
    fType        = 0;
    gVirtualPS   = this;
    fBoundingBox = kFALSE;
@@ -100,7 +99,6 @@ TSVG::TSVG(const char *fname, Int_t wtype) : TVirtualPS(fname, wtype)
    //          necessary to specify this parameter at creation time because it
    //          has a default value (which is ignore in the SVG case).
 
-   fStream = 0;
    SetTitle("SVG");
    Open(fname, wtype);
 }
@@ -174,7 +172,7 @@ void TSVG::Close(Option_t *)
    PrintStr("</svg>@");
 
    // Close file stream
-   if (fStream) { fStream->close(); delete fStream; fStream = 0;}
+   CloseStream();
 
    gVirtualPS = 0;
 }

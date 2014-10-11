@@ -66,6 +66,17 @@ TVirtualPS::~TVirtualPS()
    if (fBuffer) delete [] fBuffer;
 }
 
+//______________________________________________________________________________
+void TVirtualPS::CloseStream()
+{
+    if (fStream)
+    {
+        fStream->close();
+        delete fStream;
+        fStream = 0;
+    }
+}
+
 
 //______________________________________________________________________________
 void TVirtualPS::PrintStr(const char *str)

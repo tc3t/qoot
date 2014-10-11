@@ -267,7 +267,6 @@ TPostScript::TPostScript() : TVirtualPS()
 {
    // Default PostScript constructor
 
-   fStream          = 0;
    fType            = 0;
    gVirtualPS       = this;
    fBlue            = 0.;
@@ -345,7 +344,6 @@ TPostScript::TPostScript(const char *fname, Int_t wtype)
    //     112 ps  Landscape
    //     113 eps
 
-   fStream = 0;
    SetTitle("PS");
    Open(fname, wtype);
 }
@@ -464,8 +462,7 @@ void TPostScript::Close(Option_t *)
    fFontEmbed = kFALSE;
 
    // Close file stream
-
-   if (fStream) { fStream->close(); delete fStream; fStream = 0;}
+   CloseStream();
 
    gVirtualPS = 0;
 }
@@ -2815,7 +2812,7 @@ void TPostScript::Text(Double_t xx, Double_t yy, const wchar_t *chars)
       // Close the the file fFileName
       if (fStream) {
          PrintStr("@");
-         fStream->close(); delete fStream; fStream = 0;
+         CloseStream();
       }
 
       // Rename the file fFileName

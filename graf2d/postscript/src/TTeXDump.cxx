@@ -88,7 +88,6 @@ TTeXDump::TTeXDump() : TVirtualPS()
 {
    // Default TeX constructor
 
-   fStream       = 0;
    fType         = 0;
    gVirtualPS    = this;
    fBoundingBox  = kFALSE;
@@ -112,7 +111,6 @@ TTeXDump::TTeXDump(const char *fname, Int_t wtype) : TVirtualPS(fname, wtype)
    //          necessary to specify this parameter at creation time because it
    //          has a default value (which is ignore in the TeX case).
 
-   fStream       = 0;
    fType         = 0;
    gVirtualPS    = this;
    fBoundingBox  = kFALSE;
@@ -197,7 +195,7 @@ void TTeXDump::Close(Option_t *)
    PrintStr("\\end{tikzpicture}@");
 
    // Close file stream
-   if (fStream) { fStream->close(); delete fStream; fStream = 0;}
+   CloseStream();
 
    gVirtualPS = 0;
 }
