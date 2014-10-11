@@ -80,6 +80,7 @@ public:
    virtual void  PrintRaw(Int_t len, const char *str);
    virtual void *GetStream() const {  return (void*)fStream; }
    virtual void  SetStream(std::ofstream *os) {  fStream = os; }
+   virtual void  CloseStream();
 
    virtual void  SetType(Int_t /*type*/ = -111) { }
    virtual Int_t GetType() const { return 111; }
