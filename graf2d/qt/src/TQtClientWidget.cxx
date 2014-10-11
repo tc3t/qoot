@@ -16,6 +16,7 @@
 #include "TQtClientGuard.h"
 #include "TGQt.h"
 #include "TQtLock.h"
+#include "commonQtDefs.h"
 
 #include <QKeySequence>
 #include <QShortcut>
@@ -41,7 +42,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 //______________________________________________________________________________
-TQtClientWidget::TQtClientWidget(TQtClientGuard *guard, QWidget* mother, const char* name, Qt::WFlags f ):
+TQtClientWidget::TQtClientWidget(TQtClientGuard *guard, QWidget* mother, const char* name, Qt::WindowFlags f ):
           QFrame(mother,f)
          ,fGrabButtonMask(kAnyModifier),      fGrabEventPointerMask(kNoEventMask)
          ,fGrabEventButtonMask(kNoEventMask), fSelectEventMask(kNoEventMask), fSaveSelectInputMask(kNoEventMask) // ,fAttributeEventMask(0)
@@ -52,7 +53,9 @@ TQtClientWidget::TQtClientWidget(TQtClientGuard *guard, QWidget* mother, const c
 {
    setObjectName(name);
    setAttribute(Qt::WA_PaintOnScreen);
+#if QT_VERSION < 0x50000
    setAttribute(Qt::WA_PaintOutsidePaintEvent);
+#endif
    setAutoFillBackground(true); 
  //   fEraseColor  = new QColor("red");
 //   fErasePixmap = new QPixmap(palette().brush(QPalette::Window).texture());

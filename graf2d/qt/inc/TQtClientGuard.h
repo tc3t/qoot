@@ -37,7 +37,7 @@ private:
 public:
    TQtClientGuard(): QObject(), fDeadCounter(0){};
    virtual ~TQtClientGuard(){;}
-   TQtClientWidget *Create(QWidget* parent=0, const char* name=0, Qt::WFlags f=0 );
+   TQtClientWidget *Create(QWidget* parent=0, const char* name=0, Qt::WindowFlags f=0 );
    void    Delete(QWidget *w);
    QWidget *Find(Window_t id);
    void    Add(QWidget *w);
@@ -67,7 +67,7 @@ public:
    QPixmap* Create(int w, int h, int depth = -1);
       //Optimization optimization=DefaultOptim);
    QPixmap* Create (const QString &fileName, const char *format = 0);
-   QPixmap* Create(int w, int h, const uchar *bits, bool isXbitmap=TRUE);
+   QPixmap* Create(int w, int h, const uchar *bits, bool isXbitmap = true);
    QPixmap* Create(const QPixmap &src);
    QBitmap* Create(const QBitmap &src);
    //, ColorMode mode = Auto);

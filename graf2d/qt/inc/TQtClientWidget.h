@@ -24,6 +24,7 @@
 #endif
   
 #include "GuiTypes.h"
+#include "commonQtDefs.h"
 
 //________________________________________________________________________
 //
@@ -72,7 +73,7 @@ protected:
        friend class TQtClientGuard;
        friend class TGQt;
 #ifndef __CINT__
-      TQtClientWidget(TQtClientGuard *guard, QWidget* parent=0, const char* name=0, Qt::WFlags f=0);
+      TQtClientWidget(TQtClientGuard *guard, QWidget* parent=0, const char* name=0, Qt::WindowFlags f=0);
 #else
       TQtClientWidget(TQtClientGuard *guard, QWidget* parent=0, const char* name=0, WFlags f=0);
 #endif
@@ -86,7 +87,7 @@ public:
     virtual void setErasePixmap (const QPixmap &pixmap);
     bool   DeleteNotify();
     TQtWidget *GetCanvasWidget() const;
-    void   GrabEvent(Event_t &ev,bool own=TRUE);
+    void   GrabEvent(Event_t &ev,bool own = true);
 //    Q3Accel *HasAccel() const ;
     bool   IsClosing();
     bool   IsGrabbed       (Event_t &ev);

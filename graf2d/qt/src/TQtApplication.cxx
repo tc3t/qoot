@@ -33,6 +33,8 @@
 
 #include "qmessagebox.h"
 
+#include "commonQtDefs.h"
+
 //________________________________________________________________
 static int QVersion(const char *ver) {
    // convert the Qversion string into the interger
@@ -113,14 +115,14 @@ void TQtApplication::CreateQApplication(int &argc, char ** argv, bool GUIenabled
             .arg(QString::fromLatin1(ROOT_VALID_QT_VERSION))
             .arg(QString::fromLatin1(qVersion()) ); 
       QMessageBox::critical( 0, QApplication::tr("Incompatible Qt Library Error" ), s, QMessageBox::Abort,0 );
-      qFatal("%s",s.toAscii().data());
+      qFatal("%s",toLatin1(s).constData());
    } else if (thisQtVersion < QtVersion()) {
        QString s = QApplication::tr("Executable '%1' was compiled with Qt %2, found Qt %3.")
             .arg(qAppName())
             .arg(QT_VERSION_STR)
             .arg(QString::fromLatin1(qVersion()) ); 
       QMessageBox::warning( 0, QApplication::tr("Upgrade Qt Library Warning" ), s, QMessageBox::Abort,0 );
-      qWarning("%s",s.toAscii().data());
+      qWarning("%s", toLatin1(s).constData());
    }
   
    // Add Qt plugin path if  present (it is the case for Windows binary ROOT distribution)
@@ -136,7 +138,7 @@ void TQtApplication::CreateGUIThread(int &argc, char **argv)
    if (gROOT->IsBatch()) {
      CreateQApplication(argc,argv,kFALSE);
    } else {
-     CreateQApplication(argc,argv, TRUE);
+     CreateQApplication(argc,argv, true);
    }
 }
 //______________________________________________________________________________
@@ -150,7 +152,7 @@ bool TQtApplication::Terminate()
     fgQtApplication = 0;
     delete  app;
   }
-  return TRUE;
+  return true;
 }
 //______________________________________________________________________________
 Int_t TQtApplication::QtVersion(){

@@ -34,6 +34,8 @@
 #include <QPixmap>
 #include <qfileinfo.h>
 
+#include "commonQtDefs.h"
+
 ClassImp(TQMimeTypes)
 QFileIconProvider  *TQMimeTypes::fgDefaultProvider = 0; // Default provider of the system icons;
 //______________________________________________________________________________
@@ -207,7 +209,7 @@ const QIcon *TQMimeTypes::AddType(const TSystemFile *filename)
    TQMime *mime = new TQMime;
    mime->fType    = "system/file";
    mime->fPattern = "*.";
-   mime->fPattern += info.suffix().toAscii().data();
+   mime->fPattern += toLatin1(info.suffix()).constData();
    mime->fIcon  = 0;
    mime->fIcon  = new QIcon(icon) ;
 #ifdef R__QTWIN32

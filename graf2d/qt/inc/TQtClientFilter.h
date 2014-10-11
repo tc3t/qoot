@@ -111,7 +111,7 @@ public:
                                     QCursor *cursor, Bool_t grab = kTRUE,
                                     Bool_t owner_events = kTRUE, QWidget *confine=0);
    ~TQtPointerGrabber();
-   void   ActivateGrabbing(bool on=TRUE);
+   void   ActivateGrabbing(bool on=true);
    void   DisactivateGrabbing(){ ActivateGrabbing(kFALSE); }
    Bool_t IsGrabSelected(UInt_t selectEventMask) const;
    Bool_t IsGrabbing(TQtClientWidget *grabbed) const { return (grabbed == fPointerGrabber); }

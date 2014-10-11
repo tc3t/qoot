@@ -1019,7 +1019,7 @@ Bool_t TGQt::Init(void* /*display*/)
          QString libPath = gSystem->GetLinkedLibs();
          // detect the exact name of the Qt library
          TString qtlibdir= "$(QTDIR)";
-         qtlibdir += QDir::separator().toAscii();
+         qtlibdir += QDir::separator().toLatin1();
          qtlibdir += "lib";
 
          gSystem->ExpandPathName(qtlibdir);
@@ -1039,7 +1039,7 @@ Bool_t TGQt::Init(void* /*display*/)
 #else
                   libPath += "QtCore4.lib QtGui4.lib QtOpenGL4.lib Qt3Support4.lib";
 #endif
-               gSystem->SetLinkedLibs(libPath.toAscii().data());
+               gSystem->SetLinkedLibs(toLatin1(libPath).constData());
             }
          } else {
             qWarning(" Can not open the QTDIR %s",(const char*)qtlibdir);
@@ -1686,7 +1686,12 @@ ULong_t  TGQt::GetPixel(Color_t cindex)
    // see: GQTGUI.cxx:QtColor() also
    ULong_t rootPixel = 0;
    const QColor &color = ColorIndex(UpdateColor(cindex));
-#ifdef R__WIN32
+
+   // This R__WIN32 seems to give wrong results (e.g. blue becomes red). The check was added in qtroot commit
+   // 2497 (20.6.2007, http://sourceforge.net/p/qtroot/code/2497)
+   // It is not known what has changed, but for now comment it out to see if anything breaks.
+//#ifdef R__WIN32
+#if 0
    rootPixel =                    ( color.blue () & 255 );
    rootPixel = (rootPixel << 8) | ( color.green() & 255 ) ;
    rootPixel = (rootPixel << 8) | ( color.red  () & 255 );
@@ -1718,7 +1723,7 @@ const QTextCodec *TGQt::GetTextDecoder()
    static  QTextCodec  *fGreekCodec = 0;
    QTextCodec  *codec = 0;
    if (!fCodec) {
-      fCodec =  QTextCodec::codecForName(fFontTextCode.toAscii()); //CP1251
+      fCodec =  QTextCodec::codecForName(toLatin1(fFontTextCode)); //CP1251
       if (!fCodec)
          fCodec=QTextCodec::codecForLocale();
       else
@@ -2726,7 +2731,7 @@ void  TGQt::UpdateWindow(int mode)
 }
 
 //______________________________________________________________________________
-Int_t  TGQt::WriteGIF(char *name)
+Int_t  TGQt::WriteGIF(const char *name)
 {
    //
    // Writes the current active window into pixmap file.
@@ -2746,7 +2751,7 @@ Int_t  TGQt::WriteGIF(char *name)
 }
 
 //______________________________________________________________________________
-void  TGQt::WritePixmap(int wd, UInt_t w, UInt_t h, char *pxname)
+void  TGQt::WritePixmap(int wd, UInt_t w, UInt_t h, const char *pxname)
 {
    // Write the pixmap wd in the bitmap file pxname in JPEG.
    // wd         : Pixmap address
@@ -2827,7 +2832,7 @@ void  TGQt::WritePixmap(int wd, UInt_t w, UInt_t h, char *pxname)
          gErrorIgnoreLevel = saver;
       } else {
          if (plus>=0) fname = GetNewFileName(fname);
-         finalPixmap->save(fname,saveType.toAscii().data());
+         finalPixmap->save(fname, toLatin1(saveType).constData());
       }
       delete finalPixmap;
    }

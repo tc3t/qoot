@@ -37,6 +37,8 @@
 #include <QMouseEvent>
 #include <QDebug>
 
+#include "commonQtDefs.h"
+
 #include <cassert>
 #include "KeySymbols.h"
 #define QTCLOSE_DESTROY_RESPOND 1
@@ -216,7 +218,7 @@ static inline UInt_t MapKeySym(const QKeyEvent &qev)
    qstrlcpy((char *)&text, (const char *)r,1);
    return text;
 #else
-   text = UInt_t(qev.text().toAscii().data()[0]);
+   text = UInt_t(toLatin1(qev.text()).constData()[0]);
 #ifdef QT_STILL_HAS_BUG   
    // Regenerate the ascii code (Qt bug I guess)
    if  (qev.modifiers() != Qt::NoModifier)  {
@@ -849,7 +851,7 @@ bool TQtPointerGrabber::SelectGrab(Event_t &evt, UInt_t selectEventMask, QMouseE
 { 
   // Select Event:  --  25.11.2005  --
   TQtClientWidget *widget = (TQtClientWidget*)TGQt::wid(evt.fWindow);
-  bool pass2Root = FALSE;
+  bool pass2Root = false;
 
   QWidget *grabber = QWidget::mouseGrabber();
   TQtClientWidget *pointerGrabber =  fPointerGrabber;
@@ -861,7 +863,7 @@ bool TQtPointerGrabber::SelectGrab(Event_t &evt, UInt_t selectEventMask, QMouseE
      DisactivateGrabbing();
      grabber = QWidget::mouseGrabber();
   }
-  bool inside = FALSE;
+  bool inside = false;
   if ( ( inside = IsMouseCursorInside() ) ) {
       if ( grabber ) {
            if ( fGrabPointerOwner ) { 
@@ -914,7 +916,7 @@ bool TQtPointerGrabber::SelectGrab(Event_t &evt, UInt_t selectEventMask, QMouseE
          pointerGrabber->GrabEvent(evt);
          // fprintf(stderr," QtPointerGrabber::SelectGrab  1.1. Active grabbing %p id =%x inside = %d\n",
          //        pointerGrabber, evt.fWindow, inside);
-         pass2Root = TRUE;
+         pass2Root = true;
       }
    } else {
      if ( IsGrabSelected (selectEventMask) ) {
@@ -939,7 +941,7 @@ bool TQtPointerGrabber::SelectGrab(Event_t &evt, UInt_t selectEventMask, QMouseE
            pointerGrabber->GrabEvent(evt);
            // fprintf(stderr," QtPointerGrabber::SelectGrab  1.5. Active grabbing %p id =%x inside = %d\n",
            //     pointerGrabber, evt.fWindow, inside);
-           pass2Root = TRUE;
+           pass2Root = true;
            mouse.accept();
         }
      } else if (widget) {

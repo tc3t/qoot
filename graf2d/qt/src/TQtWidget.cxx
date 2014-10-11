@@ -22,13 +22,16 @@
 #  include <QShowEvent>
 #  include <QResizeEvent>
 #  include <QMouseEvent>
-#  include <QCustomEvent>
+#if QT_VERSION < 0x50000
+    #  include <QCustomEvent>
+#endif
 #  include <QImage>
 #  include <QDebug>
 #endif /* QT_VERSION */
 
 #include "TQtWidget.h"
 #include "TQtTimer.h"
+#include "commonQtDefs.h"
 
 #include "TROOT.h"
 #include "TEnv.h"
@@ -181,7 +184,7 @@ ClassImp(TQtWidget)
 ////////////////////////////////////////////////////////////////////////////////
 
 //_____________________________________________________________________________
-TQtWidget::TQtWidget(QWidget* mother, const char* name, Qt::WFlags f,bool embedded) :
+TQtWidget::TQtWidget(QWidget* mother, const char* name, Qt::WindowFlags f,bool embedded) :
       QWidget(mother,f)
         ,fBits(0),fNeedStretch(false),fCanvas(0),fPixmapID(0),fPixmapScreen(0)
         ,fPaint(TRUE),fSizeChanged(FALSE),fDoubleBufferOn(FALSE),fEmbedded(embedded)
@@ -193,7 +196,7 @@ TQtWidget::TQtWidget(QWidget* mother, const char* name, Qt::WFlags f,bool embedd
 }
 
 //_____________________________________________________________________________
-TQtWidget::TQtWidget(QWidget* mother, Qt::WFlags f,bool embedded) :
+TQtWidget::TQtWidget(QWidget* mother, Qt::WindowFlags f,bool embedded) :
       QWidget(mother,f)
      ,fBits(0),fNeedStretch(false),fCanvas(0),fPixmapID(0)
      ,fPixmapScreen(0),fPaint(TRUE),fSizeChanged(FALSE)
@@ -216,7 +219,7 @@ void TQtWidget::Init()
     int minw = 10;
     int minh = 10;
     setMinimumSize(minw,minh);
-     Bool_t batch = gROOT->IsBatch();
+    Bool_t batch = gROOT->IsBatch();
     if (!batch) gROOT->SetBatch(kTRUE); // to avoid the recursion within TCanvas ctor
     TGQt::RegisterWid(this);
     fCanvas = new TCanvas(objectName().toStdString().c_str(),minw,minh, TGQt::RegisterWid(this));
@@ -227,17 +230,21 @@ void TQtWidget::Init()
   fSizeHint = QWidget::sizeHint();
   setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding));
 #ifdef R__QTWIN32
+#if QT_VERSION < 0x50000 // Disabled for Qt5 due to winId -> HWND conversion uncertainty.
    // Set the application icon for all ROOT widgets
    static HICON rootIcon = 0;
    if (!rootIcon) {
       HICON hIcon = ::LoadIcon(::GetModuleHandle(NULL), MAKEINTRESOURCE(101));
       if (!hIcon) hIcon = LoadIcon(NULL, IDI_APPLICATION);
       rootIcon = hIcon;
-      SetClassLong(winId(),        // handle to window
-                   GCL_HICON,      // index of value to change
-                   LONG(rootIcon)  // new value
-      );
+      // TODO: Figure out how convert winId into HWND. reinterpret_cast seems to work, but not sure if it's reliable.
+
+      SetClassLongPtr(winId(),        // handle to window // HACK!
+                       GCL_HICON,      // index of value to change
+                      LONG_PTR(rootIcon)  // new value
+                    );
     }
+#endif
 #endif
 }
 //______________________________________________________________________________
@@ -358,7 +365,7 @@ TApplication *TQtWidget::InitRint( Bool_t /*prompt*/, const char *appClassName, 
              QString nextarg = args.at(i);
              Int_t nchi = nextarg.length()+1;
              localArgv[i]= new char[nchi]; 
-             memcpy(localArgv[i], nextarg.toAscii().constData(),nchi-1);
+             memcpy(localArgv[i], toLatin1(nextarg).constData(), nchi - 1);
              localArgv[i][nchi-1]=0;
           } 
        } else {

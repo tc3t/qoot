@@ -32,7 +32,7 @@ TQtEvent::TQtEvent(QObject *o, QEvent *e): QEvent(QEvent::User), fCondition(0)
 //______________________________________________________________________________
 bool TQtEvent::Notify()
 {
-  bool r = FALSE;
+  bool r = false;
   if (fReceiver)
   {
     r = fReceiver->event(fThatEvent);

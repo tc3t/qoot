@@ -25,7 +25,7 @@ void TQtClientGuard::Add(QWidget *w)
    connect(w,SIGNAL(destroyed()),this,SLOT(Disconnect()));
 }
 //______________________________________________________________________________
-TQtClientWidget *TQtClientGuard::Create(QWidget* mother, const char* name, Qt::WFlags f)
+TQtClientWidget *TQtClientGuard::Create(QWidget* mother, const char* name, Qt::WindowFlags f)
 {
    // TQtClientWidget object factory
    TQtClientWidget *w =  new TQtClientWidget(this,mother,name,f);

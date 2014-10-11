@@ -20,16 +20,18 @@
 #include "Rtypes.h"
 #include "TCanvas.h"
 
+// For Qt4 -> Qt5 migration, see http://qt-project.org/wiki/Transition_from_Qt_4.x_to_Qt5
+
 #ifndef __CINT__
-#  include <QtGui/QWidget>
-#  include <QtGui/QMouseEvent>
-#  include <QtGui/QShowEvent>
-#  include <QtGui/QFocusEvent>
-#  include <QtGui/QKeyEvent>
-#  include <QtGui/QResizeEvent>
-#  include <QtCore/QEvent>
-#  include <QtGui/QPaintEvent>
-#  include <QtGui/QPaintDevice>
+#  include <QWidget>
+#  include <QMouseEvent>
+#  include <QShowEvent>
+#  include <QFocusEvent>
+#  include <QKeyEvent>
+#  include <QResizeEvent>
+#  include <QEvent>
+#  include <QPaintEvent>
+#  include <QPaintDevice>
 #  include <QtCore/QSize>
 #  include <QtCore/QPoint>
 #  include <QtCore/QPointer>
@@ -73,6 +75,8 @@ enum EEventTrackingBits {
        kEnterEvent            = BIT(5), // emit signal as soon as TCanvas processed enterEvent            QEvent
        kLeaveEvent            = BIT(6)  // emit signal as soon as TCanvas processed leaveEvent            QEvent
 };
+
+#include "commonQtDefs.h"
 
 //___________________________________________________________________
 class TQtWidgetBuffer
@@ -124,8 +128,8 @@ public:
       kFORCESIZE
    };
 #ifndef __CINT__
-  TQtWidget( QWidget* parent, const char* name, Qt::WFlags f=0, bool embedded=TRUE);
-  TQtWidget( QWidget* parent=0, Qt::WFlags f=0, bool embedded=TRUE);
+  TQtWidget( QWidget* parent, const char* name, Qt::WindowFlags f=0, bool embedded = true);
+  TQtWidget( QWidget* parent=0, Qt::WindowFlags f=0, bool embedded = true);
 #else
   TQtWidget( QWidget* parent=0);
 #endif  
@@ -140,7 +144,7 @@ public:
   // overloaded methods
   virtual void Erase ();
   bool    IsDoubleBuffered() const { return fDoubleBufferOn; }
-  void    SetDoubleBuffer(bool on=TRUE);
+  void    SetDoubleBuffer(bool on = true);
   virtual void SetSaveFormat(const char *format);
 
 protected:
@@ -166,7 +170,7 @@ protected:
    QWidget *GetRootID() const;
    virtual void EmitCanvasPainted() { emit CanvasPainted(); }
    TCanvas  *Canvas();
-   bool paintFlag(bool mode=TRUE);
+   bool paintFlag(bool mode = true);
    void AdjustBufferSize();
 
    bool PaintingActive () const;

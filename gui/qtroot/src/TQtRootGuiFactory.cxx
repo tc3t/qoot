@@ -26,6 +26,11 @@
 #include "TQtApplication.h"
 
 #include "TSystem.h"
+
+//#include "TWin32Application.h" 
+#include "TROOT.h"
+#include "TQtRootApplication.h"
+/*
 #ifdef R__QTWIN32
 #  if ROOT_VERSION_CODE < ROOT_VERSION(5,13,0)
 #    include "TWin32Application.h" 
@@ -34,7 +39,7 @@
 # include "TROOT.h"
 # include "TQtRootApplication.h"
 #endif
-
+*/
 #include "TGClient.h"
 #include "TRootCanvas.h"
 #include "TRootBrowser.h"
@@ -70,8 +75,11 @@ TQtRootGuiFactory::TQtRootGuiFactory(const char *name, const char *title)
 //______________________________________________________________________________
 TApplicationImp *TQtRootGuiFactory::CreateApplicationImp(const char *classname, int *argc, char **argv)
 {
- TGQt::CreateQtApplicationImp();
- TApplicationImp *app = 0;
+    TGQt::CreateQtApplicationImp();
+    TApplicationImp *app = 0;
+    app = new TQtRootApplication(classname, argc, argv);
+
+    /*
 #ifdef R__QTWIN32
 #  if ROOT_VERSION_CODE < ROOT_VERSION(5,13,0)
     app = new TWin32Application(classname, argc, argv);
@@ -79,6 +87,7 @@ TApplicationImp *TQtRootGuiFactory::CreateApplicationImp(const char *classname, 
 #else
   app = new TQtRootApplication (classname, argc, argv);
 #endif
+  */
   CreateQClient();
   return app;        
 }

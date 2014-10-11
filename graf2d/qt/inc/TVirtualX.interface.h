@@ -102,8 +102,8 @@ public:
    virtual void      UpdateWindow(Int_t mode);
    virtual void      Warp(Int_t ix, Int_t iy){ Warp(ix,iy,0); }
    virtual void      Warp(Int_t ix, Int_t iy, Window_t id);
-   virtual Int_t     WriteGIF(char *name);
-   virtual void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, char *pxname);
+   virtual Int_t     WriteGIF(const char *name);
+   virtual void      WritePixmap(Int_t wid, UInt_t w, UInt_t h, const char *pxname);
 
    //---- Methods used for GUI -----
    virtual void         GetWindowAttributes(Window_t id, WindowAttributes_t &attr);
