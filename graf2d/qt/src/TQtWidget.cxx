@@ -221,8 +221,8 @@ void TQtWidget::Init()
     setMinimumSize(minw,minh);
     Bool_t batch = gROOT->IsBatch();
     if (!batch) gROOT->SetBatch(kTRUE); // to avoid the recursion within TCanvas ctor
-    TGQt::RegisterWid(this);
-    fCanvas = new TCanvas(objectName().toStdString().c_str(),minw,minh, TGQt::RegisterWid(this));
+    RegisterThisWid();
+    fCanvas = new TCanvas(objectName().toStdString().c_str(), minw, minh, RegisterThisWid());
     gROOT->SetBatch(batch);
     //   schedule the flush operation fCanvas->Flush(); via timer
     Refresh();
@@ -253,7 +253,7 @@ TQtWidget::~TQtWidget()
    TCanvas *c = 0;
    // to block the double deleting from
    gVirtualX->SelectWindow(-1);
-   TGQt::UnRegisterWid(this);
+   UnRegisterThisWid();
    if (fEmbedded) {
       // one has to set CanvasID = 0 to disconnect things properly.
       c = fCanvas;
@@ -264,6 +264,18 @@ TQtWidget::~TQtWidget()
    }
    delete fPixmapID;     fPixmapID = 0;
    delete fPixmapScreen; fPixmapScreen = 0;
+}
+
+//______________________________________________________________________________
+Int_t TQtWidget::RegisterThisWid()
+{
+    return TGQt::RegisterWid(this);
+}
+
+//______________________________________________________________________________
+Int_t TQtWidget::UnRegisterThisWid()
+{
+    return TGQt::UnRegisterWid(this);
 }
 
 //______________________________________________________________________________

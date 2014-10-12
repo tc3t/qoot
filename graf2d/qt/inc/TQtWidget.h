@@ -235,6 +235,9 @@ public:
    void     EnableSignalEvents  (UInt_t f);
    void     DisableSignalEvents (UInt_t f);
    Bool_t   IsSignalEventEnabled(UInt_t f) const;
+
+   Int_t RegisterThisWid();
+   Int_t UnRegisterThisWid();
    
    static TCanvas   *Canvas(TQtWidget *widget);
    static TQtWidget *Canvas(const TCanvas *canvas);
