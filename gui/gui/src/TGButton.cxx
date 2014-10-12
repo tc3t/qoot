@@ -1183,6 +1183,12 @@ TGDimension TGCheckButton::GetDefaultSize() const
 {
    // default size
 
+    if (!fOff)
+    {
+        Error("GetDefaultSize", "Off picture is null");
+        return TGDimension();
+    }
+
    UInt_t w = !fTWidth ? fOff->GetWidth() : fTWidth + fOff->GetWidth() + 9;
    UInt_t h = !fTHeight ? fOff->GetHeight() : fTHeight + 2;                      
 
@@ -1546,6 +1552,11 @@ TGRadioButton::~TGRadioButton()
 TGDimension TGRadioButton::GetDefaultSize() const
 {
    // default size
+    if (!fOff)
+    {
+        Error("GetDefaultSize", "Off picture is null");
+        return TGDimension();
+    }
 
    UInt_t w = !fTWidth ? fOff->GetWidth() : fTWidth + fOff->GetWidth() + 10;
    UInt_t h = !fTHeight ? fOff->GetHeight() : fTHeight + 2;

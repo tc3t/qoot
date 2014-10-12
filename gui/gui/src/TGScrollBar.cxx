@@ -332,6 +332,12 @@ Bool_t TGScrollBar::HandleCrossing(Event_t *event)
 {
    // Handle mouse crossing event.
 
+    if (!gClient || !fHead || !fTail || !fSlider)
+    {
+        Error("HandleCrossing", "gClient, fHead, fTail or fSlider is nullptr");
+        return kFALSE;
+    }
+
    if (gClient->GetStyle() > 0) {
       if (event->fType == kEnterNotify) {
          fBgndColor = fHighColor;
@@ -719,6 +725,12 @@ void TGVScrollBar::Layout()
 {
    // Layout and move vertical scrollbar components.
 
+    if (!fHead || !fTail || !fSlider)
+    {
+        Error("Layout", "fHead, fTail or fSlider is nullptr");
+        return;
+    }
+
    // Should recalculate fSliderSize, fSliderRange, fX0, fY0, etc. too...
    fHead->Move(0, 0);
    fHead->Resize(fgScrollBarWidth, fgScrollBarWidth);
@@ -884,6 +896,12 @@ Bool_t TGVScrollBar::HandleMotion(Event_t *event)
 void TGVScrollBar::SetRange(Int_t range, Int_t page_size)
 {
    // Set range of vertical scrollbar.
+
+    if (!fSlider)
+    {
+        Error("SetRange", "fSlider is nullptr");
+        return;
+    }
 
    fRange = TMath::Max(range, 1);
    fPsize = TMath::Max(page_size, 0);
