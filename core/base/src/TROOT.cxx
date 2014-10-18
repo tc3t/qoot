@@ -1030,7 +1030,7 @@ TClass *TROOT::FindSTLClass(const char *name, Bool_t load, Bool_t silent) const
    // return a TClass object corresponding to 'name' assuming it is an STL container.
    // In particular we looking for possible alternative name (default template
    // parameter, typedefs template arguments, typedefed name).
-
+   R__LOCKGUARD(gCINTMutex);
    return R__FindSTLClass(name,load,silent,name);
 }
 
@@ -1316,9 +1316,9 @@ void TROOT::Idle(UInt_t idleTimeInSec, const char *command)
       TApplication::CreateApplication();
 
    if (idleTimeInSec <= 0)
-      fApplication->RemoveIdleTimer();
+      (*fApplication).RemoveIdleTimer();
    else
-      fApplication->SetIdleTimer(idleTimeInSec, command);
+      (*fApplication).SetIdleTimer(idleTimeInSec, command);
 }
 
 //______________________________________________________________________________
@@ -1498,7 +1498,10 @@ TClass *TROOT::LoadClass(const char *requestedname, Bool_t silent) const
 
    if (!dict) {
       // Try to remove the ROOT typedefs
-      resolved = TClassEdit::ResolveTypedef(classname,kTRUE);
+      {
+         R__LOCKGUARD(gCINTMutex);
+         resolved = TClassEdit::ResolveTypedef(classname,kTRUE);
+      }
       if (resolved != classname) {
          dict = TClassTable::GetDict(resolved.Data());
       } else {
@@ -1735,7 +1738,7 @@ Long_t TROOT::ProcessLine(const char *line, Int_t *error)
    if (!fApplication)
       TApplication::CreateApplication();
 
-   return fApplication->ProcessLine(sline, kFALSE, error);
+   return (*fApplication).ProcessLine(sline, kFALSE, error);
 }
 
 //______________________________________________________________________________
@@ -1755,7 +1758,7 @@ Long_t TROOT::ProcessLineSync(const char *line, Int_t *error)
    if (!fApplication)
       TApplication::CreateApplication();
 
-   return fApplication->ProcessLine(sline, kTRUE, error);
+   return (*fApplication).ProcessLine(sline, kTRUE, error);
 }
 
 //______________________________________________________________________________
