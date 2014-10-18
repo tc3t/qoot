@@ -46,6 +46,7 @@
 #include "TRootControlBar.h"
 #include "TContextMenu.h"
 #include "TRootContextMenu.h"
+#include "TQtContextMenuImp.h"
 
 #include "TGQt.h"
 
@@ -144,7 +145,10 @@ TBrowserImp *TQtRootGuiFactory::CreateBrowserImp(TBrowser *b, const char *title,
 
 //______________________________________________________________________________
 TContextMenuImp *TQtRootGuiFactory::CreateContextMenuImp(TContextMenu *c, const char *name, const char *title)
-{ return fGuiProxy ? fGuiProxy->CreateContextMenuImp(c, name, title): 0;} 
+{ 
+    //return fGuiProxy ? fGuiProxy->CreateContextMenuImp(c, name, title): 0;
+    return new TQtContextMenuImp(c);
+} 
 
 //______________________________________________________________________________
 TControlBarImp *TQtRootGuiFactory::CreateControlBarImp(TControlBar *c, const char *title)
