@@ -130,8 +130,8 @@ public:
    virtual void        SetTitle(const char *title=""); // *MENU*
    void                SetTitleOffset(Float_t titleoffset=1) {fTitleOffset = titleoffset;} // *MENU*
    void                SetTitleSize(Float_t titlesize) {fTitleSize = titlesize;} // *MENU*
-   void                SetTitleFont(Int_t titlefont) {SetTextFont(titlefont);} // *MENU*
-   void                SetTitleColor(Int_t titlecolor) {SetTextColor(titlecolor);} // *MENU*
+   void                SetTitleFont(Int_t titlefont) {SetTextFont(static_cast<Font_t>(titlefont));} // *MENU*
+   void                SetTitleColor(Int_t titlecolor) {SetTextColor(static_cast<Color_t>(titlecolor));} // *MENU*
    void                SetWmin(Double_t wmin) {fWmin = wmin;}
    void                SetWmax(Double_t wmax) {fWmax = wmax;}
    static void         SetExponentOffset(Float_t xoff=0., Float_t yoff=0., Option_t *axis="xy");
