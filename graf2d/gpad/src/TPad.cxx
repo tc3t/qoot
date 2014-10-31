@@ -4724,7 +4724,7 @@ void TPad::Print(const char *filenam, Option_t *option)
       const Ssiz_t titlePos = opt.Index("Title:");
       if (titlePos != kNPOS) {
          gVirtualPS->SetTitle(opt.Data()+titlePos+6);
-		 opt.Replace(titlePos,opt.Length(),"pdf");
+         opt.Replace(titlePos,opt.Length(),"pdf");
       }
       gVirtualPS->Open(psname,pstype);
       gVirtualPS->SetBit(kPrintingPS);
@@ -4753,7 +4753,7 @@ void TPad::Print(const char *filenam, Option_t *option)
       const Ssiz_t titlePos = opt.Index("Title:");
       if (titlePos != kNPOS) {
          gVirtualPS->SetTitle(opt.Data()+titlePos+6);
-		 opt.Replace(titlePos,opt.Length(),"pdf");
+         opt.Replace(titlePos,opt.Length(),"pdf");
       } else {
          gVirtualPS->SetTitle("PDF");
       }
