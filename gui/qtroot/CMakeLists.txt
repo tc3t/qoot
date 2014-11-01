@@ -11,10 +11,14 @@ if(qt4)
 endif()
 
 if(qt4)
-  QT4_WRAP_CPP(mocfiles inc/TQtContextMenuImp.h inc/TQtObjectDialog.h)
+  QT4_WRAP_CPP(mocfiles inc/TQtContextMenuImp.h inc/TQtObjectDialog.h
+				inc/TQtCanvasImp.h inc/TQtCanvasWidget.h inc/TQtToolBar.h
+				inc/TQtZoomPadWidget.h)
 endif()
 if(qt5)
-  QT5_WRAP_CPP(mocfiles inc/TQtContextMenuImp.h inc/TQtObjectDialog.h)
+  QT5_WRAP_CPP(mocfiles inc/TQtContextMenuImp.h inc/TQtObjectDialog.h
+				inc/TQtCanvasImp.h inc/TQtCanvasWidget.h inc/TQtToolBar.h
+				inc/TQtZoomPadWidget.h)
 endif()
 
 ROOT_GENERATE_DICTIONARY(G__QtRoot TQtRootGuiFactory.h LINKDEF LinkDef.h)

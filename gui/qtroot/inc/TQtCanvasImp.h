@@ -102,7 +102,7 @@ public:
    virtual void   CreateStatusBar(Int_t *parts, Int_t nparts=1);
    virtual void   RootExec(const char *cmd);
 
-   virtual bool   event(QEvent *){return FALSE;}
+   virtual bool   event(QEvent *){return false;}
 
 protected:
    virtual void  MakeActions();
