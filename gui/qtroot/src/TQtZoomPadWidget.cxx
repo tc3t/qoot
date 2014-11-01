@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   16/03/2006
 /****************************************************************************
 ** $Id: TQtZoomPadWidget.cxx 3594 2013-02-19 03:50:53Z fineroot $
