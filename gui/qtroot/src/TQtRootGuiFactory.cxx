@@ -53,6 +53,7 @@
 #include "TContextMenu.h"
 #include "TRootContextMenu.h"
 #include "TQtContextMenuImp.h"
+#include "TQtCanvasImp.h"
 
 #include "TGQt.h"
 
@@ -107,11 +108,15 @@ void TQtRootGuiFactory::CreateQClient()
 
 //______________________________________________________________________________
 TCanvasImp *TQtRootGuiFactory::CreateCanvasImp(TCanvas *c, const char *title, UInt_t width, UInt_t height)
-{ return fGuiProxy ? fGuiProxy->CreateCanvasImp( c, title, width, height) : 0; }
+{
+    return new TQtCanvasImp(c, title, width, height);
+}
 
 //______________________________________________________________________________
 TCanvasImp *TQtRootGuiFactory::CreateCanvasImp(TCanvas *c, const char *title, Int_t x, Int_t y, UInt_t width, UInt_t height)
-{ return fGuiProxy ? fGuiProxy->CreateCanvasImp(c, title, x, y, width, height) : 0 ;}
+{
+    return new TQtCanvasImp(c, title, x, y, width, height);
+}
 
 //______________________________________________________________________________
 TBrowserImp *TQtRootGuiFactory::CreateBrowserImp(TBrowser *b, const char *title, UInt_t width, UInt_t height)
