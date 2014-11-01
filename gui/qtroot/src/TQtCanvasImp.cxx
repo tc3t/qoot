@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtCanvasImp.cxx 3621 2013-02-28 17:32:37Z fineroot $
@@ -63,6 +69,7 @@
 #include <QToolBar>
 #include <QDockWidget>
 #include <QPixmap>
+#include <QPrintDialog>
 
 #include <QMessageBox>
 #include <QStatusBar>
@@ -206,7 +213,7 @@ static TQtBrowserMenuItem_t gMenu_Data[] = {
 
 //____________________________________________________
 static inline QString QtFileFormat(const char *selector)
-{ return QtFileFormat(QString(selector)); }
+{ return QtFileFormat(selector); }
 
 //____________________________________________________
 static inline  QString QtFileFormat(const QString &selector)
@@ -217,7 +224,7 @@ static inline  QString QtFileFormat(const QString &selector)
 
 //____________________________________________________
 static inline QString RootFileFormat(const char *selector)
-{  return RootFileFormat(QString(selector)); }
+{  return RootFileFormat(selector); }
 //____________________________________________________
 static inline QString RootFileFormat(const QString &selector)
 {   
@@ -498,7 +505,8 @@ void TQtCanvasImp::Unlock()
 //______________________________________________________________________________
 Bool_t TQtCanvasImp::IsLocked() 
 {  
-   if (fCanvasImpID) return !fCanvasImpID->isUpdatesEnabled();
+    // To check: Line below is commented out because fCanvasImpID has no such function.
+   //if (fCanvasImpID) return !fCanvasImpID->isUpdatesEnabled();
    return kFALSE; 
 }
 //______________________________________________________________________________
@@ -577,7 +585,7 @@ Int_t TQtCanvasImp::InitWindow()
   {
      // fprintf(stderr,"TQtCanvasImp::InitWindow: ");
     fCanvasImpID = new TQtCanvasWidget();
-    fCanvasImpID->setName(gVirtualX->GetName());
+    fCanvasImpID->setObjectName(gVirtualX->GetName());
     connect(fCanvasImpID,SIGNAL(WMCloseCanvas()),this,SLOT(CloseCB()));
     connect(fCanvasImpID,SIGNAL(destroyed()),this,SLOT(Disconnect()));
 //    fCanvasID = (TQtWidget *)TGQt::iwid(gVirtualX->InitWindow(TGQt::iwid(fCanvasImpID)));
@@ -653,7 +661,7 @@ void TQtCanvasImp::CreateStatusBar(Int_t nparts)
   Int_t i=0;
   for (i=0;i<nparts;i++) {
     QLabel *l = new QLabel(statusBar);
-    statusBar->addWidget(l,1,true);
+    statusBar->addPermanentWidget(l,1);
 
     // remember to delete later
     fStatusBar.insert(i,l);  
@@ -669,7 +677,7 @@ void TQtCanvasImp::CreateStatusBar(Int_t *parts, Int_t nparts)
   // Any number of widgets may be controlled by just
   // one splitter
   QSplitter *split = new QSplitter(statusBar);
-  statusBar->addWidget(split,1,FALSE);
+  statusBar->addWidget(split,1);
 
   Int_t iField=0;
   for (iField=0; iField<nparts; iField++) {
@@ -774,7 +782,7 @@ void TQtCanvasImp::SetWindowSize(UInt_t w, UInt_t h)
 //______________________________________________________________________________
 void TQtCanvasImp::SetWindowTitle(const Text_t *newTitle) 
 { 
-   fCanvasImpID->setCaption(newTitle);
+   fCanvasImpID->setWindowTitle(newTitle);
 }
 //______________________________________________________________________________
 void TQtCanvasImp::SetStatusText(const char *text, Int_t partidx)
@@ -882,7 +890,7 @@ void TQtCanvasImp::OpenCB()
    if( Canvas()) {
       QString dir = fSaveFileName;
       if (dir.isEmpty()) dir = gSystem->WorkingDirectory(); 
-      else               dir = QFileInfo(dir).dirPath();
+      else               dir = QFileInfo(dir).absolutePath();
 
       QString fOpenFileName = QFileDialog::getOpenFileName (
            fCanvasImpID
@@ -894,7 +902,7 @@ void TQtCanvasImp::OpenCB()
          thisCintCommand = "{new TFile(\"";
          thisCintCommand += fOpenFileName;
          thisCintCommand +="\",\"update\");}";
-         gROOT->ProcessLine((const char *)thisCintCommand);
+         gROOT->ProcessLine(thisCintCommand.toLatin1());
       }
    }
 }
@@ -932,7 +940,7 @@ void TQtCanvasImp::SaveAsCB()
     if (i) filter +=',';
     filter += "*.";
     QString str =  *j; i++;
-    filter += str.lower();
+    filter += str.toLower();
   }
   filter +=");";
   filter +=";all files (*.*);;";
@@ -961,9 +969,9 @@ void TQtCanvasImp::SaveAsWebCB()
 
    if (thatFolder.isEmpty()) return;
    if (fActions[kViewZoomer]->isOn() ) {
-       TQtCanvas2Html a(Canvas(),1,(const char *)thatFolder,fgZoomingWidget);
+       TQtCanvas2Html a(Canvas(),1,thatFolder.toLatin1(),fgZoomingWidget);
    } else {
-       TQtCanvas2Html a(Canvas(),1.8,(const char *)thatFolder);
+       TQtCanvas2Html a(Canvas(),1.8,thatFolder.toLatin1());
    }
 }
 
@@ -977,11 +985,11 @@ void TQtCanvasImp::SaveFile(const QString &theFile, const QString &selectedFilte
   QString thatFile = theFile;
   QString e;
   bool rootFormatFound = kTRUE;
-  Info("SaveFile","Selected filter %s \n", (const char *)selectedFilter);
+  Info("SaveFile","Selected filter %s \n", selectedFilter.toLatin1().data());
 
   //  define the file extension
   QString fileNameExtension = QFileInfo(thatFile).suffix();
-  QString  saveType = fileNameExtension.upper();
+  QString  saveType = fileNameExtension.toUpper();
 
   if (selectedFilter.contains("*.*")) {
      if (!fileNameExtension.isEmpty() ) {
@@ -1014,7 +1022,7 @@ void TQtCanvasImp::SaveFile(const QString &theFile, const QString &selectedFilte
 //   if (! thatFile.contains('.'))  thatFile += '.';
 //   if (thatFile.at(thatFile.length()-1) == '.')  thatFile += defExtension[i];
   
-  Info("TQtCanvasImp::SaveFile","Save %d:<%s> file as \"%s\"\n",rootFormatFound,(const char *)fSaveFileName, (const char *)fSaveType);
+  Info("TQtCanvasImp::SaveFile", "Save %d:<%s> file as \"%s\"\n", rootFormatFound, fSaveFileName.toLatin1().data(), fSaveType.toLatin1().data());
   if (fSaveType == "HTML") {
      if (fActions[kViewZoomer]->isOn() ) {
         TQtCanvas2Html a(Canvas(),1,0,fgZoomingWidget);
@@ -1022,14 +1030,15 @@ void TQtCanvasImp::SaveFile(const QString &theFile, const QString &selectedFilte
         TQtCanvas2Html a(Canvas());
      }
   } else {
-       fCanvasID->Save(fSaveFileName,fSaveType);
+       fCanvasID->Save(fSaveFileName,fSaveType.toLatin1());
   }
 }
 //____________________________________________________________________________
 void TQtCanvasImp::PrintCB()
 { 
   QPrinter p;
-  if (p.setup()) {     
+  QPrintDialog dialog(&p);
+  if (dialog.exec()) {
     QPixmap *pix = fCanvasID->GetOffScreenBuffer(); //(QPixmap *)TGQt::iwid(c->GetCanvasID());
     QPainter pnt(&p);
     pnt.drawPixmap(0,0,*pix);
@@ -1455,7 +1464,7 @@ void TQtCanvasImp::AboutCB()
                         QString str = QString("ROOT ") + QString(gROOT->GetVersion());
                         QString helpAbout = gHelpAbout;
                         helpAbout.replace("\n"," ");
-                        HelpOn(str,helpAbout);
+                        HelpOn(str.toLatin1(),helpAbout.toLatin1());
 #endif
 }
 //______________________________________________________________________________

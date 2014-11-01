@@ -79,7 +79,7 @@ void TQtCanvas2Html::MakePage(float zoom,unsigned int width, unsigned int height
    TVirtualPad *pad = Pad();
    if (pad) *fTargetWindow += pad->GetName();
    fTargetWindow->remove(" ");
-   fTargetWindow->lower();
+   fTargetWindow->toLower();
    if (!fZoomer) {
       fZoomer =  new TQtZoomPadWidget(pad);
       fZoomer->SetZoomFactor(zoom);
@@ -153,7 +153,7 @@ int TQtCanvas2Html::CreateMapPage(TVirtualPad *pad)
       TObject *o = 0;
       QString map = "map";
       map += *fTargetWindow;
-      MapTag((const char*)map);
+      MapTag(map.toLatin1());
       while ( (o=next()) ) {
          if (o->InheritsFrom(TVirtualPad::Class())) {
             TVirtualPad *p = (TVirtualPad *)o;

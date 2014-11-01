@@ -22,7 +22,7 @@ ROOT_GENERATE_ROOTMAP(QtRoot LINKDEF LinkDef.h DEPENDENCIES Gui GQt )
 ROOT_LINKER_LIBRARY(QtRoot *.cxx ${mocfiles} G__QtRoot.cxx LIBRARIES Core DEPENDENCIES Gui GQt)
 
 if(qt5)
-  qt5_use_modules(QtRoot Widgets)
+  qt5_use_modules(QtRoot Widgets PrintSupport)
 endif()
 
 ROOT_INSTALL_HEADERS()
