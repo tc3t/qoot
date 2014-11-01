@@ -44,7 +44,8 @@ bool TQtCanvasWidget::ExitSizeEvent (int update)
   QWidget *w = centralWidget();
   if (!w) return FALSE;
 
-  QApplication::sendEvent(w,new QCustomEvent(int(QEvent::User+update)) );
+  // QCustomEvent is Qt3 component, disabled as this doesn't seem strictly necessary.
+  //QApplication::sendEvent(w,new QCustomEvent(int(QEvent::User+update)) );
   
   return true;
 }

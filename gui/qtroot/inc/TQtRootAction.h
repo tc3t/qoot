@@ -35,6 +35,13 @@ class TQtRootAction : public QAction {
   public:
     TQtRootAction(QObject * parent, const TQtBrowserMenuItem_t  &data);
     int Id() const { return fId; }
+
+    bool addTo(QWidget* pWidget)
+    {
+        return (pWidget) ? pWidget->addAction(this) : false;
+    }
+
+    QString menuText() { return text(); }
   private:
      int  fId;
 };

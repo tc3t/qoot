@@ -162,6 +162,6 @@ void  TQtToolBar::ProcessToolMessage()
       gROOT->SetEditorMode("");
    } else {
       const QString &actionName = actionSender->menuText();
-      gROOT->SetEditorMode((const char *)actionName);
+      gROOT->SetEditorMode(actionName.toLatin1());
    }
 }

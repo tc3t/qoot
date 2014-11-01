@@ -105,10 +105,10 @@ const QPixmap &TQtGui::GetPicture(const char *pictureName)
          iconPath = RootIconPath();
       }
       char *picnam = 0;
-      picnam = gSystem->Which(iconPath.toLatin1().data(), (const char *)pname, kReadPermission);
+      picnam = gSystem->Which(iconPath.toLatin1().data(), pname.toLatin1(), kReadPermission);
       if (picnam) {
          p.load(picnam);
-         AddPicture(p,pname,kFALSE);
+         AddPicture(p,pname.toLatin1(),kFALSE);
          pp = QPixmapCache::find(pname);
       }
    }
