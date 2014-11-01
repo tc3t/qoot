@@ -72,7 +72,7 @@ TQtZoomPadWidget::TQtZoomPadWidget(TVirtualPad *pad, QWidget *parent, const char
 {
     // Create the Embedded TCanvas to draw the zoomed image of the "pad"
     // Other parameteres are passed to QHBox ctor
-    setName(name);
+    setObjectName(name);
 
     setLayout(new QHBoxLayout(QBoxLayout::TopToBottom));
     TVirtualPad *savePad = gPad;
@@ -340,7 +340,7 @@ void TQtZoomPadWidget::SetPad(TVirtualPad *pad,bool tobeShown )
    if (pad && (fZoomFactor > 0) && (fPad != pad) && (pad->GetCanvas() != (TCanvas *)pad) ) {
       TVirtualPad *savePad = gPad;
       fCanvas->cd();
-      setCaption(pad->GetName());
+      setWindowTitle(pad->GetName());
       fCanvas->Clear();
       //  Restore the mouse event bits
       if (fSrcWidget) { 
