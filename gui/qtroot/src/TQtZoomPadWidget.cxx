@@ -28,6 +28,21 @@
 
 #include <cmath>
 
+namespace
+{
+    void SetToolTip(QWidget* pWidget, const QString& s)
+    {
+        if (pWidget)
+            pWidget->setToolTip(s);
+    }
+
+    void RemoveToolTip(QWidget* pWidget)
+    {
+        if (pWidget)
+            pWidget->setToolTip(QString());
+    }
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 //                                                                                 //
@@ -74,7 +89,7 @@ TQtZoomPadWidget::TQtZoomPadWidget(TVirtualPad *pad, QWidget *parent, const char
     // Other parameteres are passed to QHBox ctor
     setObjectName(name);
 
-    setLayout(new QHBoxLayout(QBoxLayout::TopToBottom));
+    setLayout(new QHBoxLayout/*(QBoxLayout::TopToBottom)*/);
     TVirtualPad *savePad = gPad;
     TQtWidget *w = new TQtWidget(this);
     layout()->addWidget(w);
@@ -350,11 +365,14 @@ void TQtZoomPadWidget::SetPad(TVirtualPad *pad,bool tobeShown )
          if (fPad) {
             QPoint pos = GetLocation(*fSrcWidget,fPad);
             QSize size(fPad->UtoPixel(1),fPad->VtoPixel(0));
+            RemoveToolTip(fSrcWidget);
+            /*
 #if QT_VERSION < 0x40000
             QToolTip::remove(fSrcWidget,QRect(pos,size));               
 #else
             QToolTip::remove(fSrcWidget);               
 #endif
+            */
          }
       }
       if (savePad == fPad) savePad = 0;
@@ -395,8 +413,12 @@ void TQtZoomPadWidget::SetPad(TVirtualPad *pad,bool tobeShown )
       if (!fHideOnLeave && fSrcWidget) {
          QPoint pos = GetLocation(*fSrcWidget,pad);
          QSize size(pad->UtoPixel(1),pad->VtoPixel(0));
-         QToolTip::add(fSrcWidget,QRect(pos,size)
-            ,"Click this <b>TPad</b> with the <b>wheel</b> button to <b>stick</b> it with the zooming widget");
+         //QToolTip::add(fSrcWidget,QRect(pos,size)
+         //fSrcWidget->setToolTip("Click this <b>TPad</b> with the <b>wheel</b> button to <b>stick</b> it with the zooming widget");
+         QToolTip::showText(pos,
+                            "Click this <b>TPad</b> with the <b>wheel</b> button to <b>stick</b> it with the zooming widget",
+                            fSrcWidget,
+                            QRect(pos, size));
       }
       fCanvas->Modified(); fCanvas->Update();
       if (savePad) savePad->cd();
@@ -449,11 +471,11 @@ void TQtZoomPadWidget::RootEventProcessed( TObject *, unsigned int event, TCanva
              QPoint pos = GetLocation(*fSrcWidget,pad);
              QSize size(pad->UtoPixel(1),pad->VtoPixel(0));
 #if QT_VERSION < 0x40000
-             QToolTip::remove(fSrcWidget,QRect(pos,size));
+             RemoveToolTip(fSrcWidget,QRect(pos,size));
 #else
-             QToolTip::remove(fSrcWidget);
+             RemoveToolTip(fSrcWidget);
 #endif
-             QToolTip::add(fSrcWidget,"To zoom any <b>TPad</b> click it with the <b>wheel</b> button");
+             SetToolTip(fSrcWidget,"To zoom any <b>TPad</b> click it with the <b>wheel</b> button");
              fIgnoreNextMotion = true;
           } else if ( (event == kMouseMotion) ) {
              if (!fIgnoreNextMotion) event = kButton2Down; 
@@ -481,7 +503,7 @@ void TQtZoomPadWidget::DefineTooTip(bool hideOnLeave)
 {
    // Define the current tool tip for thew zoomer
    if (hideOnLeave) 
-      QToolTip::add( this,"Click the <b>wheel</b> button to <b>keep</b> this widget on the top permanently");
+      SetToolTip( this,"Click the <b>wheel</b> button to <b>keep</b> this widget on the top permanently");
    else
-      QToolTip::add( this,"Click the <b>wheel</b> button to turn the <b>\"hide on leave\"</b> mode");
+      SetToolTip( this,"Click the <b>wheel</b> button to turn the <b>\"hide on leave\"</b> mode");
 }
