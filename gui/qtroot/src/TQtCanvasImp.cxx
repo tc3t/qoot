@@ -313,7 +313,7 @@ void TQtCanvasImp::MakeActions() {
       // skip the separators 
       TQtRootAction *action = new TQtRootAction(fCanvasImpID,gMenu_Data[i]);
       fActions.insert(action->Id(),action);
-      connect( action, SIGNAL( activated() ) , this, SLOT(ProcessMessage()) );
+      connect( action, SIGNAL( triggered() ) , this, SLOT(ProcessMessage()) );
       i++;
    }
    MakeToolBarActions(i);

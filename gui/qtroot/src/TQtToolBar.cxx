@@ -153,7 +153,7 @@ void TQtToolBar::AddAction(TQtRootAction *action)
 
    if (action) {
      fActions.insert(action->Id(),action);
-     connect( action, SIGNAL( activated() ) , this, SLOT(ProcessToolMessage()) );
+     connect( action, SIGNAL( triggered() ) , this, SLOT(ProcessToolMessage()) );
      action->addTo(this); 
    }
 }
