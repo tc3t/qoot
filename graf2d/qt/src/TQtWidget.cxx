@@ -733,13 +733,13 @@ void TQtWidget::resizeEvent(QResizeEvent *e)
       exitSizeEvent();
       fSizeChanged=TRUE;
    } else {
-#ifdef R__QTWIN32
+//#ifdef R__QTWIN32
       if (!fPaint)  {
          // real resize event
          fSizeChanged=TRUE;
          fNeedStretch=true;
       } else {
-#else
+//#else
       {
          fSizeChanged=TRUE;
 #if 0
@@ -753,8 +753,8 @@ void TQtWidget::resizeEvent(QResizeEvent *e)
             fPaint = kTRUE;
             exitSizeEvent();
          }
-#endif
-      } }
+//#endif
+      } } }
 }
 //____________________________________________________________________________
 void TQtWidget::SetSaveFormat(const char *format)
