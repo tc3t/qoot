@@ -92,11 +92,12 @@ void TQtCanvas2Html::MakePage(float zoom,unsigned int width, unsigned int height
    }
    OpenHeader(pad); 
    WritePad(pad);
+   /*
    HtmlTag("h3");Eol();
    Html() << "Click any TPad image to get its ";
    HtmlTag("a","href=\"http://root.bnl.gov/QtRoot/htmldoc/TQtZoomPadWidget.html#TQtZoomPadWidget:description\"") << "zoomed"; 
    EndTag("a") << " view with the separate window";
-   EndTag("h3");EndTag("DIV"); 
+   EndTag("h3");*/EndTag("DIV"); 
    HtmlTag("DIV", "ALIGN=CENTER"); Eol();
    CreateMapPage(pad);
    QString map = "map";
