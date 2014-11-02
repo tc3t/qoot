@@ -323,9 +323,9 @@ public:
    virtual void      SetDrawOption(Option_t *option="");
    virtual void      SetEditable(Bool_t mode=kTRUE); // *TOGGLE*
    virtual void      SetFixedAspectRatio(Bool_t fixed = kTRUE);  // *TOGGLE*
-   virtual void      SetGrid(Int_t valuex = 1, Int_t valuey = 1) {fGridx = valuex; fGridy = valuey; Modified();}
-   virtual void      SetGridx(Int_t value = 1) {fGridx = value; Modified();} // *TOGGLE*
-   virtual void      SetGridy(Int_t value = 1) {fGridy = value; Modified();} // *TOGGLE*
+   virtual void      SetGrid(Int_t valuex = 1, Int_t valuey = 1) {fGridx = (valuex != 0); fGridy = (valuey != 0); Modified();}
+   virtual void      SetGridx(Int_t value = 1) {fGridx = (value != 0); Modified();} // *TOGGLE*
+   virtual void      SetGridy(Int_t value = 1) {fGridy = (value != 0); Modified();} // *TOGGLE*
    virtual void      SetFillStyle(Style_t fstyle);
    virtual void      SetLogx(Int_t value = 1); // *TOGGLE*
    virtual void      SetLogy(Int_t value = 1); // *TOGGLE*
@@ -381,7 +381,7 @@ public:
    virtual void      x3d(Option_t *type=""); // Depreciated
 
    virtual TVirtualViewer3D *GetViewer3D(Option_t * type = "");
-   virtual Bool_t            HasViewer3D() const { return (fViewer3D); }
+   virtual Bool_t            HasViewer3D() const { return (fViewer3D != nullptr); }
    virtual void              ReleaseViewer3D(Option_t * type = "");
 
    virtual Rectangle_t  GetBBox();

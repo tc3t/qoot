@@ -197,10 +197,10 @@ inline QCursor *TQtClientWidget::GrabPointerCursor() const
 
 //______________________________________________________________________________
 inline bool TQtClientWidget::IsGrabPointerSelected(UInt_t evmask) const
-{  return  evmask & PointerMask(); }
+{  return  ((evmask & PointerMask()) != 0); }
 
 //______________________________________________________________________________
 inline bool  TQtClientWidget::IsGrabButtonSelected (UInt_t evmask) const
-{ return  evmask & ButtonEventMask(); }
+{ return  ((evmask & ButtonEventMask()) != 0); }
 
 #endif
