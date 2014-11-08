@@ -1,38 +1,47 @@
 ############################################################################
-# CMakeLists.txt file for building ROOT graf2d/qt package
-# @author Pere Mato, CERN
+# CMakeLists.txt file for building ROOT gui/qtgui package
 ############################################################################
 
-ROOT_USE_PACKAGE(QtRoot/qt)
-include(${QT_USE_FILE})
+ROOT_USE_PACKAGE(graf2d/qt)
 
-set(headers TQtGuiFactory.h        TBrowserCustom.h 
-            TQtPatternSelect.h     TQtTabValidator.h
-            TEmbeddedPad.h         TQtColorSelect.h
-            TQtZoomPadWidget.h     TQGsiRootCanvas.h
-            TQtPad2Html.h           TQtCanvas2Html.h
-            TQtMarkerSelect.h      TQtPixmapBox.h )
+if(qt4)
+  include(${QT_USE_FILE})
+endif()
 
+file(GLOB_RECURSE HEADERS "*.h")
 
-QT4_WRAP_CPP(mocfiles  inc/inc/TQtBrowserImp.h      inc/TQtCanvasImp.h       
-                       inc/TQtCanvasWidget.h        inc/TQtColorSelect.h       
-                       inc/TQtColorSelectButton.h   inc/TQtContextMenuImp.h    
-                       inc/TQtControlBarImp.h       inc/TQtIconBrowserImp.h   
-                       inc/TQtCustomizeCanvasMenu.h inc/TQtFloatSpinBox.h    
-                       inc/TQtInspectImp.h          inc/TQtRootBrowserImp.h 
-                       inc/TQtObjectDialog.h        inc/TQtPatternSelect.h
-                       inc/TQtPatternSelectButton.h inc/TQtRootBrowserAction.h 
-                       inc/TQtZoomPadWidget.h       inc/TQtToolBar.h
-                       inc/TQtMarkerSelect.h        inc/TQtPixmapBox.h 
-                       inc/TQtMarkerSelectButton.h  inc/TQtStyleComboBox.h 
-                       inc/TQtFloatSlider.h         inc/TQtRootCommandCombo.h 
-                       qtcolorpicker.h              inc/TQtColorPickerHelper.h 
-                       inc/TQtTextEditor.h 
-                       qtmmlwidget.h            inc/TQtCommandPlugin.h)
+if(qt4)
+  QT4_WRAP_CPP(mocfiles inc/TQtContextMenuImp.h inc/TQtObjectDialog.h
+				inc/TQtCanvasImp.h inc/TQtCanvasWidget.h inc/TQtToolBar.h
+				inc/TQtZoomPadWidget.h inc/TQtRootBrowserImp.h inc/TQtRootBrowserAction.h
+				inc/TQtBrowserImp.h inc/TQtIconBrowserImp.h inc/TQtColorSelect.h
+				inc/TQtColorSelectButton.h inc/TQtCommandPlugin.h inc/TQtControlBarImp.h
+				inc/TQtFloatSlider.h inc/TQtFloatSpinBox.h inc/TQtCustomizeCanvasMenu.h
+				inc/TQtInspectImp.h inc/TQtMarkerSelectButton.h inc/TQtPatternSelect.h
+				inc/TQtPatternSelectButton.h inc/TQtMarkerSelect.h inc/TQtRootCommandCombo.h
+				inc/TQtTextEditor.h inc/TQtStyleComboBox.h)
+endif()
+if(qt5)
+  QT5_WRAP_CPP(mocfiles inc/TQtContextMenuImp.h inc/TQtObjectDialog.h
+				inc/TQtCanvasImp.h inc/TQtCanvasWidget.h inc/TQtToolBar.h
+				inc/TQtZoomPadWidget.h inc/TQtRootBrowserImp.h inc/TQtRootBrowserAction.h
+				inc/TQtBrowserImp.h inc/TQtIconBrowserImp.h inc/TQtColorSelect.h
+				inc/TQtColorSelectButton.h inc/TQtCommandPlugin.h inc/TQtControlBarImp.h
+				inc/TQtFloatSlider.h inc/TQtFloatSpinBox.h inc/TQtCustomizeCanvasMenu.h
+				inc/TQtInspectImp.h inc/TQtMarkerSelectButton.h inc/TQtPatternSelect.h
+				inc/TQtPatternSelectButton.h inc/TQtMarkerSelect.h inc/TQtRootCommandCombo.h
+				inc/TQtTextEditor.h inc/TQtStyleComboBox.h)
+endif()
 
-ROOT_GENERATE_DICTIONARY(G__QtRootGui ${headers} LINKDEF LinkDef.h)
-ROOT_GENERATE_ROOTMAP(QtGui LINKDEF LinkDef.h DEPENDENCIES GQt Gui Gpad Graf Rint)
+ROOT_GENERATE_DICTIONARY(G__QtGui TQtRootGuiFactory.h TBrowserCustom.h TEmbeddedPad.h
+						TQtColorSelect.h TQtMarkerSelect.h TQtPatternSelect.h
+						TQtPixmapBox.h TQtGuiFactory.h
+						LINKDEF LinkDef.h)
+ROOT_GENERATE_ROOTMAP(QtGui LINKDEF LinkDef.h DEPENDENCIES Gui GQt )
+ROOT_LINKER_LIBRARY(QtGui *.cxx ${HEADERS} ${mocfiles} G__QtGui.cxx LIBRARIES Core DEPENDENCIES Gui GQt)
 
-ROOT_LINKER_LIBRARY(QtRootGui *.cxx ${mocfiles} G__QtRootGui.cxx LIBRARIES ${QT_LIBRARIES} DEPENDENCIES Gui Gpad Graf Rint)
+if(qt5)
+  qt5_use_modules(QtGui Widgets PrintSupport)
+endif()
 
 ROOT_INSTALL_HEADERS()
