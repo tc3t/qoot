@@ -52,8 +52,6 @@
 #include "TRootControlBar.h"
 #include "TContextMenu.h"
 #include "TRootContextMenu.h"
-#include "TQtContextMenuImp.h"
-#include "TQtCanvasImp.h"
 
 #include "TGQt.h"
 
@@ -109,13 +107,13 @@ void TQtRootGuiFactory::CreateQClient()
 //______________________________________________________________________________
 TCanvasImp *TQtRootGuiFactory::CreateCanvasImp(TCanvas *c, const char *title, UInt_t width, UInt_t height)
 {
-    return new TQtCanvasImp(c, title, width, height);
+    return fGuiProxy ? fGuiProxy->CreateCanvasImp(c, title, width, height) : 0;
 }
 
 //______________________________________________________________________________
 TCanvasImp *TQtRootGuiFactory::CreateCanvasImp(TCanvas *c, const char *title, Int_t x, Int_t y, UInt_t width, UInt_t height)
 {
-    return new TQtCanvasImp(c, title, x, y, width, height);
+    return fGuiProxy ? fGuiProxy->CreateCanvasImp(c, title, x, y, width, height) : 0;
 }
 
 //______________________________________________________________________________
@@ -157,8 +155,7 @@ TBrowserImp *TQtRootGuiFactory::CreateBrowserImp(TBrowser *b, const char *title,
 //______________________________________________________________________________
 TContextMenuImp *TQtRootGuiFactory::CreateContextMenuImp(TContextMenu *c, const char *name, const char *title)
 { 
-    //return fGuiProxy ? fGuiProxy->CreateContextMenuImp(c, name, title): 0;
-    return new TQtContextMenuImp(c);
+    return fGuiProxy ? fGuiProxy->CreateContextMenuImp(c, name, title): 0;
 } 
 
 //______________________________________________________________________________
