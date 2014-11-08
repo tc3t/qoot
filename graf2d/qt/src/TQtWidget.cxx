@@ -363,7 +363,7 @@ TApplication *TQtWidget::InitRint( Bool_t /*prompt*/, const char *appClassName, 
 #endif
        if (!guiFactory.BeginsWith("qt",TString::kIgnoreCase )){
          // Check for the extention
-         char *extLib = gSystem->DynamicPathName("libQtRootGui",kTRUE);
+         char *extLib = gSystem->DynamicPathName("libQtGui",kTRUE);
          if (extLib) {
             gEnv->SetValue("Gui.Factory", "qtgui");
          } else {
