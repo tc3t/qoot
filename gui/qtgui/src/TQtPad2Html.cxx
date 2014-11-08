@@ -135,9 +135,9 @@ QTextStream & TQtPad2Html::OpenHeader(TVirtualPad *pad)
         HtmlTag("TITLE");
           Html() << ImageTitle(pad) ;
         EndTag("TITLE"); Eol();
-        HtmlTag("meta", "name=\"Author\" content=\"Valeri Fine\"");  Eol();
+        //HtmlTag("meta", "name=\"Author\" content=\"Valeri Fine\"");  Eol();
         HtmlTag("meta", "http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"");  Eol();
-        HtmlTag("meta", "name=\"GENERATOR\" content=\"http://root.bnl.gov\"");  Eol();
+        //HtmlTag("meta", "name=\"GENERATOR\" content=\"http://root.bnl.gov\"");  Eol();
         HtmlTag("meta", "target=\"exposition\"");  Eol();
      EndTag("HEAD"); Eol();
      Eol();
@@ -390,8 +390,9 @@ const QString &TQtPad2Html::AuthorName() {
 const QString &TQtPad2Html::AuthorEMail() 
 {
   if (!fAuthorEmail) {
-     fAuthorEmail = new QString(AuthorName());
-     *fAuthorEmail += "@bnl.gov";
+     //fAuthorEmail = new QString(AuthorName());
+     //*fAuthorEmail += "@bnl.gov";
+     fAuthorEmail = new QString;
   }
   return *fAuthorEmail;
 }
@@ -405,6 +406,7 @@ void TQtPad2Html::ClosePage()
    HtmlTag("code");
    HtmlTag("tr", "class=\"light\"");
    HtmlTag("td");
+   /*
    Html() << "Author:<a href=\"mailto:";
    Html() << AuthorEMail();  Quote(); 
    Html() << ">" << AuthorName(); EndTag("a");
@@ -413,6 +415,7 @@ void TQtPad2Html::ClosePage()
    HtmlTag("td","align=right");
    Html() << "<a href=\"http://www.star.bnl.gov/STAR/comp/vis/StarEvent.html\">";
    Html() << "<img src=\"http://www.star.bnl.gov/include/graphics/starLogoMenu.gif\" BORDER=0 >"; EndTag("a");
+   */
    EndTag("tr");EndTag("code");EndTag("table");EndTag("font");
    EndTag("DIV");
    EndTag("BODY");

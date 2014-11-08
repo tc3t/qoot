@@ -1,6 +1,6 @@
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
-** $Id: TQtObjectDialog.h 3594 2013-02-19 03:50:53Z fineroot $
+** $Id: TQtObjectDialog.h 3145 2009-04-23 15:56:41Z fine $
 **
 ** Copyright (C) 2002 by Valeri Fine.  All rights reserved.
 **
@@ -22,7 +22,7 @@
 #ifndef ROOT_TQtObjectDialog
 #define ROOT_TQtObjectDialog
 
-#include <QDialog>
+#include <qdialog.h>
 
 class TObject;
 class TMethod;

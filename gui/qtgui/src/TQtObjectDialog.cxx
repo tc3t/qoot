@@ -1,6 +1,6 @@
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
-** $Id: TQtObjectDialog.cxx 3594 2013-02-19 03:50:53Z fineroot $
+** $Id: TQtObjectDialog.cxx 3631 2014-03-17 02:10:47Z fineroot $
 **
 ** Copyright (C) 2002 by Valeri Fine. Brookhaven National Laboratory.
 **                                    All rights reserved.
@@ -10,6 +10,19 @@
 ** LICENSE.QPL included in the packaging of this file.
 **
 *****************************************************************************/
+
+#include "TQtObjectDialog.h"
+#include "TGQt.h"
+
+#include <QLineEdit>
+#include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QDialogButtonBox>
+#include <QDebug>
+#include <QString>
+#include <QTextCodec> 
 
 #include "TClass.h"
 
@@ -22,21 +35,6 @@
 #include "TObjArray.h"
 #include "TObjString.h"
 
-#include "TQtObjectDialog.h"
-#include "TGQt.h"
-
-#include <QLineEdit>
-#include <QLabel>
-#include <QPushButton>
-#include <QObject>
-#include <q3cstring.h> 
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QDialogButtonBox>
-#include <QDebug>
-#include <QTextCodec> 
-
-
 //______________________________________________________________________________
 TQtObjectDialog::TQtObjectDialog( TObject *object, TMethod *method ):QDialog(0,0), fParArray(0)
 {
@@ -44,20 +42,20 @@ TQtObjectDialog::TQtObjectDialog( TObject *object, TMethod *method ):QDialog(0,0
     // Create Dummy TContextMenu for the sake of its static method ???
     setWindowModality ( Qt::WindowModal );
     TContextMenu dummy(0);
+
     setWindowTitle(dummy.CreateDialogTitle( object, method ));
 
     /* Some common values for all controls */
 
         TMethodArg *argument = NULL;
-        TList *argList =  method->GetListOfMethodArgs();
-        TIter next(argList);
+        TIter next( method->GetListOfMethodArgs() );
 
         QVBoxLayout *layout = new QVBoxLayout( this );
         while ( (argument = (TMethodArg *) next() ) ) {
             // Create a label gadget.
 //*-* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //*-*          Label      as STATIC control
-         const char *argname  = dummy.CreateArgumentTitle( argument );
+          const char *argname  = dummy.CreateArgumentTitle( argument );
 //------------------ begin of copy / paste from void TRootContextMenu::Dialog(TObject *object, TMethod *method)
          const Text_t *type       = argument->GetTypeName();
          TDataType    *datatype   = gROOT->GetType(type);
@@ -140,29 +138,14 @@ TQtObjectDialog::TQtObjectDialog( TObject *object, TMethod *method ):QDialog(0,0
 void TQtObjectDialog::accept () 
 {
    // Collect the results from all LinedEdit widgets
-#if QT_VERSION >= 0x40000
    QList<QLineEdit*> list = findChildren<QLineEdit*>();
    fParArray = new TObjArray(list.size());
    Int_t index = 0;
    for (int i = 0; i < list.size(); ++i) {
-      QByteArray r = gQt->GetTextDecoder()->fromUnicode( list.at(i)->text() );
-      fParArray->AddAt((TObject *)(new TObjString(r.data())),index);
-      index++;
-   }     
-#else        
-   QObjectList *l = queryList("QLineEdit");
-   QObjectListIt it( *l ); // iterate over the text input widgets
-   QObject *obj;
-   Int_t index = 0;
-   fParArray = new TObjArray(l->count());
-   while ( (obj = it.current()) != 0 ) {
-      // for each found object...
-      ++it;
-      QCString r = gQt->GetTextDecoder()->fromUnicode( ((QLineEdit*)obj)->text() );
-      fParArray->AddAt((TObject *)(new TObjString((const char *)r)),index);
+      QString r = gQt->GetTextDecoder()->fromUnicode( list.at(i)->text() );
+      fParArray->AddAt((TObject *)(new TObjString(r.toLatin1().data())),index);
       index++;
    }
-#endif  
   QDialog::accept();
 }
 //______________________________________________________________________________

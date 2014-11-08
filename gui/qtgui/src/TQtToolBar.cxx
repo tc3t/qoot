@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   16/06/2006
 /****************************************************************************
 ** $Id: TQtToolBar.cxx 3594 2013-02-19 03:50:53Z fineroot $
@@ -147,7 +153,7 @@ void TQtToolBar::AddAction(TQtRootAction *action)
 
    if (action) {
      fActions.insert(action->Id(),action);
-     connect( action, SIGNAL( activated() ) , this, SLOT(ProcessToolMessage()) );
+     connect( action, SIGNAL( triggered() ) , this, SLOT(ProcessToolMessage()) );
      action->addTo(this); 
    }
 }
@@ -162,6 +168,6 @@ void  TQtToolBar::ProcessToolMessage()
       gROOT->SetEditorMode("");
    } else {
       const QString &actionName = actionSender->menuText();
-      gROOT->SetEditorMode((const char *)actionName);
+      gROOT->SetEditorMode(actionName.toLatin1());
    }
 }

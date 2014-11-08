@@ -52,7 +52,7 @@ bool TQtGui::AddPicture(const QPixmap &pic, const char *pictureName, bool checkC
    bool  res = false;
    if (pictureName && pictureName[0] && !pic.isNull()) 
    {
-     QString pname = QString(pictureName).stripWhiteSpace();
+     QString pname = QString(pictureName).trimmed();
      bool found = false;
      if (!checkCache || ( checkCache && !(found = QPixmapCache::find(pname))))
      {
@@ -81,10 +81,10 @@ const QPixmap &TQtGui::GetPicture(const char *pictureName)
    //
    QPixmap* pp=0;
    QPixmap p;
-   QString pname = QString(pictureName).stripWhiteSpace();
+   QString pname = QString(pictureName).trimmed();
    if ( !(pp=QPixmapCache::find(pname)) ) {
 
-      QString ext   = QFileInfo(pname).suffix().lower();
+      QString ext   = QFileInfo(pname).suffix().toLower();
 
       if (!ext.isEmpty()) { // ".xpm", ".gif" etc
 
@@ -105,10 +105,10 @@ const QPixmap &TQtGui::GetPicture(const char *pictureName)
          iconPath = RootIconPath();
       }
       char *picnam = 0;
-      picnam = gSystem->Which(iconPath.toLatin1().data(), (const char *)pname, kReadPermission);
+      picnam = gSystem->Which(iconPath.toLatin1().data(), pname.toLatin1(), kReadPermission);
       if (picnam) {
          p.load(picnam);
-         AddPicture(p,pname,kFALSE);
+         AddPicture(p,pname.toLatin1(),kFALSE);
          pp = QPixmapCache::find(pname);
       }
    }

@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtCanvasWidget.cxx 3624 2013-03-10 16:17:14Z fineroot $
@@ -44,7 +50,8 @@ bool TQtCanvasWidget::ExitSizeEvent (int update)
   QWidget *w = centralWidget();
   if (!w) return FALSE;
 
-  QApplication::sendEvent(w,new QCustomEvent(int(QEvent::User+update)) );
+  // QCustomEvent is Qt3 component, disabled as this doesn't seem strictly necessary.
+  //QApplication::sendEvent(w,new QCustomEvent(int(QEvent::User+update)) );
   
   return true;
 }

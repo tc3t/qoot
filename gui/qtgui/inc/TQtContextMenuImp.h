@@ -1,6 +1,12 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
-** $Id: TQtContextMenuImp.h 3594 2013-02-19 03:50:53Z fineroot $
+** $Id: TQtContextMenuImp.h 3631 2014-03-17 02:10:47Z fineroot $
 **
 ** Copyright (C) 2002 by Valeri Fine.  All rights reserved.
 **
@@ -25,9 +31,14 @@
 #include "TContextMenuImp.h"
 #include "TContextMenu.h"
 
-#include <QtGlobal>
-#include <QObject>
-#include <QVector>
+#ifndef __CINT__
+	//#include <QGlobal>
+	#include <QObject>
+	#include <QVector>
+#else
+	class QObject;
+#endif
+
 
 // *-*
 // *-* Context Menu is derived from QPopupMenu (since it is special type of PopUp menu
@@ -46,11 +57,15 @@
 
 class TQtDialog;
 class QEvent;
-class QMenu;
+//MOC_SKIP_BEGIN
+  class QMenu;
+//MOC_SKIP_END
 
 class TQtMenutItem : public QObject {
 
+#ifndef __CINT__
   Q_OBJECT
+#endif
 
 private:
   TMethod *fMethod;
@@ -96,7 +111,7 @@ class TQtContextMenuImp : public QObject, public TContextMenuImp
             void       DeletePopup();
     QMenu &PopupMenu() const { return *fPopupMenu; }
 
-    virtual bool   event(QEvent *){return FALSE;}
+    virtual bool   event(QEvent *){return false;}
     
  protected slots:
    void Disconnect();

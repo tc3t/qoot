@@ -1,6 +1,12 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
-** $Id: TQtContextMenuImp.cxx 3601 2013-02-24 04:20:15Z fineroot $
+** $Id: TQtContextMenuImp.cxx 3631 2014-03-17 02:10:47Z fineroot $
 **
 ** Copyright (C) 2002 by Valeri Fine. Brookhaven National Laboratory.
 **                                    All rights reserved.
@@ -12,21 +18,27 @@
 *****************************************************************************/
 
 #include "TQtContextMenuImp.h"
-#include <QMenu>
-#include <QClipboard>
-#include <QDebug>
-#ifndef NoQtWebkit
-#  include <QWebView>
-#  include <QNetworkProxy>
-#  include <QUrl>
-#  if QT_VERSION >= 0x40500
-#    include <QtNetwork/QNetworkProxyFactory>
-#  endif
+#if QT_VERSION >= 0x40000
+#  include <QMenu>
+#  include <QClipboard>
+#  include <QDebug>
+#if QT_VERSION < 0x50000
+  // I can find thsi on Mac ! under qt 5.2 yet
+#  include <QWebView>  
 #endif
-#include <QString>
+//#  include <QNetworkProxy>
+#  include <QString>
+#  include <QUrl>
+#else
+#  include "qpopupmenu.h"
+#  include <qclipboard.h>
+#  include <qlabel.h>
+#endif /* QT_VERSION */
+
 #include "TGQt.h"
 #include "TSystem.h"
 #include "TQtLock.h"
+#include <qclipboard.h> 
 #include "TCanvas.h"
 #include "TClass.h"
 
@@ -58,7 +70,10 @@ TQtContextMenuImp::TQtContextMenuImp(TContextMenu *c) :  TContextMenuImp(c), fPo
 TQtContextMenuImp::~TQtContextMenuImp()
 {
    // destroy the WebView if any
-   delete fHelpWidget; fHelpWidget = 0;
+#if QT_VERSION < 0x50000
+   delete fHelpWidget;
+#endif
+   fHelpWidget = 0;
    // destroy all menu item first
    foreach (TQtMenutItem *it, fItems) { delete it; }
    DeletePopup();
@@ -142,7 +157,11 @@ void  TQtContextMenuImp::Dialog( TObject *object, TMethod *method )
     if (fExecute) fExecute->Execute(object,method,parList);
     // TContextMenu *c=GetContextMenu();
     //  c->Execute(object,method,parList); 
-    if (fHelpWidget) fHelpWidget->hide();
+      if (fHelpWidget) {
+#if QT_VERSION < 0x50000
+          fHelpWidget->hide();
+#endif
+      }
   }
   delete d;
 }
@@ -157,7 +176,9 @@ void  TQtContextMenuImp::Dialog( TObject *object, TFunction *function )
     if (fExecute) fExecute->Execute(function,parList);
     // TContextMenu *c=GetContextMenu();
     //  c->Execute(0,function,parList); 
-    if (fHelpWidget) fHelpWidget->hide();
+#if QT_VERSION < 0x50000
+      fHelpWidget->hide();
+#endif
   }
   delete d;
 }
@@ -198,7 +219,13 @@ void TQtContextMenuImp::UpdateProperties()
     
     //*-*  Include the "Properties" item "by canvases"
     fPopupMenu->addSeparator();
-    QMenu *propertiesMenu = fPopupMenu->addMenu("&Properties");
+    QMenu *propertiesMenu =fPopupMenu; 
+    // Use the ROOT default style
+    const char *env =  gEnv->GetValue("Gui.Factory","qtgui");
+    if (env && !strcmp(env,"qtgui")) {
+       // USe QtRoot default style
+       propertiesMenu = fPopupMenu->addMenu("&Properties");
+    }
 
     //*-*  Create Menu "Properties"
 
@@ -263,9 +290,6 @@ void TQtContextMenuImp::CopyCB()
 void TQtContextMenuImp::HelpCB()
 {
   // Pop Web page with the class HTML doc from web site defined by "Browser.StartUrl"
-#ifdef  NoQtWebkit
-   return;
-#endif
   TObject *obj = fContextMenu->GetSelectedObject(); 
   if (obj) { 
      QString clname = obj->ClassName(); 
@@ -280,6 +304,7 @@ void TQtContextMenuImp::HelpCB()
      } else { 
          url += QString("%1.html").arg(clname); 
      } 
+#if QT_VERSION < 0x50000
      if (!fHelpWidget) {
         // Set proxy
         QString http_proxy = gSystem->Getenv("http_proxy");
@@ -294,7 +319,7 @@ void TQtContextMenuImp::HelpCB()
            proxy.setPort(url.port());
            QNetworkProxy::setApplicationProxy(proxy); 
         }
-#if QT_VERSION >= 0x40500           
+#if QT_VERSION >= 0x40500
         else {
            // attempt to get the system defined proxy
            QList<QNetworkProxy> list = QNetworkProxyFactory::systemProxyForQuery();
@@ -312,5 +337,6 @@ void TQtContextMenuImp::HelpCB()
      }
      fHelpWidget->setUrl(url);
      fHelpWidget->show();
+#endif
   }
 }
