@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtColorSelectButton.cxx 3594 2013-02-19 03:50:53Z fineroot $
 // Author: Bertrand Bellenot + Fons Rademakers   22/08/02
 
@@ -76,6 +82,7 @@
 #include <QDebug>
 #include <QMenu>
 #include <QTimer>
+#include <QColorMap>
 
 //ClassImp(TQtColorFrame)
 //ClassImp(TQt16ColorSelector)
@@ -134,9 +141,9 @@ TQt16ColorSelector::TQt16ColorSelector( QWidget *p,const char *name) :
    QFrame (p),fActive(-1)
 {
    if (!name)
-      setName("ColorSelect16");
+      setObjectName("ColorSelect16");
    else 
-      setName(name);
+      setObjectName(name);
    // setGeometry(QRect(0,0,200,200));
    
    QWidget *group          = this;
@@ -201,7 +208,7 @@ const QColor  &TQt16ColorSelector::GetActiveColor() const
 //______________________________________________________________________________
 void TQt16ColorSelector::languageChange()
 {
-    //setCaption( tr( "Select Color" ) );
+    //setWindowTitle( tr( "Select Color" ) );
     //fPushButton->setText( tr( "pushButton39" ) );
     //QToolTip::add( fPushButton, tr( "Current Color" ) );
     //QWhatsThis::add( fPushButton, tr( "Your current attribute fill color" ) );
@@ -214,13 +221,14 @@ TQtColorPopup::TQtColorPopup(QWidget *p, QColor &color,const char *name, bool mo
    QFrame *inter = new QFrame(this);
    inter->setFrameShape(QFrame::Panel);
    QVBoxLayout *vLayout = new QVBoxLayout(inter);
-   setName(name);
+   setObjectName(name);
    setModal(modal);
    inter->setGeometry( QRect( 2, 2, 2 + 4*(boxSize+1) +1 ,2 + 5*(boxSize+1) + boxSize/2 + 4 ) );
    TQt16ColorSelector *cs = new TQt16ColorSelector(inter);
    
    // The horizontal divider 
-   QFrame *line1 = new QFrame( inter, "lineH" );
+   QFrame *line1 = new QFrame( inter );
+   line1->setWindowTitle("lineH");
    line1->setFrameShape ( QFrame::HLine  );
    line1->setFrameShadow( QFrame::Sunken );
 
@@ -267,7 +275,7 @@ void TQtColorPopup::ColorSelected(const QColor &color )
 //______________________________________________________________________________
 void TQtColorPopup::languageChange()
 {
-    //setCaption( tr( "Select Color" ) );
+    //setWindowTitle( tr( "Select Color" ) );
     //fPushButton->setText( tr( "pushButton39" ) );
     //QToolTip::add( fPushButton, tr( "Current Color" ) );
     //QWhatsThis::add( fPushButton, tr( "Your current attribute fill color" ) );
@@ -277,7 +285,7 @@ TQtColorSelectButton::TQtColorSelectButton( QWidget *p,  const char *name,Qt::Wi
     : QFrame(p,f)
       ,fColor("grey"),fColorEmitter(0), fFakeMenu(0)
 {
-   if (name) setName(name);
+   if (name) setObjectName(name);
    CreateWidget();
 }
 
@@ -293,7 +301,7 @@ TQtColorSelectButton::TQtColorSelectButton( QWidget *p, UInt_t pixel, Int_t /*id
     : QFrame(p)
       ,fColor(gQt->QtColor(pixel)),fColorEmitter(emitter), fFakeMenu(0)
 {
-   setName("ColorSelectButton");
+   setObjectName("ColorSelectButton");
    setWindowFlags (Qt::WindowStaysOnTopHint);
    CreateWidget();
 }
@@ -301,7 +309,7 @@ TQtColorSelectButton::TQtColorSelectButton( QWidget *p, UInt_t pixel, Int_t /*id
 TQtColorSelectButton::TQtColorSelectButton( QWidget *p, QColor &color, Int_t /*id*/,TColorEmit *emitter) 
     : QFrame(p),fColor(color),fColorEmitter(emitter), fFakeMenu(0)
 {
-   setName("ColorSelectButton");
+   setObjectName("ColorSelectButton");
    CreateWidget();
 }
 //________________________________________________________________________________
@@ -316,7 +324,7 @@ void TQtColorSelectButton::CreateWidget()
     
        
     //  Color Button
-    QHBoxLayout *layout = new QHBoxLayout( this, 0, 0, "layoutColorButton"); 
+    QHBoxLayout *layout = new QHBoxLayout( this/*, 0, 0, "layoutColorButton"*/); 
     fPushButton = new  TQtColorFrame(this, fColor);
     ((TQtColorFrame *)fPushButton)->setPopupMode( QToolButton::MenuButtonPopup); 
     if (!fFakeMenu) {
@@ -350,7 +358,11 @@ void TQtColorSelectButton::PopupDialog()
       // to emit the ROOT signal
       SetColor(popup->Color());
       ColorSelected();
-      if (fColorEmitter) fColorEmitter->ColorEmit(fColor.pixel());
+      if (fColorEmitter)
+      {
+          QColormap cmap = QColormap::instance();
+          fColorEmitter->ColorEmit(cmap.pixel(fColor));
+      }
       emit colorSelected(fColor);
    }
    if (fFakeMenu && (sender() == fFakeMenu) ) QTimer::singleShot(0,fFakeMenu, SLOT(close()) );
@@ -373,7 +385,7 @@ void TQtColorSelectButton::SetColor(const QColor &color)
 //______________________________________________________________________________
 void TQtColorSelectButton::languageChange()
 {
-    setCaption( tr( "Select Color" ) );
+    setWindowTitle( tr( "Select Color" ) );
     if (fPushButton) {
        fPushButton->setText( tr( "pushButton39" ) );
        fPushButton->setToolTip(tr( "Current Color" ) );

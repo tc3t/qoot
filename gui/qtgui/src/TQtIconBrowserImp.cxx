@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtIconBrowserImp.cxx 3601 2013-02-24 04:20:15Z fineroot $
@@ -43,32 +49,25 @@
 #  include "TColumnView.h"
 #endif
 
+namespace
+{
+    void raiseWidget(Q3WidgetStack* p, Int_t id)
+    {
+        if (!p)
+            return;
+        QWidget* pWidget = p->widget(id);
+        if (pWidget)
+            pWidget->raise();
+    }
+}
+
 #include "TQMimeTypes.h"
 
-#if QT_VERSION < 0x40000
-#include <qpopupmenu.h>
-#else /* QT_VERSION */
-#include <q3popupmenu.h>
-#endif /* QT_VERSION */
 #include <qlabel.h>
-#if QT_VERSION < 0x40000
-#include <qlistview.h>
-#include <qtable.h>
-#include <qwidgetstack.h>
-#else /* QT_VERSION */
-#include <q3listview.h>
-#include <q3table.h>
-#include <q3widgetstack.h>
-#endif /* QT_VERSION */
 #include <qpixmap.h>
 
-#if QT_VERSION < 0x40000
-static QIconSet *folderClosed = 0;
-static QIconSet *fileNormal = 0;
-#else /* QT_VERSION */
 static QIcon *folderClosed = 0;
 static QIcon *fileNormal = 0;
-#endif /* QT_VERSION */
 
 static const char* folder_closed_xpm[]={
    "32 32 11 1",
@@ -216,7 +215,7 @@ TQtIconBrowserImp::TQtIconBrowserImp(TBrowser *b, const char *title, UInt_t widt
 #if QT_VERSION < 0x40000
   ,fIconSize(QIconSet::Large),fStackBrowser(0),fCurrentItem(0),fBrowserCustom(0)
 #else /* QT_VERSION */
-  ,fIconSize(QIcon::Large),fStackBrowser(0),fCurrentItem(0),fBrowserCustom(0)
+  ,fIconSize(Q3Icon::Large),fStackBrowser(0),fCurrentItem(0),fBrowserCustom(0)
 #endif /* QT_VERSION */
  , fCurentViewMode(TQtGui::kNotDefinedYet)
 {
@@ -232,7 +231,7 @@ TQtIconBrowserImp::TQtIconBrowserImp(TBrowser *b, const char *title, Int_t x, In
 #if QT_VERSION < 0x40000
 , fIconSize(QIconSet::Large),fStackBrowser(0),fCurrentItem(0),fBrowserCustom(0)
 #else /* QT_VERSION */
-, fIconSize(QIcon::Large),fStackBrowser(0),fCurrentItem(0),fBrowserCustom(0)
+, fIconSize(Q3Icon::Large),fStackBrowser(0),fCurrentItem(0),fBrowserCustom(0)
 #endif /* QT_VERSION */
 , fCurentViewMode(TQtGui::kNotDefinedYet)
 {
@@ -310,16 +309,16 @@ const QIcon  *TQtIconBrowserImp::Shape2GeoShapeIcon(const char *shapeName)
    QString shapeIconName = "TGeo";
    QString  shapeClass =  shapeName;
    shapeClass.remove(0,1);             // remove the leading "T"
-   shapeIconName += shapeClass.ref(0); // pick the fist upper case shale name letter
+   shapeIconName += shapeClass[0]; // pick the fist upper case shale name letter
    shapeClass.remove(0,1);             // Remove it
-   shapeIconName += shapeClass.lower();// Convert the tail to the lower case and append it
+   shapeIconName += shapeClass.toLower();// Convert the tail to the lower case and append it
    // exceptions
    if   (shapeIconName == "TGeoBrik") shapeIconName = "TGeoBBox";
    else if (shapeIconName == "TGeoCons") shapeIconName = "TGeoConeSeg";
    else if (shapeIconName == "TGeoTubs") shapeIconName = "TGeoTubeSeg";
    else if (shapeIconName == "TGeoSphe") shapeIconName = "TGeoSphere";
    // printf(" Final Form = %s\n", (const char *)shapeIconName.toLatin1().data());
-   return IconList()->GetIcon(shapeIconName);
+   return IconList()->GetIcon(shapeIconName.toLatin1());
 }
 //______________________________________________________________________________
 TQtIconBrowserItem *TQtIconBrowserImp::Add(TObject *obj, const char *caption,const char *iconKey, Int_t /*check*/)
@@ -486,7 +485,7 @@ void TQtIconBrowserImp::Clear(TObject *obj)
       ((Q3IconView *)fBrowserImpID->widget(fIconWidgetId))->clear();
 #endif /* QT_VERSION */
       if (fDetailWidgetID != -1) {
-         fBrowserImpID->raiseWidget (fIconWidgetId);
+          raiseWidget(fBrowserImpID, fIconWidgetId);
          QWidget *details = fBrowserImpID->widget(fDetailWidgetID);
          fBrowserImpID->removeWidget(details);
          fDetailWidgetID  = -1;
@@ -623,7 +622,7 @@ static void ViewTable(Q3Table *details, TObject *obj) {
 #else /* QT_VERSION */
     Q3Header *header = 0;
 #endif /* QT_VERSION */
-    Bool_t vertical = FALSE;
+    Bool_t vertical = false;
     if (nRows > 1) {
        header = details->horizontalHeader();
        details-> setNumRows (nRows );
@@ -794,7 +793,7 @@ void TQtIconBrowserImp::CreateDetailView()
 #if QT_VERSION < 0x40000
      QHeader *header = details->horizontalHeader();
 #else /* QT_VERSION */
-     Q3Header *header = details->horizontalHeader();
+     Q3Header *header = dynamic_cast<Q3Header*>(details->horizontalHeader());
 #endif /* QT_VERSION */
      connect(header,SIGNAL(clicked(int)),this,SLOT(SetSortIndicator(int)));
      // details->setSorting (true);
@@ -802,7 +801,7 @@ void TQtIconBrowserImp::CreateDetailView()
      details->setText ( 0,0,QString("Dummy"));
 
      header->setLabel(0,QString("No detail view yet!"));
-     header = details->verticalHeader();
+     header = dynamic_cast<Q3Header*>(details->verticalHeader());
      header->setLabel(0,QString("0"));
      // detect the table object:
 #if QT_VERSION < 0x40000
@@ -904,8 +903,8 @@ void TQtIconBrowserImp::SetViewMode(int mode){
   fCurentViewMode = TQtGui::TQtIconViewOptions(mode);
    if (mode == TQtGui::kViewDetails) {
       CreateDetailView();
-      if (fDetailWidgetID != -1) 
-         fBrowserImpID->raiseWidget ( fDetailWidgetID );
+      if (fDetailWidgetID != -1)
+          raiseWidget(fBrowserImpID, fDetailWidgetID);
    } else {
 #if QT_VERSION < 0x40000
       QIconView::Arrangement arrangement   = QIconView::LeftToRight;
@@ -914,7 +913,7 @@ void TQtIconBrowserImp::SetViewMode(int mode){
 #else /* QT_VERSION */
       Q3IconView::Arrangement arrangement   = Q3IconView::LeftToRight;
       Q3IconView::ItemTextPos labelPosition = Q3IconView::Bottom;
-      QIcon::Size   size = QIcon::Large;
+      Q3Icon::Size   size = Q3Icon::Large;
 #endif /* QT_VERSION */
       int xGridSize = 68; // for the large icon
       int yGridSize = 36; // for the large icon
@@ -938,7 +937,7 @@ void TQtIconBrowserImp::SetViewMode(int mode){
 #else /* QT_VERSION */
             arrangement   = Q3IconView::TopToBottom;
             labelPosition = Q3IconView::Right;
-            size          = QIcon::Small;
+            size          = Q3Icon::Small;
 #endif /* QT_VERSION */
             xGridSize  = int(2.5*xGridSize);
             yGridSize  = 16;
@@ -952,7 +951,7 @@ void TQtIconBrowserImp::SetViewMode(int mode){
 #else /* QT_VERSION */
             arrangement   = Q3IconView::LeftToRight;
             labelPosition = Q3IconView::Bottom;
-            size = QIcon::Large;
+            size = Q3Icon::Large;
 #endif /* QT_VERSION */
             // xGridSize = 68;
             // yGridSize = 36;
@@ -986,7 +985,7 @@ void TQtIconBrowserImp::SetViewMode(int mode){
             ((TQtIconBrowserItem*)item)->SetPixmap(fIconSize);
       } 
       EnableUpdates (kTRUE);
-      fBrowserImpID->raiseWidget (fIconWidgetId);
+      raiseWidget(fBrowserImpID, fIconWidgetId);
    }
 }
 //______________________________________________________________________________
@@ -1030,7 +1029,7 @@ Int_t TQtIconBrowserImp::InitWindow(Bool_t show)
    fBrowserImpID = new Q3WidgetStack(0,"RootIconBrowser",Qt::WDestructiveClose);
 #endif /* QT_VERSION */
 //   fBrowserImpID = new QIconView(0,"RootBrowser",Qt::WDestructiveClose);
-   fBrowserImpID->setCaption(fTitle);
+   fBrowserImpID->setWindowTitle(fTitle);
    if (fX*fY) fBrowserImpID->setGeometry(fX,fY,fWidth,fHeight);
    else fBrowserImpID->resize(fWidth,fHeight);
 
@@ -1046,7 +1045,7 @@ Int_t TQtIconBrowserImp::InitWindow(Bool_t show)
 #else /* QT_VERSION */
    iconView->setResizeMode(Q3IconView::Adjust);
 #endif /* QT_VERSION */
-   iconView->setWordWrapIconText(FALSE);
+   iconView->setWordWrapIconText(false);
    SetViewMode(TQtGui::kViewSmallIcons);
 
 #if QT_VERSION < 0x40000

@@ -1,13 +1,19 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtPatternSelectButton.h 3594 2013-02-19 03:50:53Z fineroot $
 // Author: Bertrand Bellenot + Fons Rademakers   22/08/02
 
 /*************************************************************************
- * Copyright (C) 1995-2002, Rene Brun and Fons Rademakers.               *
- * All rights reserved.                                                  *
- *                                                                       *
- * For the licensing terms see $ROOTSYS/LICENSE.                         *
- * For the list of contributors see $ROOTSYS/README/CREDITS.             *
- *************************************************************************/
+* Copyright (C) 1995-2002, Rene Brun and Fons Rademakers.               *
+* All rights reserved.                                                  *
+*                                                                       *
+* For the licensing terms see $ROOTSYS/LICENSE.                         *
+* For the list of contributors see $ROOTSYS/README/CREDITS.             *
+*************************************************************************/
 
 #ifndef ROOT_TQtPatternSelectButton
 #define ROOT_TQtPatternSelectButton
@@ -51,6 +57,8 @@
 #include <QColor>
 #include <QBrush>
 
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
+
 
 class QToolButton;
 class QMouseEvent;
@@ -65,55 +73,55 @@ class TEmitRootSignal;
 //class TQtPatternFrame : public QPushButton {
 //class TQtPatternFrame : public QToolButton {
 class TQtPatternFrame : public QToolButton {
-Q_OBJECT
+    Q_OBJECT
 
 protected:
-   QColor          fPixel;
-   Int_t           fActive;
-   TQtBrush        fBrush;
-   QString         fBrushTipLabel;
-   QWidget        *fPanel;
-   static QPalette *fgPalette;
-   
+    QColor          fPixel;
+    Int_t           fActive;
+    TQtBrush        fBrush;
+    QString         fBrushTipLabel;
+    QWidget        *fPanel;
+    static QPalette *fgPalette;
+
 protected:
-   virtual void SetIcon();
-   virtual void mouseReleaseEvent(QMouseEvent *event);
-   virtual void paintEvent(QPaintEvent *e);
-   static QPalette &palette();
+    virtual void SetIcon();
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void paintEvent(QPaintEvent *e);
+    static QPalette &palette();
 
 public:
-   TQtPatternFrame(QWidget *p, TQtBrush &c, Int_t n=-1);
-   TQtPatternFrame(QWidget *p, Style_t pattern, Int_t n);
-   virtual ~TQtPatternFrame() { }
-   QSize   sizeHint () const ;
+    TQtPatternFrame(QWidget *p, TQtBrush &c, Int_t n=-1);
+    TQtPatternFrame(QWidget *p, Style_t pattern, Int_t n);
+    virtual ~TQtPatternFrame() { }
+    QSize   sizeHint () const ;
    void    SetActive(Bool_t in)         { fActive = in;       }
-   const TQtBrush &GetBrush() const { return fBrush; }
+    const TQtBrush &GetBrush() const { return fBrush; }
 
-public slots:
-   void    SetBrush(TQtBrush &newBrush);
-   void    SetBrushAlpha();
-protected slots:
-   virtual void languageChange();
+    public slots:
+    void    SetBrush(TQtBrush &newBrush);
+    void    SetBrushAlpha();
+    protected slots:
+    virtual void languageChange();
 
-   // ClassDef(TQtPatternFrame,0)  // Frame for color cell
+    // ClassDef(TQtPatternFrame,0)  // Frame for color cell
 };
 
 //----------------------------------------------------------------------
 //                 TQtPatternPopup
 //----------------------------------------------------------------------
 class TQtPatternPopup : public QDialog  {
-Q_OBJECT
+    Q_OBJECT
 protected:
-   Int_t            fActive;
-   Int_t            fLaunchDialog;
-   TQtBrush           fCurrentBrush;
-   static TQtPatternPopup *fgBrushPopup;//  Pointer to the singletons
+    Int_t            fActive;
+    Int_t            fLaunchDialog;
+    TQtBrush           fCurrentBrush;
+    static TQtPatternPopup *fgBrushPopup;//  Pointer to the singletons
 
 protected:
-   TQtPatternPopup( QWidget *p, TQtBrush &color,const char *name=0, bool modal=FALSE, Qt::WindowFlags f=Qt::WStyle_Customize | Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
+   TQtPatternPopup( QWidget *p, TQtBrush &color,const char *name=0, bool modal=false, Qt::WindowFlags f= Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
 
 public:
-   static TQtPatternPopup *Create(QWidget *p, TQtBrush &pattern,const char *name=0, bool modal=FALSE, Qt::WindowFlags f=Qt::WStyle_Customize | Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);            
+   static TQtPatternPopup *Create(QWidget *p, TQtBrush &pattern,const char *name=0, bool modal=false, Qt::WindowFlags f= Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);            
    virtual ~TQtPatternPopup();
 
    const TQtBrush &Brush() const { return fCurrentBrush;}
@@ -152,7 +160,7 @@ protected:
 public:
    TQtPatternSelectButton(QWidget *p, UInt_t style, Int_t id=-1,TEmitRootSignal *emitter=0);
    TQtPatternSelectButton(QWidget *p, TQtBrush &pattern, Int_t id=-1,TEmitRootSignal *emitter=0);
-   TQtPatternSelectButton(QWidget *p, const char *name, Qt::WindowFlags f = Qt::WStyle_Customize | Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
+   TQtPatternSelectButton(QWidget *p, const char *name, Qt::WindowFlags f =  Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
    TQtPatternSelectButton(QWidget *p);
          
    virtual ~TQtPatternSelectButton();

@@ -422,7 +422,7 @@ void TQtCanvasImp::MakeMenu()
    viewWithMenu->addAction(fActions[kViewX3D]);
    
 #  if ROOT_VERSION_CODE >= ROOT_VERSION(4,01,00)
-      fActions[kViewX3D]    ->setEnabled(FALSE);
+      fActions[kViewX3D]    ->setEnabled(false);
 #  endif
    
    viewWithMenu->addAction(fActions[kViewOpenGL]);
@@ -492,7 +492,7 @@ void TQtCanvasImp::FitCanvas(){}
 void TQtCanvasImp::Lock()
 {
    // Lock updating canvas.
-  if (!fCanvasImpID) fCanvasImpID->setUpdatesEnabled(FALSE);
+  if (!fCanvasImpID) fCanvasImpID->setUpdatesEnabled(false);
 }
 
 //______________________________________________________________________________
@@ -672,7 +672,7 @@ void TQtCanvasImp::CreateStatusBar(Int_t *parts, Int_t nparts)
 {
   QStatusBar *statusBar = fCanvasImpID->statusBar();
 #ifdef WIN32
-  statusBar->setSizeGripEnabled(FALSE);
+  statusBar->setSizeGripEnabled(false);
 #endif
   // Any number of widgets may be controlled by just
   // one splitter

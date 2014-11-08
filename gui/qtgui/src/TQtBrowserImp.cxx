@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtBrowserImp.cxx 3601 2013-02-24 04:20:15Z fineroot $
@@ -29,15 +35,11 @@
 
 #include "TQtObjectListItem.h"
 
-#include "q3popupmenu.h"
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QLabel>
 #include <QImage>
 #include <QApplication>
-#include "q3ptrstack.h"
-#include "q3ptrvector.h"
-#include "q3listview.h"
 #include <QPixmap>
 #include <QFileInfo>
 
@@ -315,7 +317,7 @@ void TQtBrowserImp::Add(TObject *obj, const char *caption, Int_t check)
    }
 }
 //______________________________________________________________________________
-void  TQtBrowserImp::AddCheckBox(TObject */*obj*/, Bool_t /*check*/)
+void  TQtBrowserImp::AddCheckBox(TObject* /*obj*/, Bool_t /*check*/)
 {  
    // Add a checkbox in the TGListTreeItem corresponding to obj
    // and a checkmark on TGLVEntry if check = kTRUE.
@@ -419,7 +421,7 @@ void TQtBrowserImp::ClickedItem(Q3ListViewItem *item)
    if (fRootItem && ( item == (Q3ListViewItem*) fRootItem ) && !fRootItem->isOpen() ) {
 #endif /* QT_VERSION */
        fRootItem->setOpen (true);
-       fRootItem->setEnabled(FALSE);
+       fRootItem->setEnabled(false);
    }
 
    // if (item->depth() == 0) return;
@@ -464,8 +466,8 @@ void TQtBrowserImp::MakeParentActive(TObject *obj) {
       //   ,gSystem->WorkingDirectory());
       QString currentPath(((TNamed *)obj)->GetTitle());
       if (currentPath == "") currentPath = "/";
-      QFileInfo path(currentPath); ((TNamed *)obj)->SetTitle((const char *)currentPath);
-      fActiveItem->setText(0, path.absFilePath () ); 
+      QFileInfo path(currentPath); ((TNamed *)obj)->SetTitle(currentPath.toLatin1());
+      fActiveItem->setText(0, path.absoluteFilePath() ); 
       // ((TNamed *)obj)->SetTitle((const char *)path.dirPath(true));
       //fprintf(stderr," 2. - %s Activate the top directory; new = \"%s\":\"%s\"\n",__FUNCTION__,((TNamed *)obj)->GetTitle()
       //   ,gSystem->WorkingDirectory());
@@ -526,7 +528,7 @@ void TQtBrowserImp::ExpandedItem(Q3ListViewItem *item)
             fRealFolder = kFALSE;
             justOpened->SetExpanded(kTRUE);
          } else {
-            justOpened->setExpandable(FALSE);
+            justOpened->setExpandable(false);
          }
       }
       // if (justOpened) emit FolderExpanded(justOpened->Object());
@@ -654,7 +656,7 @@ void TQtBrowserImp::Refresh(Bool_t /*flag*/) { }
 void TQtBrowserImp::Show() { 
    if (fBrowserImpID) {
       // fRootItem->setOpen (true);
-      // fRootItem->setEnabled(FALSE);
+      // fRootItem->setEnabled(false);
       fBrowserImpID->show();
    }
 }
@@ -670,7 +672,7 @@ Int_t TQtBrowserImp::InitWindow(Bool_t show)
 #else /* QT_VERSION */
    fBrowserImpID = new Q3ListView(0,"RootBrowser",Qt::WDestructiveClose);
 #endif /* QT_VERSION */
-   fBrowserImpID->setCaption(fTitle);
+   fBrowserImpID->setWindowTitle(fTitle);
 
    if (fX*fY) fBrowserImpID->setGeometry(fX,fY,fWidth,fHeight);
    else fBrowserImpID->resize(fWidth,fHeight);
@@ -731,8 +733,8 @@ Int_t TQtBrowserImp::InitWindow(Bool_t show)
    fRootItem = new TQtBrowserItem(0,fBrowserImpID,"ROOT");
    Add(gROOT,"ROOT");
    fRootItem->setEnabled(true);
-   fRootItem->setOpen (FALSE);
-   // fRootItem->setEnabled(FALSE);
+   fRootItem->setOpen(false);
+   // fRootItem->setEnabled(false);
    // fRootItem->setOpen (true);
    
    if (show) Show();

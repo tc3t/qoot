@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtInspectImp.cxx 3601 2013-02-24 04:20:15Z fineroot $
@@ -141,7 +147,7 @@ void TQtInspectWidget::MakeTitle()
                                            fObject->GetName(),
                                            fObject->GetUniqueID(),
                                            fObject->GetTitle(),fObject);
-    setCaption(buffer);
+    setWindowTitle(buffer);
 }
 //______________________________________________________________________________
 void TQtInspectWidget::AddValues()
@@ -221,7 +227,7 @@ void TQtInspectWidget::AddValues()
            line[ktitle] = (char *)member->GetTitle();
        }
        if (tlink) {
-         tlink->SetName((char *)member->GetTypeName());
+         tlink->SetName(member->GetTypeName());
          tlink->SetBit(kCanDelete);
        }
        

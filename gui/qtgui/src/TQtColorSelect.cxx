@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtColorSelect.cxx 3531 2012-11-16 20:10:58Z fineroot $
 // Author: Valeri Fine  21/05/2004
 /****************************************************************************
@@ -31,6 +37,7 @@
 #include "TQtEvent.h"
 #include "TQtApplication.h"
 #include <QApplication>
+#include <QColorMap>
 
 ClassImp(TQtColorSelect)
 //______________________________________________________________________________
@@ -64,7 +71,15 @@ void TQtColorSelect::ColorEmit(Pixel_t pixel)
  } //*SIGNAL*
 //______________________________________________________________________________
 Pixel_t TQtColorSelect::GetColor() const      
-{ return  (fColorSelector) ? fColorSelector->GetColor().pixel() : 0; }
+{ 
+    if (fColorSelector)
+    {
+        QColormap cmap = QColormap::instance();
+        return cmap.pixel(fColorSelector->GetColor());
+    }
+    else
+        return 0;
+}
 //______________________________________________________________________________
 void    TQtColorSelect::SetColor(Color_t color)
 {if (fColorSelector) fColorSelector->SetColor(gQt->ColorIndex(gQt->UpdateColor(color))); }
@@ -81,7 +96,7 @@ void TQtColorSelect::SavePrimitive(std::ostream & out, Option_t *)
 
    char quote = '"';
    //   ULong_t color = GetColor();
-   const char *colorname = fColorSelector->GetColor().name();
+   const std::string colorname = fColorSelector->GetColor().name().toLatin1();
    //const char *colorname = TColor::PixelAsHexString(color);
    // gClient->GetColorByName(colorname, color);
 

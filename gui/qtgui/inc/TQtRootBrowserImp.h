@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtRootBrowserImp.h 3066 2009-03-22 22:34:06Z fine $
@@ -27,8 +33,7 @@
 #include <qstring.h>
 #include <qobject.h>
 
-#  include <q3ptrvector.h>
-#  include <q3intdict.h>
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
 // #  include <QActionGroup>
 
 // class TQtBrowserWidget;
@@ -86,7 +91,7 @@ public:
    virtual void  Show();
 
    // TObject overloaded methods:
-   const char* GetTitle() const;
+   const QString& GetTitle() const;
    QWidget *GetBrowserID();
    // This class own data-members:
 protected:
@@ -131,6 +136,6 @@ protected slots:
   void ResetAction(int mode) ;
 
 };
-inline  const char* TQtRootBrowserImp::GetTitle() const {return fTitle;}
+inline  const QString& TQtRootBrowserImp::GetTitle() const {return fTitle;}
 
 #endif

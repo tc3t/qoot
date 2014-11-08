@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtPatternSelect.h 3594 2013-02-19 03:50:53Z fineroot $
 // Author: Valeri Fine  21/05/2004
 
@@ -90,9 +96,7 @@ signals:
    void PatternSelected(Style_t);
       // 
 #ifndef Q_MOC_RUN
-//MOC_SKIP_BEGIN
    ClassDef(TQtPatternSelect,0)  // Color selection checkbutton
-//MOC_SKIP_END
 #endif
 };
 

@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtLockWidget.h 3594 2013-02-19 03:50:53Z fineroot $
 // Author: Valeri Fine 07/07/2006
 
@@ -18,7 +24,7 @@ class TQtLockWidget {
      bool                 fWasBlocked;
   public:
      TQtLockWidget(QWidget *w) : fWidget(w)
-        , fWasEnabled(FALSE), fWasBlocked(FALSE)
+        , fWasEnabled(false), fWasBlocked(false)
          {
             if (fWidget) {
                if (( fWasEnabled = w->isEnabled()) )

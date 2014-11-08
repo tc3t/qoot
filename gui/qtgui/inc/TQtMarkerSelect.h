@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 #ifndef ROOT_TQtMarkerSelect
 #define ROOT_TQtMarkerSelect
 
@@ -62,9 +68,7 @@ signals :
    void StyleSelected ( Style_t markerStyle );
 #endif // #ifndef __CINT__
 #ifndef Q_MOC_RUN
-//MOC_SKIP_BEGIN
    ClassDef ( TQtMarkerSelect, 0 ) // style selection checkbutton
-//MOC_SKIP_END
 #endif
 }; // class TQtMarkerSelectButton 
 

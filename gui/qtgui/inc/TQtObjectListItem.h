@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtObjectListItem.h 1948 2006-04-26 16:41:18Z fine $
@@ -24,19 +30,19 @@
 #include "TClass.h"
 
 #include <qstring.h>
-#if QT_VERSION < 0x40000
-#include <qlistview.h>
-#else /* QT_VERSION */
-#include <q3listview.h>
-//Added by qt3to4:
-#include <QPixmap>
-#endif /* QT_VERSION */
 
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
+#include <QPixmap>
+
+/*
 #if (QT_VERSION > 0x0301000)
 #  define _QCHECKLISTDEFAULT_ _QCHECKLISTDEFAULT_
 #else
 #  define _QCHECKLISTDEFAULT_ Controller
 #endif
+*/
+
+const int _QCHECKLISTDEFAULT_ = 0; // TODO: check this
 
 #if 1
 
@@ -169,6 +175,8 @@ class TQtObjectListItem : public TQtObjectListItemInterface, public Q3CheckListI
 #endif /* QT_VERSION */
 
 public:
+    typedef int Type; // TODO: check this.
+
 #if QT_VERSION < 0x40000
    TQtObjectListItem(TObject *obj, QCheckListItem *parent, const QString &text,
 #else /* QT_VERSION */
@@ -186,7 +194,7 @@ public:
 #else /* QT_VERSION */
    TQtObjectListItem( TObject *obj, Q3CheckListItem *parent, Q3ListViewItem *after,
 #endif /* QT_VERSION */
-         const QString &text, Type itemType= _QCHECKLISTDEFAULT_ )
+         const QString &text, Type itemType/*= _QCHECKLISTDEFAULT_*/ )
 #if QT_VERSION < 0x40000
       :TQtObjectListItemInterface(this,obj,kTRUE),QCheckListItem(parent,after,text,itemType){}
 #else /* QT_VERSION */

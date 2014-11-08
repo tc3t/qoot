@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtColorSelectButton.h 3606 2013-02-24 05:18:50Z fineroot $
 // Author: Bertrand Bellenot + Fons Rademakers   22/08/02
 
@@ -47,6 +53,8 @@
 #include <QDialog> 
 #include <QColor>
 #include <QPushButton> 
+
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
 
 
 
@@ -124,10 +132,10 @@ protected:
    static TQtColorPopup *fgColorPopup;//  Pointer to the singletons
 
 protected:
-   TQtColorPopup( QWidget *p, QColor &color,const char *name=0, bool modal=FALSE, Qt::WindowFlags f=Qt::WStyle_Customize | Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
+   TQtColorPopup( QWidget *p, QColor &color,const char *name=0, bool modal=false, Qt::WindowFlags f= Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
 
 public:
-   static TQtColorPopup *Create(QWidget *p, QColor &color,const char *name=0, bool modal=FALSE, Qt::WindowFlags f=Qt::WStyle_Customize | Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);            
+   static TQtColorPopup *Create(QWidget *p, QColor &color,const char *name=0, bool modal=false, Qt::WindowFlags f= Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);            
    virtual ~TQtColorPopup();
 
    const QColor &Color() const { return fCurrentColor;}
@@ -164,7 +172,7 @@ protected:
 public:
    TQtColorSelectButton(QWidget *p, UInt_t pixel, Int_t id=-1,TColorEmit *emitter=0);
    TQtColorSelectButton(QWidget *p, QColor &color, Int_t id=-1,TColorEmit *emitter=0);
-   TQtColorSelectButton(QWidget *p, const char *name, Qt::WindowFlags f = Qt::WStyle_Customize | Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
+   TQtColorSelectButton(QWidget *p, const char *name, Qt::WindowFlags f =  Qt::WStyle_NoBorder|Qt::WStyle_StaysOnTop);
    TQtColorSelectButton(QWidget *p);
    virtual ~TQtColorSelectButton();
 

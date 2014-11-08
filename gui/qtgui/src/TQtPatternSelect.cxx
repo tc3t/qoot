@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtPatternSelect.cxx 3601 2013-02-24 04:20:15Z fineroot $
 // Author: Valeri Fine  21/05/2004
 /****************************************************************************
@@ -129,7 +135,7 @@ void TQtPatternSelect::SavePrimitive(std::ostream & /*out*/ , Option_t *)
 bool TQtPatternSelect::event(QEvent *e)
 {
   if (e) {
-    if (e->type() < QEvent::User) return FALSE;
+    if (e->type() < QEvent::User) return false;
     ((TQtEvent *)e)->ExecuteCB();
   }
   return true;

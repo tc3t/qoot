@@ -56,7 +56,11 @@ class TQtRootAction : public QAction {
     bool isOn() const { return isChecked(); }
     void setOn(bool b) { setChecked(b); }
 
+    void setToggleAction(bool b) { setCheckable(b); }
+    bool isToggleAction() const { isCheckable(); }
+
     QString menuText() { return text(); }
+
   private:
      int  fId;
 };

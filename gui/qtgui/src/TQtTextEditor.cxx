@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Id: TQtTextEditor.cxx 3537 2010-05-24 17:20:01Z fine@BNL.GOV $
 // Author: Bertrand Bellenot   20/06/06
 // Author:Valeri Fine          20/05/10 (Qt-based implemenation)
@@ -346,7 +352,7 @@ void TQtTextEditor::MakeActions() {
       // skip the separators 
       TQtRootAction *action = new TQtRootAction(this,gMenu_Data[i]);
       fActions.insert(action->Id(),action);
-      connect( action, SIGNAL( activated() ) , this, SLOT(ProcessMessage()) );
+      connect( action, SIGNAL( triggered() ) , this, SLOT(ProcessMessage()) );
       i++;
    }
 }
@@ -373,13 +379,13 @@ void TQtTextEditor::Build()
 
    fMenuFile->clear();
    fMenuFile->addAction(fActions[kM_FILE_NEW]);         fToolFile->addAction(fActions[kM_FILE_NEW]);
-                                       fMenuFile->insertSeparator();
+                                       fMenuFile->addSeparator();
    fMenuFile->addAction(fActions[ kM_FILE_OPEN]);       fToolFile->addAction(fActions[ kM_FILE_OPEN]);
    fMenuFile->addAction(fActions[ kM_FILE_SAVE]);       fToolFile->addAction(fActions[ kM_FILE_SAVE]);
    fMenuFile->addAction(fActions[ kM_FILE_SAVEAS]);     fToolFile->addAction(fActions[ kM_FILE_SAVEAS]);
-                                       fMenuFile->insertSeparator();
+                                       fMenuFile->addSeparator();
    fMenuFile->addAction(fActions[ kM_FILE_PRINT]);      fToolFile->addAction(fActions[ kM_FILE_PRINT]);
-                                       fMenuFile->insertSeparator();
+                                       fMenuFile->addSeparator();
    fMenuFile->addAction(fActions[ kM_FILE_EXIT]);    
    fActions[kM_FILE_EXIT]->setMenuRole(QAction::QuitRole);
 //  Edit menu:
@@ -389,9 +395,9 @@ void TQtTextEditor::Build()
    fMenuEdit->addAction(fActions[kM_EDIT_COPY]);        fToolEdit->addAction(fActions[kM_EDIT_COPY]);
    fMenuEdit->addAction(fActions[kM_EDIT_PASTE]);       fToolEdit->addAction(fActions[kM_EDIT_PASTE]);
    fMenuEdit->addAction(fActions[kM_EDIT_DELETE]);      fToolEdit->addAction(fActions[kM_EDIT_DELETE]);
-                                       fMenuEdit->insertSeparator();
+                                       fMenuEdit->addSeparator();
    fMenuEdit->addAction(fActions[kM_EDIT_SELECTALL]); //  fToolEdit->addAction(fActions[kM_EDIT_SELECTALL]);
-                                       fMenuEdit->insertSeparator();
+                                       fMenuEdit->addSeparator();
    fMenuEdit->addAction(fActions[kM_EDIT_SELFONT]);   //  fToolEdit->addAction(fActions[kM_EDIT_SELFONT]);
    
 //  Tool menu:
@@ -401,24 +407,24 @@ void TQtTextEditor::Build()
    fMenuTools->addAction(fActions[kM_TOOLS_EXECUTE]);   fToolTools->addAction(fActions[kM_TOOLS_EXECUTE]);
    fMenuTools->addAction(fActions[kM_TOOLS_INTERRUPT]); fToolTools->addAction(fActions[kM_TOOLS_INTERRUPT]);
 
-   fActions[kM_EDIT_CUT]    ->setEnabled(FALSE);
-   fActions[kM_EDIT_COPY]   ->setEnabled(FALSE);
-//   fActions[kM_EDIT_DELETE] ->setEnabled(FALSE);
-   fActions[kM_EDIT_PASTE]  ->setEnabled(FALSE);
+   fActions[kM_EDIT_CUT]    ->setEnabled(false);
+   fActions[kM_EDIT_COPY]   ->setEnabled(false);
+//   fActions[kM_EDIT_DELETE] ->setEnabled(false);
+   fActions[kM_EDIT_PASTE]  ->setEnabled(false);
    
 //  Search menu:
 
    fMenuSearch->clear();
    fMenuSearch->addAction(fActions[kM_SEARCH_FIND]);    fToolSearch->addAction(fActions[kM_SEARCH_FIND]);
    fMenuSearch->addAction(fActions[kM_SEARCH_FINDNEXT]);fToolSearch->addAction(fActions[kM_SEARCH_FINDNEXT]);
-   fMenuSearch->insertSeparator();
+   fMenuSearch->addSeparator();
    fMenuSearch->addAction( fActions[kM_SEARCH_GOTO] );  fToolSearch->addAction( fActions[kM_SEARCH_GOTO] );
    
 //  Help menu
 
    fMenuHelp->clear();
    fMenuHelp->addAction(fActions[ kM_HELP_CONTENTS]);    fToolHelp->addAction(fActions[kM_HELP_CONTENTS]);
-   fMenuHelp->insertSeparator();
+   fMenuHelp->addSeparator();
    fMenuHelp->addAction(fActions[  kM_HELP_ABOUT]);   // fTollHelp->addAction(fActions[kM_HELP_ABOUT]);
                                                          fToolHelp->addAction(fActions[ kM_FILE_EXIT]);
    //---- toolbar
@@ -484,7 +490,7 @@ void TQtTextEditor::CreateStatusBar(int nparts)
   int i=0;
   for (i=0;i<nparts;i++) {
     QLabel *l = new QLabel(statusBar);
-    statusBar->addWidget(l,1,true);
+    statusBar->addPermanentWidget(l, 1);
     fStatusBar.insert(i,l);
   }
 }
@@ -493,12 +499,12 @@ void TQtTextEditor::CreateStatusBar(int *parts, int nparts)
 {
   QStatusBar *statusBar = this->statusBar();
 #ifdef WIN32
-  statusBar->setSizeGripEnabled(FALSE);
+  statusBar->setSizeGripEnabled(false);
 #endif
   // Any number of widgets may be controlled by just
   // one splitter
   QSplitter *split = new QSplitter(statusBar);
-  statusBar->addWidget(split,1,FALSE);
+  statusBar->addWidget(split, 1);
 
   int iField=0;
   for (iField=0; iField<nparts; iField++) {

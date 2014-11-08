@@ -1,7 +1,13 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Id: TQtCommandPlugin.cxx 3523 2010-05-15 00:04:15Z fine@BNL.GOV $
 // Author: Bertrand Bellenot   26/09/2007
 #include "TQtCommandPlugin.h"
-#include "ui_TQtRootCommand.h"
+//#include "ui_TQtRootCommand.h"
 
 #include <QLineEdit>
 #include <QPalette> 
@@ -11,6 +17,7 @@
 #include <QTextStream>
 #include <QString>
 #include <QTimer>
+#include <QApplication>
 
 #include "TQtWidget.h"
 
@@ -32,16 +39,16 @@
 
 //______________________________________________________________________________
 TQtCommandPlugin::TQtCommandPlugin(QWidget * parent, Qt::WindowFlags f) :
-      QFrame(parent,f),fUi(new Ui_TQtRootCommand())
+      QFrame(parent,f)/*,fUi(new Ui_TQtRootCommand())*/
      ,fTempFile( QString("%1/command.%2.log").arg(QDir::tempPath()).arg(QCoreApplication::applicationPid ()),this )
      ,fTimer(this)
 {
    // TQtCommandPlugin Constructor.
-   fUi->setupUi(this);
+   //fUi->setupUi(this);
    InsertFromHistory();
    
-   connect(fUi->fComboCmd->lineEdit(),SIGNAL(returnPressed ()), this, SLOT( HandleCommand()) );
-   connect(fUi->fComboCmd->lineEdit(),SIGNAL(returnPressed ()), fUi->fComboCmd->lineEdit(), SLOT( clear()) );
+   //connect(fUi->fComboCmd->lineEdit(),SIGNAL(returnPressed ()), this, SLOT( HandleCommand()) );
+   //connect(fUi->fComboCmd->lineEdit(),SIGNAL(returnPressed ()), fUi->fComboCmd->lineEdit(), SLOT( clear()) );
 
    fTimer.setInterval(1000);
    connect(&fTimer,SIGNAL(timeout ()), this, SLOT(CheckRemote()));
@@ -54,7 +61,7 @@ void TQtCommandPlugin::InsertFromHistory(int index)
    QFile lunin(defhist);
    if (lunin.open(QIODevice::ReadOnly | QIODevice::Text)) {
      QTextStream in(&lunin);
-     while (!in.atEnd()) fUi->fComboCmd->insertItem(index,in.readLine());
+     //while (!in.atEnd()) fUi->fComboCmd->insertItem(index,in.readLine());
    }
 }
 
@@ -63,7 +70,7 @@ TQtCommandPlugin::~TQtCommandPlugin()
 {
    // Destructor.
    fTempFile.remove();
-   delete fUi; fUi = 0;
+   //delete fUi; fUi = 0;
 }
 
 //______________________________________________________________________________
@@ -74,18 +81,18 @@ void TQtCommandPlugin::CheckRemote()
    if (app->InheritsFrom("TRint"))  {
       TString sPrompt = ((TRint*)app)->GetPrompt();
       Int_t end = sPrompt.Index(":root [", 0);
-      QPalette textColor =  fUi->fLabel->palette ();
-      fUi->fLabel->setForegroundRole(QPalette::WindowText);
+      QPalette textColor/* =  fUi->fLabel->palette ()*/;
+      //fUi->fLabel->setForegroundRole(QPalette::WindowText);
       if (end > 0 && end != kNPOS) {
          // remote session
          sPrompt.Remove(end);
          textColor.setColor(QPalette::WindowText,QColor(Qt::red));
-         fUi->fLabel->setPalette(textColor);
-         fUi->fLabel->setText(QString("Command (%1):").arg(sPrompt.Data()));
+         //fUi->fLabel->setPalette(textColor);
+         //fUi->fLabel->setText(QString("Command (%1):").arg(sPrompt.Data()));
       } else {
          // local session
          textColor.setColor(QPalette::WindowText,QColor(Qt::black));
-         fUi->fLabel->setText("Command (local):");
+         //fUi->fLabel->setText("Command (local):");
       }
    }
 }
@@ -95,7 +102,7 @@ void TQtCommandPlugin::HandleCommand()
 {
    // Handle command line from the "command" combo box.
 
-   QString string = fUi->fComboCmd->lineEdit()->text(); 
+   QString string/* = fUi->fComboCmd->lineEdit()->text()*/; 
    if (!string.isEmpty() ) {
       if (!gApplication) TQtWidget::InitRint();     
       QString sPrompt = "root []";
@@ -114,7 +121,7 @@ void TQtCommandPlugin::HandleCommand()
          Gl_histadd((char *)string.toLatin1().data());
       gSystem->RedirectOutput(0);      
       if (fTempFile.open(QIODevice::ReadOnly)) {
-            fUi->fStatus->appendPlainText(fTempFile.readAll());
+            //fUi->fStatus->appendPlainText(fTempFile.readAll());
             fTempFile.close();
       }
       QApplication::restoreOverrideCursor();

@@ -64,7 +64,7 @@ bool TQtGui::AddPicture(const QPixmap &pic, const char *pictureName, bool checkC
    return res;
 }
 //________________________________________________________________________
-const QPixmap &TQtGui::GetPicture(QString &pictureName) 
+const QPixmap &TQtGui::GetPicture(const QString &pictureName) 
 {
    std::string pName = pictureName.toStdString();
    return GetPicture(pName.c_str());

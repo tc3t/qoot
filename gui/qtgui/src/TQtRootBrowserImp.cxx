@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtRootBrowserImp.cxx 3594 2013-02-19 03:50:53Z fineroot $
@@ -36,28 +42,12 @@
 #include "TQtBrowserImp.h"
 #include "TQtIconBrowserImp.h"
 
-#if QT_VERSION < 0x40000
-#  include "qpopupmenu.h"
-#  include "qiconview.h"
-#  include "qhbox.h"
-#  include "qmainwindow.h"
-#  include "qfiledialog.h"
-#  include "qtoolbar.h"
-#  include "qdragobject.h" 
-#else /* QT_VERSION */
-#  include <QMenu>
-#  include <q3iconview.h>
-#  include <q3hbox.h>
-#  include <QMainWindow>
-#  include <q3filedialog.h>
-#  include <QToolBar>
-#  include "q3dragobject.h" 
-#  include <QImageWriter>
-//Added by qt3to4:
-#  include <QActionGroup>
-#  include <QDropEvent>
-#  include <Q3ValueList>
-#endif /* QT_VERSION */
+#include <QMainWindow>
+#include <QFileInfo>
+#include <QToolBar>
+#include <QImageWriter>
+#include <QPrintDialog>
+#include <QDropEvent>
 
 #include "qlabel.h"
 #include "qapplication.h"
@@ -132,7 +122,7 @@ protected:
          QString fileName = QUriDrag::uriToLocalFile((const char*)text);
 #else /* QT_VERSION */
       if ( Q3TextDrag::decode(event, text) ) {
-         QString fileName = Q3UriDrag::uriToLocalFile((const char*)text);
+         QString fileName = Q3UriDrag::uriToLocalFile(text);
 #endif /* QT_VERSION */
          // remove errat "end-of-line" if any
          fileName.remove('\n'); fileName.remove('\r');
@@ -147,12 +137,12 @@ protected:
 #endif
          } else {
              // Check ROOT file
-            TFile *rootFile = TFile::Open( (const char *)file.absFilePath () );
+            TFile *rootFile = TFile::Open(file.absoluteFilePath().toLatin1() );
             if (rootFile->IsZombie()) delete rootFile;
          }
-         event->accept(true);
+         event->setAccepted(true);
       } else {
-         event->accept(false);
+         event->setAccepted(false);
       }
    }
 };
@@ -340,15 +330,16 @@ void TQtRootBrowserImp::Show() {
 //______________________________________________________________________________
 Int_t TQtRootBrowserImp::InitWindow()
 {
-  fBrowserImpID = new RootMainWindows(0,Qt::WDestructiveClose|Qt::WType_TopLevel);
-  fBrowserImpID->setName(Browser()->GetName());
+  fBrowserImpID = new RootMainWindows(0, Qt::WType_TopLevel);
+  fBrowserImpID->setAttribute(Qt::WDestructiveClose);
+  fBrowserImpID->setObjectName(Browser()->GetName());
   connect(fBrowserImpID,SIGNAL(destroyed()),this,SLOT(Disconnect()));
-  fBrowserImpID->setCaption(fTitle);
+  fBrowserImpID->setWindowTitle(fTitle);
 
 #if QT_VERSION < 0x40000
   QWidget *central = new QHBox(fBrowserImpID,"CentralRootBrowser");
 #else /* QT_VERSION */
-  QWidget *central = new Q3HBox(fBrowserImpID,"CentralRootBrowser");
+  QWidget *central = new Q3HBox(fBrowserImpID, "CentralRootBrowser");
 #endif /* QT_VERSION */
   fBrowserImpID->setCentralWidget (central);
 
@@ -378,17 +369,19 @@ Int_t TQtRootBrowserImp::InitWindow()
 #if QT_VERSION < 0x40000
   QValueList<int> sizes;
 #else /* QT_VERSION */
-  Q3ValueList<int> sizes;
+  QList<int> sizes;
 #endif /* QT_VERSION */
 
   sizes.append(  fWidth/3);
   sizes.append(2*fWidth/3);
 
   QWidget *treeWidget = (QWidget *)fTreeView->GetBrowserID();
-  treeWidget->reparent(split,Qt::WStyle_NoBorder,QPoint(0,0));
+  //treeWidget->reparent(split,Qt::WStyle_NoBorder,QPoint(0,0));
+  treeWidget->setParent(split, Qt::WStyle_NoBorder);
 
   QWidget *iconWidget = (QWidget *)fIconView->GetBrowserID();
-  iconWidget->reparent(split,Qt::WStyle_NoBorder,QPoint(0,0));
+  //iconWidget->reparent(split,Qt::WStyle_NoBorder,QPoint(0,0));
+  iconWidget->setParent(split, Qt::WStyle_NoBorder);
   split->setSizes(sizes);
 
   MakeActions();
@@ -405,7 +398,7 @@ void TQtRootBrowserImp::MakeActions() {
       // skip the separators 
       TQtRootAction *action = new TQtRootAction(fBrowserImpID,menu_data[i]);
       fActions.insert(action->Id(),action);
-      connect( action, SIGNAL( activated() ) , this, SLOT(ProcessMessage()) );
+      connect( action, SIGNAL( triggered() ) , this, SLOT(ProcessMessage()) );
    }
    // Create a group action
 #if QT_VERSION < 0x40000
@@ -558,7 +551,7 @@ void TQtRootBrowserImp::MakeToolBar()
     fViewActions           ->addTo(fToolBar); 
 
     // reset Signals/Slots
-    fActions[M_VIEW_TOOLBAR]->disconnect(SIGNAL(activated()));
+    fActions[M_VIEW_TOOLBAR]->disconnect(SIGNAL(triggered()));
     connect(fActions[M_VIEW_TOOLBAR],SIGNAL(toggled ( bool)), this,SLOT(ToolbarCB(bool)));
     fActions[M_VIEW_TOOLBAR]->setToggleAction (true); 
     fActions[M_VIEW_TOOLBAR]->setOn (true);
@@ -572,7 +565,7 @@ void TQtRootBrowserImp::MakeToolBar()
     fToolBar->addActions(fViewActions->actions()); 
 
     // reset Signals/Slots
-    fActions[M_VIEW_TOOLBAR]->disconnect(SIGNAL(activated()));
+    fActions[M_VIEW_TOOLBAR]->disconnect(SIGNAL(triggered()));
     connect(fActions[M_VIEW_TOOLBAR],SIGNAL(toggled ( bool)), this,SLOT(ToolbarCB(bool)));
     fActions[M_VIEW_TOOLBAR]->setCheckable(true); 
     fActions[M_VIEW_TOOLBAR]->setChecked (true);
@@ -582,7 +575,7 @@ void TQtRootBrowserImp::MakeToolBar()
 void TQtRootBrowserImp::MakeStatBar() 
 {
   fBrowserImpID->statusBar();
-  fActions[M_VIEW_STATBAR]->disconnect(SIGNAL(activated()));
+  fActions[M_VIEW_STATBAR]->disconnect(SIGNAL(triggered()));
   connect(fActions[M_VIEW_STATBAR],SIGNAL(toggled ( bool)), this,SLOT(StatusBarCB(bool)));
   fActions[M_VIEW_STATBAR]->setToggleAction (true); 
   fActions[M_VIEW_STATBAR]->setOn (true);
@@ -642,7 +635,7 @@ void TQtRootBrowserImp::SaveCB()
    if ( fSaveType.isEmpty() ||  fSaveFileName.isEmpty() )
       SaveAsCB(); 
    else
-      QPixmap::grabWidget(GetBrowserID()->topLevelWidget() ).save(fSaveFileName,fSaveType);
+      QPixmap::grabWidget(GetBrowserID()->topLevelWidget() ).save(fSaveFileName,fSaveType.toLatin1());
 }
 //______________________________________________________________________________
 void TQtRootBrowserImp::SaveAsCB()
@@ -667,7 +660,7 @@ void TQtRootBrowserImp::SaveAsCB()
 #else
     QString str =  *j; i++;
 #endif
-    filter += str.lower();
+    filter += str.toLower();
     filter +=");";
   }
   filter +=';';
@@ -686,8 +679,8 @@ void TQtRootBrowserImp::SaveAsCB()
   if (thatFile.isEmpty()) return;
 
   //  define the file extension
-  QString fileNameExtension = QFileInfo(thatFile).extension(FALSE);
-  QString saveType = fileNameExtension.upper();
+  QString fileNameExtension = QFileInfo(thatFile).suffix();
+  QString saveType = fileNameExtension.toUpper();
 
   if (selectedFilter.contains("*.*")) {
      if (!fileNameExtension.isEmpty() ) 
@@ -706,7 +699,7 @@ void TQtRootBrowserImp::SaveAsCB()
   fSaveType      = saveType;
   fSaveFileName  = thatFile;
 
-  QPixmap::grabWidget(GetBrowserID()->topLevelWidget() ).save(fSaveFileName,fSaveType);
+  QPixmap::grabWidget(GetBrowserID()->topLevelWidget() ).save(fSaveFileName,fSaveType.toLatin1());
 }
 //______________________________________________________________________________
 void TQtRootBrowserImp::StatusBarCB(bool show)
@@ -727,11 +720,13 @@ void TQtRootBrowserImp::ToolbarCB(bool show)
 //______________________________________________________________________________
 void TQtRootBrowserImp::PrintCB()
 { 
-  QPrinter p;
-  if (p.setup()) {
-    QPainter pnt(&p);
-    pnt.drawPixmap(0,0,QPixmap::grabWidget(GetBrowserID()->topLevelWidget() ));
-  }
+    QPrinter p;
+    QPrintDialog dialog(&p);
+    if (dialog.exec())
+    {
+        QPainter pnt(&p);
+        pnt.drawPixmap(0,0,QPixmap::grabWidget(GetBrowserID()->topLevelWidget() ));
+    }
 }
 
 //______________________________________________________________________________

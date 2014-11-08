@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtBrowserImp.h 3531 2012-11-16 20:10:58Z fineroot $
@@ -30,8 +36,7 @@
 #include <QtGlobal>
 #include <QString>
 
-#include <q3ptrvector.h>
-#include <q3listview.h>
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
 
 
 // class TQtBrowserWidget;
@@ -63,13 +68,7 @@ private:
   TQtBrowserItem   *fRootItem;
   Bool_t            fRealFolder;
 
-#if QT_VERSION < 0x40000
-  QPtrVector<TQtBrowserItem> fOpenFolderList;
-#else /* QT_VERSION */
-//MOC_SKIP_BEGIN
   Q3PtrVector<TQtBrowserItem> fOpenFolderList;
-//MOC_SKIP_END
-#endif /* QT_VERSION */
 
   TQtUpdateViewFlag fUpdate;
 
@@ -105,7 +104,7 @@ public:
    virtual void  Show();
 
    // TObject overloaded methods:
-   const char* GetTitle() const;
+   const QString& GetTitle() const;
    QPaintDevice *GetBrowserID(){ return fBrowserImpID; }
    // This class own data-members:
 protected:
@@ -127,36 +126,20 @@ public slots:
    void EnableUpdates(Bool_t updt=kTRUE);
 
 protected slots:
-#if QT_VERSION < 0x40000
-  void ClickedItem(QListViewItem *item);
-  void CollapsedItem(QListViewItem *item);
-  void ExpandedItem(QListViewItem *item);
-  void PopMenu(QListViewItem *item, const QPoint &pos, int id);
-  void SelectionChanged(QListViewItem *item);
-#else /* QT_VERSION */
-//MOC_SKIP_BEGIN
   void ClickedItem(Q3ListViewItem *item);
   void CollapsedItem(Q3ListViewItem *item);
   void ExpandedItem(Q3ListViewItem *item);
   void PopMenu(Q3ListViewItem *item, const QPoint &pos, int id);
   void SelectionChanged(Q3ListViewItem *item);
-//MOC_SKIP_END
-#endif /* QT_VERSION */
   void DisconnectItem(QObject *obj);
 
 signals:
   void CanBeUpdated(Bool_t);
-#if QT_VERSION < 0x40000
-  void CurrentPath(const QPtrVector<TQtBrowserItem> &);
-#else /* QT_VERSION */
-//MOC_SKIP_BEGIN
   void CurrentPath(const Q3PtrVector<TQtBrowserItem> &);
-//MOC_SKIP_END
-#endif /* QT_VERSION */
   void FolderExpanded(TObject *obj, Bool_t expand=kTRUE);
   void ItemOpen(TObject *);
   void OpenFolder(TObject *);
 };
-inline  const char* TQtBrowserImp::GetTitle() const {return fTitle;}
+inline  const QString& TQtBrowserImp::GetTitle() const {return fTitle;}
 
 #endif

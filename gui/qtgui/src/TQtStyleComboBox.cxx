@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtStyleComboBox.cxx 3601 2013-02-24 04:20:15Z fineroot $
 // Author: Valeri Fine 07/07/2006
 /****************************************************************************
@@ -98,7 +104,7 @@ TQtStyleComboBox::~TQtStyleComboBox ()
 int TQtStyleComboBox::AddComboItem(QPixmap &pixmap, QString &seq)
 {
    // Add the the prepared Qt item to the QComboBox
-   QString indx = seq.rightJustify(2,' ',true);
+   QString indx = seq.rightJustified(2,' ',true);
    addItem(indx,QVariant(pixmap));
  //  setItemData(count(),pixmap,Qt::BackgroundRole);
    Pad().Clear();
@@ -117,7 +123,7 @@ int TQtStyleComboBox::AddComboItem(QFont &font, QString &seq)
 int TQtStyleComboBox::AddComboItem(QPen &pen, QString &seq)
 {
    // Add the the prepared Qt item to the QComboBox
-   QString indx = seq.rightJustify(2,' ',true);
+   QString indx = seq.rightJustified(2,' ',true);
    addItem(indx,QVariant(pen));
    return count();
 }
@@ -129,7 +135,7 @@ void TQtStyleComboBox::Build()
 
    clear();
    TVirtualPad *padsav = gPad;
-   for (Int_t i = 1; i <= fItemListSize; i++) AddItem(i,FALSE);
+   for (Int_t i = 1; i <= fItemListSize; i++) AddItem(i, false);
    if (padsav) padsav->cd();
 
    SetCurrentItem (1);  // to have first entry selected
@@ -139,7 +145,7 @@ void TQtStyleComboBox::Build()
 void TQtStyleComboBox::SetCurrentItem(int style)
 {
    // Select the item using ROOT style type
-  setCurrentItem (style-1);
+  setCurrentIndex (style-1);
 }
 
 //______________________________________________________________________________

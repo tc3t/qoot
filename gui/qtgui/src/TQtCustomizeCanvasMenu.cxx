@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/qt:$Name$:$Id: TQtCustomizeCanvasMenu.cxx 3601 2013-02-24 04:20:15Z fineroot $
 // Author: Valeri Fine   12/12/2005
 /****************************************************************************
@@ -98,7 +104,7 @@ TQtCustomizeCanvasMenu::~TQtCustomizeCanvasMenu()
 bool TQtCustomizeCanvasMenu::eventFilter( QObject *o, QEvent *e )
 {
   // Qt eventFilter for the  to custiomize the ROOT Canvas TContextMenu
-  bool filtered = FALSE;
+  bool filtered = false;
   
   // Event filter to customize the Canvas behavor
   QMouseEvent        *mouseEvent = 0;

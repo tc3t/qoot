@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtControlBarImp.cxx 3601 2013-02-24 04:20:15Z fineroot $
@@ -22,8 +28,8 @@
 #include <QToolTip>
 #include <QLayout>
 
-#include <Q3VBoxLayout>
-#include <Q3HBoxLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 //______________________________________________________________________________
 TQtControlBarItem::TQtControlBarItem( TControlBarButton *b,QPushButton *i)
  :fButton(b),fButtonImp(i)
@@ -43,16 +49,18 @@ void TQtControlBarItem::Exec(bool on)
 }
 //______________________________________________________________________________
 TQtControlBarImp::TQtControlBarImp(TControlBar *c, const char *title):
- QObject(0,title),TControlBarImp(c,title),fWidget(0),fClicked(0)
+ QObject(0),TControlBarImp(c,title),fWidget(0),fClicked(0)
  {
+    setObjectName(title);
     fItems.setAutoDelete(true);
     fXpos = -999;       //Initial x position
     fYpos = -999;       //Initial y position
  }
 //______________________________________________________________________________
 TQtControlBarImp::TQtControlBarImp(TControlBar *c, const char *title,Int_t x, Int_t y):
- QObject(0,title),TControlBarImp(c,title,x,y),fWidget(0),fClicked(0)
+ QObject(0),TControlBarImp(c,title,x,y),fWidget(0),fClicked(0)
 {
+    setObjectName(title);
     fItems.setAutoDelete(true);
     fXpos = x;       //Initial x position
     fYpos = y;       //Initial y position
@@ -95,22 +103,24 @@ void TQtControlBarImp::Show()
     TControlBar *bar = GetControlBar();
     TList *buttons = bar ? bar->GetListOfButtons() : 0;
     if (bar && buttons) {
-      fWidget = new QWidget(0,"controlbar",Qt::WDestructiveClose);
-      fWidget->setCaption(name());
+      fWidget = new QWidget(0);
+      fWidget->setAttribute(Qt::WDestructiveClose);
+      fWidget->setWindowTitle("controlbar");
+      fWidget->setWindowTitle(objectName());
       QObject::connect(fWidget,SIGNAL(destroyed()),this,SLOT(Disconnect()));
       if (fXpos > 0 && fYpos > 0) fWidget->move(fXpos,fYpos);
       Bool_t vertical = bar->GetOrientation() == TControlBar::kVertical;
-      Q3BoxLayout *layout = 0;
-      if (vertical) {layout = new Q3VBoxLayout( fWidget );}
-      else          {layout = new Q3HBoxLayout( fWidget );}
-      layout->setAutoAdd( true );
+      QBoxLayout *layout = 0;
+      if (vertical) {layout = new QVBoxLayout( fWidget );}
+      else          {layout = new QHBoxLayout( fWidget );}
+      //layout->setAutoAdd( true );
 
       TIter nextButton(buttons);
       TControlBarButton *button = 0;
       while (( button = (TControlBarButton *)nextButton()) ) {
         QPushButton *b = new QPushButton(button->GetName(),fWidget);
-        b->setToggleButton(true);
-        QToolTip::add ( b, button->GetTitle() );
+        b->setCheckable(true);
+        b->setToolTip(button->GetTitle() );
         TQtControlBarItem *barItem = new TQtControlBarItem(button,b);
         fItems.push(barItem);
         connect(b,SIGNAL(toggled(bool)),barItem,SLOT(Exec(bool)));

@@ -15,6 +15,8 @@
   class QPopupMenu;
 #endif  
 
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // TQtMarkerFrame                                                                              //
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,12 +50,7 @@ class TQt18MarkerSelector : public QDialog {
 Q_OBJECT
 
 public :
-   TQt18MarkerSelector( QWidget *p,Qt::WindowFlags f=  Qt::WStyle_NoBorder |
-#if QT_VERSION < 0x50000
-   Qt::WStyle_Customize | Qt::WStyle_StaysOnTop
-#else
-   Qt::WindowStyle_Customize | Qt::WindowStyle_StaysOnTop
-#endif   
+    TQt18MarkerSelector(QWidget *p, Qt::WindowFlags f = Qt::WStyle_NoBorder | Qt::WindowStaysOnTopHint
 );
    virtual ~TQt18MarkerSelector(){}
    void showSelector ( const QPoint & position );

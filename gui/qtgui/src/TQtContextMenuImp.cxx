@@ -114,7 +114,7 @@ void TQtContextMenuImp::CreatePopup () {
     fPopupMenu->setSeparatorsCollapsible(false);
     connect(fPopupMenu,SIGNAL(destroyed()),this,SLOT(Disconnect()));
     connect(fPopupMenu,SIGNAL(aboutToShow () ),this,SLOT( AboutToShow() ));
-//    fPopupMenu->setCaption("Title");
+//    fPopupMenu->setWindowTitle("Title");
 
 //*-*  Include the menu title
     TObject *object = c? c->GetSelectedObject() : 0;

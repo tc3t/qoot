@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/base:$Name$:$Id: TEmbeddedPad.cxx 3347 2009-10-21 19:01:22Z fine $
 // Author: Valeri Fine   02/18/2006
 
@@ -23,6 +29,7 @@
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 
+#define R__QT
 
 #include "TEmbeddedPad.h"
 #include "TStyle.h"
@@ -198,7 +205,7 @@ Int_t TEmbeddedPad::GetEvent() const
 {
    // Get Event.
 
-	return fCanvas ?  TPad::GetEvent() : 0;
+    return fCanvas ?  TPad::GetEvent() : 0;
 }
 
 //______________________________________________________________________________
@@ -206,14 +213,14 @@ Int_t TEmbeddedPad::GetEventX() const
 {
    // Get X event.
 
-	return fCanvas ?  TPad::GetEventX() : -1;
+    return fCanvas ?  TPad::GetEventX() : -1;
 }
 
 //______________________________________________________________________________
 Int_t TEmbeddedPad::GetEventY() const
 {
    // Get Y event.
-	return fCanvas ?  TPad::GetEventY()  : -1;
+    return fCanvas ?  TPad::GetEventY()  : -1;
 }
 
 //______________________________________________________________________________
@@ -221,7 +228,7 @@ Color_t TEmbeddedPad::GetHighLightColor() const
 {
    // Get highlight color.
 
-	return fCanvas ? TPad::GetHighLightColor() : 0;
+    return fCanvas ? TPad::GetHighLightColor() : 0;
 }
 
 //______________________________________________________________________________
@@ -229,7 +236,7 @@ TObject *TEmbeddedPad::GetSelected() const
 {
    // Get selected.
 
-	return fCanvas ? TPad::GetSelected(): 0;
+    return fCanvas ? TPad::GetSelected(): 0;
 }
 
 //______________________________________________________________________________
@@ -237,7 +244,7 @@ TVirtualPad *TEmbeddedPad::GetSelectedPad() const
 {
    // Get selected pad.
 
-	return  fCanvas ? TPad::GetSelectedPad() : 0;
+    return  fCanvas ? TPad::GetSelectedPad() : 0;
 }
 
 //______________________________________________________________________________
@@ -245,7 +252,7 @@ TVirtualPad *TEmbeddedPad::GetPadSave() const
 {
    // Get save pad.
 
-	return  fCanvas ? TPad::GetPadSave() : 0;
+    return  fCanvas ? TPad::GetPadSave() : 0;
 }
 
 //______________________________________________________________________________
@@ -253,7 +260,7 @@ UInt_t TEmbeddedPad::GetWh() const
 {
    // Get Wh.
 
-	return fCanvas ? TPad::GetWh() : fPh;
+    return fCanvas ? TPad::GetWh() : fPh;
 }
 
 //______________________________________________________________________________
@@ -261,7 +268,7 @@ UInt_t TEmbeddedPad::GetWw() const
 {
    // Get Ww.
 
-	return fCanvas ? TPad::GetWw() : fPw;
+    return fCanvas ? TPad::GetWw() : fPw;
 }
 
 //______________________________________________________________________________
@@ -269,7 +276,7 @@ Bool_t TEmbeddedPad::IsBatch() const
 {
    // Is pad in batch mode ?
 
-	return fCanvas ? TPad::IsBatch() : kFALSE;
+    return fCanvas ? TPad::IsBatch() : kFALSE;
 }
 
 //______________________________________________________________________________
@@ -277,7 +284,7 @@ Bool_t TEmbeddedPad::IsRetained() const
 {
    // Is pad retained ?
 
-	return fCanvas ? TPad::IsRetained(): kFALSE;
+    return fCanvas ? TPad::IsRetained(): kFALSE;
 }
 
 //______________________________________________________________________________
@@ -285,7 +292,7 @@ Bool_t TEmbeddedPad::OpaqueMoving() const
 {
    // Is pad moving in opaque mode ?
 
-	return fCanvas ? TPad::OpaqueMoving() : kFALSE;
+    return fCanvas ? TPad::OpaqueMoving() : kFALSE;
 }
 
 //______________________________________________________________________________
@@ -293,13 +300,13 @@ Bool_t TEmbeddedPad::OpaqueResizing() const
 {
    // Is pad resizing in opaque mode ?
 
-	return fCanvas ? TPad::OpaqueResizing() : kFALSE;
+    return fCanvas ? TPad::OpaqueResizing() : kFALSE;
 }
 
 //______________________________________________________________________________
 void TEmbeddedPad::RecursiveRemove(TObject *obj)
 {
-	if (fCanvas) TPad::RecursiveRemove(obj);
+    if (fCanvas) TPad::RecursiveRemove(obj);
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,24,0)
    else {
       // No protection against of 
@@ -409,7 +416,7 @@ ULong_t TEmbeddedPad::GetHandle( ULong_t handle, double m11, double m12, double 
 #ifdef R__QT
    QPixmap &padPixmap = *(QPixmap*)GetHandle();
    QPixmap &dstPixmap = *(QPixmap*)handle;
-   dstPixmap = padPixmap.xForm(QWMatrix(m11, m12, m21, m22, dx,dy));
+   dstPixmap = padPixmap.transformed(QMatrix(m11, m12, m21, m22, dx, dy));
    return handle;
 #endif 
 }
@@ -444,21 +451,21 @@ ULong_t TEmbeddedPad::GetHandleRotate( ULong_t handle, double angle) const
 #ifdef R__QT
    QPixmap &padPixmap = *(QPixmap*)GetHandle();
    QPixmap &dstPixmap = *(QPixmap*)handle;
-   dstPixmap = padPixmap.xForm(QWMatrix().rotate(angle));
+   dstPixmap = padPixmap.transformed(QMatrix().rotate(angle));
 #endif 
    return handle;
 }
 //______________________________________________________________________________
 TImage *TEmbeddedPad::CreateImage( Int_t x, Int_t y, UInt_t w, UInt_t h)
 {
-	// Create a TImage object from this TPad
-	// The user is responsible to delete it
+    // Create a TImage object from this TPad
+    // The user is responsible to delete it
    TImage *img = TImage::Create(); 
-	// TASImage::FromPad implementation does ise TPad::Paint method
-	// that can change "this" object. 
-	// by this reason we can not make this method to be "const"
+    // TASImage::FromPad implementation does ise TPad::Paint method
+    // that can change "this" object. 
+    // by this reason we can not make this method to be "const"
    img->FromPad(this,x,y,w,h); 
-	return img;
+    return img;
 }
 
 //______________________________________________________________________________
@@ -501,12 +508,12 @@ void TEmbeddedPad::Flush()
 //______________________________________________________________________________
 TObject *TEmbeddedPad::Pick(Int_t px, Int_t py)
 {
-	// Return the pointer to the ROOT object selected at the pixel px,py
-	TObjLink *pickobj  = 0;
-	TObject  *selected = 0;
-	if (TPad::Pick( px,py, pickobj) && pickobj) 
-	    selected =  pickobj->GetObject();
-	return selected;
+    // Return the pointer to the ROOT object selected at the pixel px,py
+    TObjLink *pickobj  = 0;
+    TObject  *selected = 0;
+    if (TPad::Pick( px,py, pickobj) && pickobj) 
+        selected =  pickobj->GetObject();
+    return selected;
 }
 
 //______________________________________________________________________________
@@ -621,10 +628,10 @@ void TEmbeddedPad::ResizePad(Option_t *option)
    //  ==> fYtoPixelk = pylow - Log(ymin)/beta
    //      fYtoPixel  = 1/beta
 
-	if ( fCanvas ) { TPad::ResizePad(); return; }
+    if ( fCanvas ) { TPad::ResizePad(); return; }
    // Recompute subpad positions in case pad has been moved/resized
    TPad *parent = fMother;
-	if (!(parent || fCanvas) ||  (this == (TPad *)gPad->GetCanvas()) ) {
+    if (!(parent || fCanvas) ||  (this == (TPad *)gPad->GetCanvas()) ) {
       fAbsXlowNDC  = fXlowNDC;
       fAbsYlowNDC  = fYlowNDC;
       fAbsWNDC     = fWNDC;
@@ -726,7 +733,7 @@ void TEmbeddedPad::ResizePad(Option_t *option)
                if (fEmbeddedGL) gGLManager->DrawViewer(fViewer3D);
                else 
 #endif
-						Modified(kTRUE);
+                        Modified(kTRUE);
             }
 #endif
 
@@ -763,14 +770,14 @@ Int_t TEmbeddedPad::HasChildren() const
 //______________________________________________________________________________
 TVirtualViewer3D *TEmbeddedPad::GetViewer3D(Option_t *type )
 {
-	return fCanvas ? TPad::GetViewer3D(type) : 0;
+    return fCanvas ? TPad::GetViewer3D(type) : 0;
 }
 
 //______________________________________________________________________________
 Int_t TEmbeddedPad::GetGLDevice()
 {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,00,0)
-	return fCanvas ? TPad::GetGLDevice() : -1;
+    return fCanvas ? TPad::GetGLDevice() : -1;
 #else
    return -1;
 #endif

@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 #ifndef ROOT_TQTUPDATEVIEWFLAG
 #define ROOT_TQTUPDATEVIEWFLAG
 // Author: Valeri Fine   30/04/2003
@@ -13,7 +19,7 @@
 **
 *****************************************************************************/
 #include <QtGlobal>
-#include <q3scrollview.h> 
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
 
 /////////////////////////////////////////////////////////////
 //                                                         //
@@ -29,11 +35,19 @@ public:
    TQtUpdateViewFlag(): fCounter (0){};
    void FreezeToUpdate(Q3ScrollView *view){
       if (!fCounter) {
-         view->setUpdatesEnabled( FALSE );
-         view->viewport()->setUpdatesEnabled( FALSE );
+         view->setUpdatesEnabled( false );
+         view->viewport()->setUpdatesEnabled(false);
       }
       fCounter++;
-   };
+   }
+   void FreezeToUpdate(Q3ListView *view)
+   {
+   }
+
+   void FreezeToUpdate(Q3IconView *view)
+   {
+   }
+
    void UnFreezeToUpdate(Q3ScrollView *view){ 
       if (fCounter) fCounter--; 
       if (!fCounter) {
@@ -41,6 +55,14 @@ public:
          view->setUpdatesEnabled( true );
          view->repaintContents();
       }
+   }
+
+   void UnFreezeToUpdate(Q3ListView *view)
+   {
+   }
+
+   void UnFreezeToUpdate(Q3IconView *view)
+   {
    }
 };
 

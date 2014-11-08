@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   21/01/2002
 /****************************************************************************
 ** $Id: TQtControlBarImp.h 3531 2012-11-16 20:10:58Z fineroot $
@@ -27,7 +33,7 @@
 #include "Rtypes.h"
 
 #include <QtGlobal>
-#include "q3ptrstack.h"
+#include "qoot/QtRoot/Qt3ToQt5PortingHelpers.h"
 #include <QObject>
 
 class TControlBarButton;

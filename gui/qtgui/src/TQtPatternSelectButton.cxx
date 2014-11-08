@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtPatternSelectButton.cxx 3594 2013-02-19 03:50:53Z fineroot $
 // Author: Bertrand Bellenot + Fons Rademakers   22/08/02
 
@@ -211,7 +217,7 @@ TQtPatternPopup::TQtPatternPopup(QWidget *p, TQtBrush &color,const char *name, b
    QFrame *group = new QFrame(this);
    gridLayout->addWidget(group,0,0);
    group->setFrameShape(QFrame::Panel);
-   setName(name);
+   setObjectName(name);
    setModal(modal);
    
    gridLayout = new QGridLayout(group);
@@ -277,7 +283,7 @@ void TQtPatternPopup::BrushSelected(const TQtBrush &pattern )
 //______________________________________________________________________________
 void TQtPatternPopup::languageChange()
 {
-    //setCaption( tr( "Select Brush" ) );
+    //setWindowTitle( tr( "Select Brush" ) );
     //fPushButton->setText( tr( "pushButton39" ) );
     //QToolTip::add( fPushButton, tr( "Current Brush" ) );
     //QWhatsThis::add( fPushButton, tr( "Your current attribute fill color" ) );
@@ -295,7 +301,7 @@ TQtPatternSelectButton::TQtPatternSelectButton(QWidget *p, const char *name, Qt:
     : QFrame(p,f)
     , fFakeMenu(0), fBrushEmitter(0)
 {
-   if (name && name[0]) setName(name);
+   if (name && name[0]) setObjectName(name);
    fBrush.SetStyle();
    CreateWidget();
 }
@@ -305,7 +311,7 @@ TQtPatternSelectButton::TQtPatternSelectButton( QWidget *p, UInt_t pattern, Int_
     : QFrame(p)
    , fFakeMenu(0), fBrushEmitter(emitter)
 {
-   setName("BrushSelectButton");
+   setObjectName("BrushSelectButton");
    setWindowFlags (Qt::WindowStaysOnTopHint);
    fBrush.SetStyle(pattern);
    CreateWidget();
@@ -316,7 +322,7 @@ TQtPatternSelectButton::TQtPatternSelectButton( QWidget *p, TQtBrush &pattern, I
     : QFrame(p)
     , fFakeMenu(0), fBrush(pattern),fBrushEmitter(emitter)
 {
-   setName("BrushSelectButton");
+   setObjectName("BrushSelectButton");
    CreateWidget();
 }
 //________________________________________________________________________________
@@ -326,7 +332,7 @@ void TQtPatternSelectButton::CreateWidget()
     fBrush.SetColor("white");
     setFrameStyle(QFrame::NoFrame);
     setContentsMargins(0,0,0,0);
-    QHBoxLayout *layout = new QHBoxLayout(this, 0, 0, "layoutPatternSelect"); 
+    QHBoxLayout *layout = new QHBoxLayout(this/*, 0, 0, "layoutPatternSelect"*/); 
     layout->setSpacing(0);
     layout->setMargin(0);
 
@@ -395,9 +401,9 @@ void TQtPatternSelectButton::SetBrush(const QColor &color)
 //______________________________________________________________________________
 void TQtPatternSelectButton::languageChange()
 {
-   setCaption( tr( "Select Pattern" ) );
+   setWindowTitle( tr( "Select Pattern" ) );
    if (fPushButton) {
-      QToolTip::add( fPushButton, tr( "Current Pattern" ) );
+      fPushButton->setToolTip(tr( "Current Pattern" ) );
       fPushButton->setWhatsThis(tr( "Your current attribute fill pattern" ) );
    }
 }

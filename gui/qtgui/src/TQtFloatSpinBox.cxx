@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   30/04/2003
 /****************************************************************************
 ** $Id: TQtFloatSpinBox.cxx 2792 2008-06-18 14:31:19Z fine $
@@ -151,7 +157,7 @@ void  TQtFloatSpinBox::SetValue   ( const QString &v)
 TQtFloatSpinBox::TQtFloatSpinBox( QWidget* parent, const char* name ):
 QDoubleSpinBox(parent)
 {
-   setName(name);
+   setObjectName(name);
    SetDigit(1);
    lineEdit()->setAlignment(Qt::AlignRight);
    connect(this,SIGNAL(valueChanged(double)), this, SIGNAL(ValueChanged(double)));
@@ -166,7 +172,7 @@ QDoubleSpinBox(parent)
    SetDigit(0);
    setRange(minValue, maxValue);
    setSingleStep(step);
-   setName(name);
+   setObjectName(name);
    lineEdit()->setAlignment(Qt::AlignRight);
    connect(this,SIGNAL(valueChanged(double)), this, SIGNAL(ValueChanged(double)));
 }
@@ -177,7 +183,7 @@ TQtFloatSpinBox::TQtFloatSpinBox( float initvalue, float minimal, float maximal,
 QDoubleSpinBox(parent) 
 {
    SetDigit(digit);
-   setName(name);
+   setObjectName(name);
    SetValue   (initvalue);
    SetMinValue(minimal);
    SetMaxValue(maximal);

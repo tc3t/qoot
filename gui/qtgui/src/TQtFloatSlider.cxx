@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Valeri Fine   3/02/2007
 /****************************************************************************
 ** $Id: TQtFloatSlider.cxx 2454 2007-05-22 00:44:46Z fine $
@@ -16,34 +22,41 @@
 
 //______________________________________________________________________________
 TQtFloatSlider::TQtFloatSlider( QWidget* parent, const char* name ):
-QSlider(parent,name),fMinValue(0),fMaxValue(1)
+QSlider(parent),fMinValue(0),fMaxValue(1)
 {  
+    setObjectName(name);
    setRange(0,kFloatSliderPrecision); 
    // Constructs a vertical slider. 
    ConnectSingals();
 }
 //______________________________________________________________________________
 TQtFloatSlider::TQtFloatSlider ( Qt::Orientation orientation, QWidget *parent, const char *name):
-QSlider(orientation, parent, name),fMinValue(0),fMaxValue(1)
+QSlider(orientation, parent),fMinValue(0),fMaxValue(1)
 {
   // Constructs a slider. 
   // The orientation must be Qt::Vertical or Qt::Horizontal. 
   // The parent and name arguments are sent on to the QWidget constructor. 
+    setObjectName(name);
    setRange(0,kFloatSliderPrecision); 
    ConnectSingals();
 }
 
 //______________________________________________________________________________
 TQtFloatSlider::TQtFloatSlider ( int minValue, int maxValue, int pageStep, int value, Qt::Orientation orientation, QWidget * parent, const char * name)
-: QSlider(minValue, maxValue, pageStep, value, orientation,parent,name) 
+: QSlider(orientation,parent) 
 {
    // special ctor for the integers. It should behave as the original QSlider 
+    setMinimum(minValue);
+    setMaximum(maxValue);
+    setPageStep(pageStep);
+    setValue(value);
+    setObjectName(name);
    ConnectSingals();
 }
 
 //______________________________________________________________________________
 TQtFloatSlider::TQtFloatSlider ( double minValue, double maxValue, double pageStep, double value, Qt::Orientation orientation, QWidget * parent, const char * name)
-:QSlider(0, kFloatSliderPrecision, 1, 0, orientation,parent,name),fMinValue(minValue),fMaxValue(maxValue)
+:QSlider(orientation,parent),fMinValue(minValue),fMaxValue(maxValue)
 {
    // Constructs a slider whose value can never be smaller than minValue or greater than maxValue, 
    // whose page step size is pageStep and whose value is initially value 
@@ -53,7 +66,11 @@ TQtFloatSlider::TQtFloatSlider ( double minValue, double maxValue, double pageSt
    // if it is Qt::Horizontal the slider is horizontal. 
    //
    // The parent and name arguments are sent on to the QWidget constructor. 
-
+    setMinimum(0);
+    setMaximum(kFloatSliderPrecision);
+    SetLineStep(1);
+    setPageStep(0);
+    setObjectName(name);
    SetValue   (value);
    SetPageStep(pageStep);
 
@@ -108,14 +125,14 @@ void  TQtFloatSlider::SetMaxValue( double v)
 double TQtFloatSlider::MinValue() const
 { 
    // Returns the current minimum value of the slider.
-   return ToDouble(minValue());
+   return ToDouble(minimum());
 }
 
 //______________________________________________________________________________
 double	TQtFloatSlider::MaxValue() const
 {  
   // Returns the current maximum value of the slider.
-  return  ToDouble(maxValue());
+  return  ToDouble(maximum());
 }
 
 //______________________________________________________________________________
@@ -171,12 +188,12 @@ void TQtFloatSlider::SetPageStep(double v)
 //______________________________________________________________________________
 void   TQtFloatSlider::SetLineStep(double v)
 {
-  setLineStep(ToInt(v)); 
+  setSingleStep(ToInt(v)); 
 }
 //______________________________________________________________________________
 double  TQtFloatSlider::LineStep() const
 {
-   return  ToDouble(lineStep());
+   return  ToDouble(singleStep());
 }
 
 //______________________________________________________________________________

@@ -5,18 +5,6 @@
 #include <qstring.h>
 
 
-#if QT_VERSION < 0x40000
-#  define  QBUTTONGROUP QButtonGroup
-#  include <qbuttongroup.h>
-#  include <qhbox.h>
-
-#else /* QT_VERSION */
-#  define  QBUTTONGROUP Q3ButtonGroup
-#  include <q3buttongroup.h>
-#  include <q3hbox.h>
-#endif /* QT_VERSION */
-
-
 ClassImp( TQtMarkerSelect )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,4 +42,3 @@ void TQtMarkerSelect::MarkerStyleEmit(Style_t style)
   Emit("StyleSelected(style);", style);
 }
 
-#undef QBUTTONGROUP

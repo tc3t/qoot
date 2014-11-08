@@ -20,11 +20,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //__________________________________________________________________________________
 TQtMarkerFrame::TQtMarkerFrame ( QWidget *p, const char * name, Style_t style )
-   : QToolButton (p, name),
+   : QToolButton (p),
      fStyle (-1),
      fPixmap()
 {
 //   std::cout << "TQtMarkerFrame constructor "<< (QString("marker")  + QString::number(shape) + ".xpm" )).ascii() << std::endl ;
+    setObjectName(name);
    SetStyle(style);
    connect (this , SIGNAL(clicked()), this, SLOT(clickedSlot()));
 }

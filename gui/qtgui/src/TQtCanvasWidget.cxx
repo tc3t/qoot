@@ -48,7 +48,7 @@ bool TQtCanvasWidget::ExitSizeEvent (int update)
 {
   // Disable update during resizing (for the sake of the optimization) 
   QWidget *w = centralWidget();
-  if (!w) return FALSE;
+  if (!w) return false;
 
   // QCustomEvent is Qt3 component, disabled as this doesn't seem strictly necessary.
   //QApplication::sendEvent(w,new QCustomEvent(int(QEvent::User+update)) );
