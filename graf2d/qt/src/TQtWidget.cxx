@@ -366,6 +366,8 @@ TApplication *TQtWidget::InitRint( Bool_t /*prompt*/, const char *appClassName, 
          char *extLib = gSystem->DynamicPathName("libQtGui",kTRUE);
          if (extLib) {
             gEnv->SetValue("Gui.Factory", "qtgui");
+            if (gSystem->DynamicPathName("libQtGed", kTRUE))
+                gEnv->SetValue("Root.PadEditor", "QtGed");
          } else {
             gEnv->SetValue("Gui.Factory", "qt");
          }

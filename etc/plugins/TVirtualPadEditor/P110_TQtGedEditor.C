@@ -2,7 +2,7 @@ void P110_TQtGedEditor()
 {
    TString qtgui = gEnv->GetValue("Gui.Factory","native");
    if (qtgui == "qtgui") {
-      gPluginMgr->AddHandler("TVirtualPadEditor", "Ged", "TQtGedEditor",
+      gPluginMgr->AddHandler("TVirtualPadEditor", "QtGed", "TQtGedEditor",
          "QtGed", "TQtGedEditor(TCanvas*)");
    }
 }
