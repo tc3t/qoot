@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Name$:$Id: TQtGedFrames.cxx 2524 2007-07-06 00:13:50Z fine $
 // Author: Marek Biskup, Ilka Antcheva   22/07/03
 
@@ -103,8 +109,9 @@ void TQtGedAttNameFrame::BuildView(QWidget  *editorPanel)
 //______________________________________________________________________________
 void TQtGedAttNameFrame::ChangeView()
 {
-
-   fLabel->setPaletteForegroundColor(QColor("#ff0000"));
+    QPalette palette;
+    palette.setColor(fLabel->foregroundRole(), QColor("#ff0000"));
+    fLabel->setPalette(palette);
    fLabel->setText(QString(fModel->GetName()) + QString("::") + QString(fModel->ClassName()));
 }
 //______________________________________________________________________________
@@ -349,10 +356,10 @@ void TQtGedAttTextFrame::ChangeView()
 
    fTypeCombo->SetCurrentItem((int)fModel->GetTextFont()/10);
 
-   fSizeCombo->setCurrentItem(size-1);
+   fSizeCombo->setCurrentIndex(size-1);
 
    int index =  fModel->GetTextAlign()/10 + (fModel->GetTextAlign()%10-1)*3 -1;
-   fAlignCombo->setCurrentItem(index);
+   fAlignCombo->setCurrentIndex(index);
     // Pixel_t p = TColor::Number2Pixel(fModel->GetTextColor());
    fColorSelect->SetColor(fModel->GetTextColor());
 }
@@ -411,10 +418,11 @@ QComboBox* TQtGedAttTextFrame::BuildFontSizeComboBox(QWidget* parent,Int_t /* id
 {
    // Create text size combo box.
 
-   QComboBox *c = new QComboBox(FALSE,parent);
-   c->insertItem("Default", 0);
+   QComboBox *c = new QComboBox(parent);
+   c->setEditable(false);
+   c->addItem("Default", 0);
    for (int i = 1; i <= 50; i++) 
-      c->insertItem(QString::number(i), i);
+      c->addItem(QString::number(i), i);
    return c;
 }
 
@@ -423,17 +431,18 @@ QComboBox* TQtGedAttTextFrame::BuildTextAlignComboBox(QWidget* parent,Int_t /* i
 {
    // Create text align combo box.
 
-   QComboBox *c = new QComboBox("FALSE",parent);
+   QComboBox *c = new QComboBox(parent);
+   c->setEditable(false);
 
-   c->insertItem("11 Bottom, Left");   // 11);
-   c->insertItem("21 Bottom, Middle"); // 21);
-   c->insertItem("31 Bottom, Right");  // 31);
-   c->insertItem("12 Middle, Left");   // 12);
-   c->insertItem("22 Middle, Middle"); // 22);
-   c->insertItem("32 Middle, Right");  // 32);
-   c->insertItem("13 Top, Left");      // 13);
-   c->insertItem("23 Top, Middle");    // 23);
-   c->insertItem("33 Top, Right");     // 33);
+   c->addItem("11 Bottom, Left");   // 11);
+   c->addItem("21 Bottom, Middle"); // 21);
+   c->addItem("31 Bottom, Right");  // 31);
+   c->addItem("12 Middle, Left");   // 12);
+   c->addItem("22 Middle, Middle"); // 22);
+   c->addItem("32 Middle, Right");  // 32);
+   c->addItem("13 Top, Left");      // 13);
+   c->addItem("23 Top, Middle");    // 23);
+   c->addItem("33 Top, Right");     // 33);
 
    return c;
 }

@@ -59,11 +59,11 @@ public:
    TQtArrowEditor(QMainWindow *mainWidget, TCanvas *canvas, Int_t id=0,
                Int_t width = TQtGedAttInterfaceB::EditorDefaultWidth(), Int_t height = 30,
                UInt_t options = 0, // kChildFrame,
-		  Pixel_t back = 0) ;
+          Pixel_t back = 0) ;
    TQtArrowEditor(TCanvas *canvas, QWidget *parent=0, Int_t id=0,
                Int_t width = TQtGedAttInterfaceB::EditorDefaultWidth(), Int_t height = 30,
                UInt_t options = 0, // kChildFrame,
-		  Pixel_t back = 0) ;
+          Pixel_t back = 0) ;
    virtual ~TQtArrowEditor() ;
 
 public slots:

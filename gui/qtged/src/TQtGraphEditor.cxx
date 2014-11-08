@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Name$:$Id: TQtGraphEditor.cxx 2524 2007-07-06 00:13:50Z fine $
 // Author: Valeri Fine 16/08/04
 
@@ -51,18 +57,10 @@
 #include "TStyle.h"
 
 #include <qlabel.h>
-#if QT_VERSION < 0x40000
-#  include <qvbox.h> 
-#  include <qvgroupbox.h> 
-#  include <qhbuttongroup.h> 
-#  include <qvbuttongroup.h>
-#else /* QT_VERSION */
-#  include <Q3CString>
 #  include <QVBoxLayout>
 #  include <QHBoxLayout>
 #  include <QButtonGroup>
 #  include <QGroupBox>
-#endif /* QT_VERSION */
 #include <qcheckbox.h> 
 
 #include <qtooltip.h>
@@ -120,7 +118,7 @@ void TQtGraphEditor::BuildView(QWidget  *editorPanel) {
 
     // Radio Buttons to change the draw options of the graph
    fgr = new  QVButtonGroup ("Shape", vframe);
-   fgr->setRadioButtonExclusive(TRUE);fgr->setInsideSpacing(0);
+   fgr->setRadioButtonExclusive(true);fgr->setInsideSpacing(0);
 #else /* QT_VERSION */
    fTitle->setToolTip(tr("Enter the graph title string"));
    
@@ -128,7 +126,7 @@ void TQtGraphEditor::BuildView(QWidget  *editorPanel) {
    vframe->addWidget(group);
    QVBoxLayout *vbox = new QVBoxLayout(group);
    fgr = new  QButtonGroup (group);
-   fgr->setExclusive(TRUE);// fgr->setInsideSpacing(0);
+   fgr->setExclusive(true);// fgr->setInsideSpacing(0);
 #endif /* QT_VERSION */
    const char *shapes[] = {
       //    "Label"       "ToolTip"
@@ -280,18 +278,18 @@ void TQtGraphEditor::ChangeView()
    if (opt=="A" || opt=="AP" || opt=="PA" || opt == "P") {
       if (!opt.Contains("P"))
          opt +="P";
-      fMarkerOnOff->setEnabled(FALSE);
+      fMarkerOnOff->setEnabled(false);
    } else {
-      fMarkerOnOff->setEnabled(TRUE);
+      fMarkerOnOff->setEnabled(true);
       if (opt.Contains("P")) 
-        fMarkerOnOff->setChecked(TRUE);
+        fMarkerOnOff->setChecked(true);
       else 
-        fMarkerOnOff->setChecked(FALSE);
+        fMarkerOnOff->setChecked(false);
    }
 
    // Exclusion zone parameters
-   if (fModel->GetLineWidth()<0) fExSide->setChecked(TRUE); //kFALSE);
-   else fExSide->setChecked(FALSE); //  kFALSE);
+   if (fModel->GetLineWidth()<0) fExSide->setChecked(true); //kFALSE);
+   else fExSide->setChecked(false); //  kFALSE);
    fWidthCombo ->SetCurrentItem((int)TMath::Abs(Int_t(fModel->GetLineWidth()/100))); //, kFALSE);
 }
 
@@ -299,13 +297,7 @@ void TQtGraphEditor::ChangeView()
 void TQtGraphEditor::DoTitle(const QString &text)
 {
    // Slot for setting the graph title.
-#if QT_VERSION < 0x40000
-   QCString r = gQt->GetTextDecoder()->fromUnicode(text);
-#else /* QT_VERSION */
-   Q3CString r = gQt->GetTextDecoder()->fromUnicode(text);
-#endif /* QT_VERSION */
-
-   fModel->SetTitle((const char *)r );
+   fModel->SetTitle(gQt->GetTextDecoder()->fromUnicode(text));
 }
 
 //______________________________________________________________________________
@@ -328,7 +320,7 @@ void TQtGraphEditor::DoShape(int s)
           if (opt.Contains(fDrawShape))
                opt.Remove(opt.First(fDrawShape),1);
           fDrawShape = ' ';
-          fMarkerOnOff->setEnabled(FALSE);
+          fMarkerOnOff->setEnabled(false);
           break;
 
      // change draw option to Smooth Line (C)
@@ -370,27 +362,27 @@ void TQtGraphEditor::DoShape(int s)
 
    // set/reset the Marker CheckBox
    if (opt.Contains("P"))
-      fMarkerOnOff->setChecked(TRUE);
+      fMarkerOnOff->setChecked(true);
    else
-      fMarkerOnOff->setChecked(FALSE);
+      fMarkerOnOff->setChecked(false);
    if (opt=="A" || opt=="AP" || opt=="PA" || opt == "P") {
       if (!opt.Contains("P"))
          opt +="P";
-      fMarkerOnOff->setEnabled(FALSE);
+      fMarkerOnOff->setEnabled(false);
    } else {
-      fMarkerOnOff->setEnabled(TRUE);
+      fMarkerOnOff->setEnabled(true);
    }
 
 
    // set/reset the exclusion zone CheckBox
    if (opt.Contains("L") || opt.Contains("C")) {
-      if (fModel->GetLineWidth()<0) fExSide->setChecked(TRUE); // FALSE
-      else fExSide->setChecked(FALSE); // , kFALSE);
+      if (fModel->GetLineWidth()<0) fExSide->setChecked(true); // false
+      else fExSide->setChecked(false); // , kFALSE);
       fWidthCombo->setEnabled(kTRUE);
-      fExSide    ->setEnabled(TRUE);
+      fExSide    ->setEnabled(true);
    } else {
-      fExSide    ->setEnabled(FALSE);
-      fWidthCombo->setEnabled(FALSE);
+      fExSide    ->setEnabled(false);
+      fWidthCombo->setEnabled(false);
    }
    SetDrawOption(opt);
 }
@@ -407,17 +399,17 @@ void TQtGraphEditor::DoMarkerOnOff(bool on)
    if (on) {
       if  (!t.Contains("P")) t+="P";
 #if QT_VERSION < 0x40000
-            fgr->find(kSHAPE_NOLINE)->setEnabled(TRUE);
+            fgr->find(kSHAPE_NOLINE)->setEnabled(true);
 #else            
-            fgr->button(kSHAPE_NOLINE)->setEnabled(TRUE);
+            fgr->button(kSHAPE_NOLINE)->setEnabled(true);
 #endif            
    } else {
       // remove the marker option P
       while (t.Contains("P")) t.Remove(t.First("P"),1);
 #if QT_VERSION < 0x40000
-      fgr->find(kSHAPE_NOLINE)->setEnabled(FALSE);
+      fgr->find(kSHAPE_NOLINE)->setEnabled(false);
 #else      
-      fgr->button(kSHAPE_NOLINE)->setEnabled(FALSE);
+      fgr->button(kSHAPE_NOLINE)->setEnabled(false);
 #endif      
    }
    SetDrawOption(t); 
@@ -426,7 +418,7 @@ void TQtGraphEditor::DoMarkerOnOff(bool on)
 void TQtGraphEditor::DoGraphLineWidth(bool)
 {
    // Slot connected to the graph line exclusion check box.
-   DoGraphLineWidth(fWidthCombo->currentItem());
+   DoGraphLineWidth(fWidthCombo->currentIndex());
 }
 //______________________________________________________________________________
 void TQtGraphEditor::DoGraphLineWidth(int width)

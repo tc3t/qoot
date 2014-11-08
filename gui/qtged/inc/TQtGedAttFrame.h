@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Name$:$Id: TQtGedAttFrame.h 3532 2012-11-16 20:11:52Z fineroot $
 // Author: Valeri Fine 25/06/04
 // based on the code by Marek Biskup, Ilka  Antcheva 28/07/03
@@ -126,7 +132,7 @@ protected:
    TQtFrameUpdate fUpdateSlot; // object to hold the view update slot
    
    virtual void AddControl2List(const QObject *)  = 0;
-   virtual void BlockChildSignals(bool block=TRUE)= 0;
+   virtual void BlockChildSignals(bool block=true)= 0;
    virtual void BuildView(QWidget  *editorPanel)  = 0;
    virtual void ChangeView()                      = 0;
    virtual void Show()                            = 0;
@@ -155,8 +161,8 @@ public:
                 UInt_t  = 0,  /* option = kChildFrame, */
                 Pixel_t = 0   /* back = GetDefaultFrameBackground()*/ )
      : TObject(),      fId(id),   fCanvas(0),        fPad(0)
-     , fActive(kFALSE),fObject(0),fLockUpdate(FALSE),fInitialized(FALSE)
-     , fCanvasConnected(FALSE), fUpdateSlot(this){}
+     , fActive(kFALSE),fObject(0),fLockUpdate(false),fInitialized(false)
+     , fCanvasConnected(false), fUpdateSlot(this){}
     virtual ~TQtGedAttInterfaceB() {  }
 
    static void ResetPadOption(TVirtualPad *pad, TObject *obj, Option_t *opt);
@@ -206,7 +212,7 @@ inline void TQtFrameUpdate::Reconnect()
 inline void TQtGedAttInterfaceB::DoNotUpdate()
 {
    // Temporary lock the next Update() method
-   fLockUpdate=TRUE;
+   fLockUpdate=true;
 }
 //_________________________________________________________________________________________________________
 inline Bool_t TQtGedAttInterfaceB::IsInitialized()  const 
@@ -220,7 +226,7 @@ inline void TQtGedAttInterfaceB::SetCanvas(TCanvas  *canvas)
 
 //_________________________________________________________________________________________________________
 inline void TQtGedAttInterfaceB::SetInitialized()
-{ fInitialized = TRUE;                   }
+{ fInitialized = true;                   }
 
 //_________________________________________________________________________________________________________
 //
@@ -266,9 +272,10 @@ class TQtGedFactory : public TQtGedFactoryI {
        
    QWidget     *fPanelBox;
    QObjectList *fControlList;
+   mutable std::string fTitle;
    virtual  void MakeTitle(const char *c,QWidget *parent=0);
    virtual  void AddControl2List(const QObject *obj);
-   void     BlockChildSignals(bool block=TRUE);
+   void     BlockChildSignals(bool block=true);
    void     Constructor(const QString &label,  TCanvas *canvas
                      , Int_t id, Int_t width, Int_t height
                      , UInt_t options, Pixel_t back);
@@ -290,7 +297,7 @@ public:
    virtual ~TQtGedAttInterface() ;
 
    virtual void SetActive(Bool_t active = true);
-   virtual const char *GetTitle() const;
+   virtual const char* GetTitle() const /*override*/;
 
 // 
 #ifndef Q_MOC_RUN

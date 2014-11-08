@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Name$:$Id: TQtAxisEditor.cxx 2525 2007-07-06 01:06:15Z fine $
 // Author: Ilka Antcheva   11/05/04
 
@@ -59,21 +65,10 @@
 #include <qlineedit.h>
 #include <qtooltip.h>
 #include <qlabel.h>
-#if QT_VERSION < 0x40000
-#  include <qvgroupbox.h> 
-#  include <qhgroupbox.h> 
-#  include <qgrid.h> 
-#  include <qvbox.h> 
-#  include <qbuttongroup.h> 
-#include <qcheckbox.h> 
-#else /* QT_VERSION */
 #  include <QVBoxLayout>
 #  include <QHBoxLayout>
 #  include <QGroupBox>
-//Added by qt3to4:
-#  include <Q3CString>
 #  include <QCheckBox> 
-#endif /* QT_VERSION */
 #include <qtextcodec.h> 
 
 #include "TColor.h"
@@ -174,40 +169,31 @@ void TQtAxisEditor::BuildView(QWidget  *editorPanel) {
 #endif /* QT_VERSION */
 
 //---
-#if QT_VERSION < 0x40000
-   hbox = new QHBox(this); // hbox->setSpacing(1);
-   vframe->addWidget(hbox);
-   
-   fDiv3 = new QSpinBox(0, 99, 1, hbox); fDiv3->setValue(10);
-   QToolTip::add(fDiv3, "Tertiary axis divisions");
-
-   fDiv2 = new QSpinBox( 0, 99,1,hbox); fDiv3->setValue(5);
-   QToolTip::add(fDiv2,"Secondary axis divisions");
-
-   fDiv1 = new QSpinBox( 0, 99,1,hbox); fDiv3->setValue(0);
-   QToolTip::add(fDiv1, "Primary axis divisions");
-#else /* QT_VERSION */
    hbox = new QWidget(editorPanel);
    vframe->addWidget(hbox);
    hboxLayout  = new QHBoxLayout(hbox);
    hboxLayout->setMargin(2); hboxLayout->setSpacing(2);
    
    hboxLayout->addWidget(
-         fDiv3 = new QSpinBox(0, 99, 1, hbox));
+         fDiv3 = new QSpinBox(hbox));
+   fDiv3->setRange(0, 99);
+   fDiv3->setSingleStep(1);
    fDiv3->setValue(10);
    fDiv3->setToolTip(tr("Tertiary axis divisions"));
 
    hboxLayout->addWidget(
-         fDiv2 = new QSpinBox( 0, 99,1,hbox));
+         fDiv2 = new QSpinBox(hbox));
+   fDiv2->setRange(0, 99);
+   fDiv2->setSingleStep(1);
    fDiv3->setValue(5);
    fDiv2->setToolTip(tr("Secondary axis divisions"));
 
    hboxLayout->addWidget(
-         fDiv1 = new QSpinBox( 0, 99,1,hbox));
+         fDiv1 = new QSpinBox(hbox));
+   fDiv1->setRange(0, 99);
+   fDiv1->setSingleStep(1);
    fDiv3->setValue(0);
    fDiv1->setToolTip(tr("Primary axis divisions"));   
-#endif /* QT_VERSION */
-
 
    fTicksFlag = 1;
 // --  title 
@@ -564,13 +550,7 @@ void TQtAxisEditor::DoMoreLog(bool on)
 void TQtAxisEditor::DoTitle(const QString &text)
 {
    // Slot connected to the axis color.
-
-#if QT_VERSION < 0x40000
-   QCString r = gQt->GetTextDecoder()->fromUnicode(text);
-#else /* QT_VERSION */
-   Q3CString r = gQt->GetTextDecoder()->fromUnicode(text);
-#endif /* QT_VERSION */
-   fModel->SetTitle((const char*)r);
+   fModel->SetTitle(gQt->GetTextDecoder()->fromUnicode(text));
 }
 
 //______________________________________________________________________________

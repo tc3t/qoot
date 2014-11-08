@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Name$:$Id: TQtGedAttFrame.cxx 2524 2007-07-06 00:13:50Z fine $
 // Author: Valeri Fine   22/07/06
 
@@ -140,16 +146,16 @@ void TQtGedAttInterfaceB::ResetPadOption(TVirtualPad *pad, TObject *object, Opti
 void TQtGedAttInterfaceB::SetModel(TVirtualPad *pad, TObject *obj, Int_t /* event  */)
 {
    // Pick up the proper editor
-   SetUpdatesEnabled(FALSE);
-   BlockChildSignals(TRUE);
+   SetUpdatesEnabled(false);
+   BlockChildSignals(true);
    if ( SetModel(obj) ){
 
       fPad = pad;
 
       ChangeView();
       // Release the  the view for the non-zero model
-      BlockChildSignals(FALSE);
-      SetUpdatesEnabled(TRUE);
+      BlockChildSignals(false);
+      SetUpdatesEnabled(true);
       SetActive();
    }
 }
@@ -161,7 +167,7 @@ void TQtGedAttInterfaceB::Update()
    if (fPad && !fLockUpdate) {
       fPad->Modified();
       fPad->Update();
-      fLockUpdate = FALSE;
+      fLockUpdate = false;
    }
 }
 
@@ -174,11 +180,11 @@ void TQtGedAttInterfaceB::ConnectToCanvas(TCanvas* c,const char *className, TObj
          if (connect) {
             assert(TQObject::Connect(c, "Selected(TVirtualPad*,TObject*,Int_t)", className,
                thisPointer, "SetModel(TVirtualPad*,TObject*,Int_t)"));
-            fCanvasConnected = TRUE;
+            fCanvasConnected = true;
          } else {
             assert(TQObject::Disconnect(c, "Selected(TVirtualPad*,TObject*,Int_t)",
                thisPointer, "SetModel(TVirtualPad*,TObject*,Int_t)"));
-            fCanvasConnected = FALSE;
+            fCanvasConnected = false;
          }
       }
    }
@@ -344,9 +350,10 @@ void TQtGedAttInterface::SetActive(Bool_t active)
 }
 
 //______________________________________________________________________________
-const char *TQtGedAttInterface::GetTitle() const
+const char* TQtGedAttInterface::GetTitle() const
 {   
-   return caption();
+    fTitle = windowTitle().toLatin1().constData();
+    return fTitle.c_str();
 }
 
 //______________________________________________________________________________

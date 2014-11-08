@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // Author: Eric Dumonteil   26/01/2006
 
 /****************************************************************************
@@ -77,14 +83,14 @@ protected:
 #endif   
    void Ctor(){
       insertStrList(fgListOfVisuals);
-      setCurrentItem(2);
+      setCurrentIndex(2);
    }
 
 public:
-   TQtArrowStyleSelect(QWidget * parent=0, const char *name=0) : QComboBox(parent,name){ Ctor(); } 
-   TQtArrowStyleSelect(bool rw, QWidget *parent=0,const char *name=0): QComboBox(rw,parent,name) { Ctor(); }
+   TQtArrowStyleSelect(QWidget * parent=0, const char *name=0) : QComboBox(parent){ setObjectName(name);Ctor(); } 
+   TQtArrowStyleSelect(bool rw, QWidget *parent=0,const char *name=0): QComboBox(parent) { setObjectName(name); setEditable(rw); Ctor(); }
    const char *GetCurrentShapeEntry() const {
-      return fgListOfOptions[currentItem()];
+      return fgListOfOptions[currentIndex()];
    }   
 };
 
@@ -153,7 +159,7 @@ void TQtArrowEditor::BuildView(QWidget  *editorPanel)
   hboxLayout->addWidget(
         new QLabel("Shape:",hbox));
   hboxLayout->addWidget(
-        fOptionCombo = new TQtArrowStyleSelect(FALSE, hbox));
+        fOptionCombo = new TQtArrowStyleSelect(false, hbox));
   
   vframe->addWidget(
         hbox        = new QWidget(this));

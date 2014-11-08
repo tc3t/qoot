@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Name$:$Id: TQtGedEditor.cxx 3189 2009-06-01 15:45:26Z fine $
 // Author: Valeri Fine 10/07/2004
 
@@ -43,9 +49,9 @@
 #include "TQtCanvasWidget.h"
 #include "TQtWidget.h"
 
-#ifdef R__WIN32
-#  include "TPadEditorHelper.h"
-#endif
+//#ifdef R__WIN32
+//#  include "TPadEditorHelper.h"
+//#endif
 
 #include <QTimer> 
 #include <QDebug> 
@@ -84,7 +90,8 @@ TQtGedEditor::TQtGedEditor(TCanvas* canvas) : fCanvas(canvas)
 #ifndef R__WIN32
       fgPadEditor = this;
 #else
-      TPadEditorHelper::SetPadPointer(this);
+      //TODO
+      //TPadEditorHelper::SetPadPointer(this);
 #endif
    }
 }
@@ -170,7 +177,7 @@ void TQtGedEditor::Show()
 {
     // Show editor.
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    fCanvasImpID->setUpdatesEnabled(FALSE);
+    fCanvasImpID->setUpdatesEnabled(false);
     TCanvas *newCanvas = 0;
     // Check whether one needs to reconnect the editor to another TCanvas
     if (gPad && (gPad->GetCanvas() != fCanvas)) {
@@ -193,7 +200,7 @@ void TQtGedEditor::Show()
        frame->Connect(newCanvas);
     }
     fDock->show();
-    fCanvasImpID->setUpdatesEnabled(TRUE);
+    fCanvasImpID->setUpdatesEnabled(true);
     if (fIsMainWindow == kOrdinaryWidget ) fCanvasImpID->show();
     else QTimer::singleShot(0,(TQtWidget*)fCanvasID, SLOT(Refresh()));
     QApplication::restoreOverrideCursor();
@@ -205,7 +212,7 @@ void TQtGedEditor::Hide()
    // Hide editor.
     if (!fDock) return;
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-    fCanvasImpID->setUpdatesEnabled(FALSE);
+    fCanvasImpID->setUpdatesEnabled(false);
     if (fIsMainWindow == kOrdinaryWidget ) fCanvasImpID->hide();
     else fDock->hide();
     std::list<TQtGedAttInterfaceB *>::iterator it = fGedPropertyFrames.begin();
@@ -214,7 +221,7 @@ void TQtGedEditor::Hide()
        frame->Disconnect();
        frame->Hide();
     }
-    fCanvasImpID->setUpdatesEnabled(TRUE);
+    fCanvasImpID->setUpdatesEnabled(true);
     if (fIsMainWindow != kOrdinaryWidget ) QTimer::singleShot(0,(TQtWidget*)fCanvasID, SLOT(Refresh()));
     QApplication::restoreOverrideCursor();
 }

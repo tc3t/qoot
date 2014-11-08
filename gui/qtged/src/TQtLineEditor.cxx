@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Name:  $:$Id: TQtLineEditor.cxx 3497 2010-09-23 18:50:01Z fineroot $
 // Author: Valeri Fine 13/06/06
 
@@ -104,7 +110,7 @@ void TQtLineEditor::BuildView(QWidget  *editorPanel)
 #if ROOT_VERSION_CODE > ROOT_VERSION(5,11,3) 
   QGroupBox   *group  = new QGroupBox(editorPanel);
   QVBoxLayout *layout = new QVBoxLayout(group);
-  fOrientation        = new QButtonGroup(editorPanel); fOrientation->setExclusive(TRUE);
+  fOrientation        = new QButtonGroup(editorPanel); fOrientation->setExclusive(true);
   vframeLayout->addWidget(group);
   
   fVertical = new QCheckBox(tr("Vertical"),group);
