@@ -15,7 +15,6 @@
 #pragma link off all functions;
  
 // #pragma link C++ class TQt;
-#pragma link C++ class TQtRootGuiFactory;
 #pragma link C++ class TBrowserCustom;
 #pragma link C++ class TEmbeddedPad;
 #pragma link C++ class TQtColorSelect;

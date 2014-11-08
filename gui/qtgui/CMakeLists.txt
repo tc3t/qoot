@@ -33,7 +33,7 @@ if(qt5)
 				inc/TQtTextEditor.h inc/TQtStyleComboBox.h)
 endif()
 
-ROOT_GENERATE_DICTIONARY(G__QtGui TQtRootGuiFactory.h TBrowserCustom.h TEmbeddedPad.h
+ROOT_GENERATE_DICTIONARY(G__QtGui TBrowserCustom.h TEmbeddedPad.h
 						TQtColorSelect.h TQtMarkerSelect.h TQtPatternSelect.h
 						TQtPixmapBox.h TQtGuiFactory.h
 						LINKDEF LinkDef.h)
