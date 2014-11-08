@@ -182,6 +182,7 @@ set(returncode_1 fit/fit2a.C fit/graph2dfit.C
                  hist/h2proj.C
                  hist/th2polyBoxes.C
                  hist/statsEditing.C
+                 hist/cumulative.C
                  tree/h1analysis.C
                  io/fildir.C
                  math/chi2test.C )
@@ -197,6 +198,12 @@ set(fit-fit1-depends tutorial-hist-fillrandom)
 set(foam-foam_demopers-depends tutorial-foam-foam_demo)
 set(tree-staff-depends  tutorial-tree-cernbuild)
 set(tree-cernstaff-depends  tutorial-tree-cernbuild)
+set(benchmarks-depends tutorial-hsimple
+                       tutorial-fit-fit1
+                       tutorial-hist-h1draw
+                       tutorial-geom-na49view
+                       tutorial-tree-ntuple1)
+
 #--many roostats tutorials depending on having creating the file first with histfactory
 foreach(tname  ModelInspector OneSidedFrequentistUpperLimitWithBands StandardBayesianMCMCDemo StandardBayesianNumericalDemo
                StandardFeldmanCousinsDemo  StandardFrequentistDiscovery StandardHistFactoryPlotsWithCategories StandardHypoTestDemo
@@ -258,7 +265,8 @@ if(ROOT_python_FOUND)
 
   #---Python tutorials dependencies--------------------------------------
   set(pyroot-ntuple1-depends tutorial-pyroot-hsimple)
-  set(pyroot-benchmarks-depends tutorial-pyroot-hsimple tutorial-pyroot-fillrandom)
+  set(pyroot-benchmarks-depends tutorial-pyroot-hsimple tutorial-pyroot-fit1
+                                tutorial-pyroot-na49view )
   set(pyroot-fit1-depends tutorial-pyroot-fillrandom)
   set(pyroot-na49view-depends tutorial-geom-geometry)
 
