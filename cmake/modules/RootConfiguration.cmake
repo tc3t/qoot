@@ -179,6 +179,7 @@ set(odbcincdir ${OCDB_INCLUDE_DIR})
 
 set(buildqt4 ${value${qt4}})
 set(buildqt5 ${value${qt5}})
+set(buildqtgui ${value${qtgui}})
 set(buildqtpsi ${value${qtgsi}})
 set(qtlibdir ${QT_LIBRARY_DIR})
 set(qtlib ${QT_QT_LIBRARY})
