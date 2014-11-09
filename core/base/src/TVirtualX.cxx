@@ -2074,7 +2074,7 @@ void TVirtualX::GetRegionBox(Region_t /*reg*/, Rectangle_t * /*rect*/)
 }
 
 //______________________________________________________________________________
-char **TVirtualX::ListFonts(const char * /*fontname*/, Int_t /*max*/, Int_t &/*count*/)
+char **TVirtualX::ListFonts(const char * /*fontname*/, Int_t /*max*/, Int_t &count)
 {
    // Returns list of font names matching fontname regexp, like "-*-times-*".
    // The pattern string can contain any characters, but each asterisk (*)
@@ -2088,7 +2088,7 @@ char **TVirtualX::ListFonts(const char * /*fontname*/, Int_t /*max*/, Int_t &/*c
    //            contain wildcard characters
    // max      - specifies the maximum number of names to be returned
    // count    - returns the actual number of font names
-
+   count = 0;
    return 0;
 }
 

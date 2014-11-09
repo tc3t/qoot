@@ -189,7 +189,8 @@ TGResourcePool::TGResourcePool(TGClient *client)
                 kGCFillStyle  | kGCGraphicsExposures;
    gval.fGraphicsExposures = kFALSE;
    gval.fFillStyle  = kFillSolid;
-   gval.fFont       = fDefaultFont->GetFontHandle();
+   if (fDefaultFont)
+        gval.fFont       = fDefaultFont->GetFontHandle();
    gval.fBackground = fBackColor;
    gval.fForeground = fBlack;
    fBlackGC = fGCPool->GetGC(&gval, kTRUE);
@@ -216,7 +217,8 @@ TGResourcePool::TGResourcePool(TGClient *client)
    gval.fBackground = fSelBackColor;
    fSelGC = fGCPool->GetGC(&gval, kTRUE);
 
-   gval.fFont       = fDocPropFont->GetFontHandle();
+   if (fDocPropFont)
+        gval.fFont       = fDocPropFont->GetFontHandle();
    gval.fForeground = fDocForeColor;
    gval.fBackground = fDocBackColor;
    fDocGC = fGCPool->GetGC(&gval, kTRUE);
@@ -224,7 +226,8 @@ TGResourcePool::TGResourcePool(TGClient *client)
    gval.fForeground = fDocBackColor;
    fDocbgndGC = fGCPool->GetGC(&gval, kTRUE);
 
-   gval.fFont       = fStatusFont->GetFontHandle();
+   if (fStatusFont)
+        gval.fFont       = fStatusFont->GetFontHandle();
    gval.fForeground = fTipForeColor;
    gval.fBackground = fTipBackColor;
    fTipGC = fGCPool->GetGC(&gval, kTRUE);
