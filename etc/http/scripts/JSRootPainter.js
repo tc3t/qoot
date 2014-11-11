@@ -2088,29 +2088,16 @@
                    .style("fill", pthis.excl_ec);
          }
       }
+
       if (this.seriesType == 'line') {
 
-         if ((this.optionLine == 1) && (this.optionFill == 0)) {
-            var polyline = "";
-            for (var i in this.bins)
-               polyline += " " + Math.round(x(this.bins[i].x)) + "," + Math.round(y(this.bins[i].y));
-
-            this.draw_g.append("polyline")
-                       .attr("class", "draw_line")
-                       .attr("points", polyline)
-                       .style("stroke", JSROOT.Painter.root_colors[pthis.graph['fLineColor']])
-                       .style("stroke-width", pthis.bins_lw)
-                       .style("stroke-dasharray", JSROOT.Painter.root_line_styles[pthis.graph['fLineStyle']])
-                       .style("fill", "none").style("fill-opacity", "none");
-         } else {
-            this.draw_g.append("svg:path")
-                  .attr("d", line(pthis.bins))
-                  .attr("class", "draw_line")
-                  .style("stroke", (pthis.optionLine == 1) ? JSROOT.Painter.root_colors[pthis.graph['fLineColor']] : "none")
-                  .style("stroke-width", pthis.bins_lw)
-                  .style("stroke-dasharray", JSROOT.Painter.root_line_styles[pthis.graph['fLineStyle']])
-                  .style("fill", (pthis.optionFill == 1) ? JSROOT.Painter.root_colors[pthis.graph['fFillColor']] : "none");
-         }
+         this.draw_g.append("svg:path")
+               .attr("d", line(pthis.bins))
+               .attr("class", "draw_line")
+               .style("stroke", (pthis.optionLine == 1) ? JSROOT.Painter.root_colors[pthis.graph['fLineColor']] : "none")
+               .style("stroke-width", pthis.bins_lw)
+               .style("stroke-dasharray", JSROOT.Painter.root_line_styles[pthis.graph['fLineStyle']])
+               .style("fill", (pthis.optionFill == 1) ? JSROOT.Painter.root_colors[pthis.graph['fFillColor']] : "none");
 
          // do not add tooltip for line, when we wants to add markers
          if (JSROOT.gStyle.Tooltip && !this.showMarker)
@@ -2123,7 +2110,6 @@
                        .attr("opacity", 0)
                        .append("svg:title")
                        .text(TooltipText);
-
       }
 
       if (this.draw_errors)
@@ -2355,13 +2341,8 @@
 
       var pthis = this;
 
-      if (this.main_rect == null) {
+      if (this.main_rect == null)
          this.main_rect = this.svg_pad(true).append("rect");
-      } else {
-         // force main rect of the stat box be last item in the primitives to
-         // kept it on the top - for instance when colz is created
-         JSROOT.Painter.moveChildToEnd(this.main_rect);
-      }
 
       this.main_rect
              .attr("x", pos_x)
@@ -2371,24 +2352,6 @@
              .attr("fill", fcolor)
              .style("stroke-width", lwidth ? 1 : 0)
              .style("stroke", lcolor);
-
-      this.AddDrag("stat", this.main_rect, {
-         move : function(x, y, dx, dy) {
-            pthis.draw_g.attr("transform", "translate(" + x + "," + y + ")");
-
-            pthis.pavetext['fX1NDC'] += dx / Number(pthis.svg_pad(true).attr("width"));
-            pthis.pavetext['fX2NDC'] += dx / Number(pthis.svg_pad(true).attr("width"));
-            pthis.pavetext['fY1NDC'] -= dy / Number(pthis.svg_pad(true).attr("height"));
-            pthis.pavetext['fY2NDC'] -= dy / Number(pthis.svg_pad(true).attr("height"));
-         },
-         resize : function(width, height) {
-            pthis.pavetext['fX2NDC'] = pthis.pavetext['fX1NDC'] + width  / Number(pthis.svg_pad(true).attr("width"));
-            pthis.pavetext['fY1NDC'] = pthis.pavetext['fY2NDC'] - height / Number(pthis.svg_pad(true).attr("height"));
-
-            pthis.DrawPaveText();
-         }
-      });
-
 
       // container used to recalculate coordinates
       this.RecreateDrawG(true);
@@ -2542,6 +2505,28 @@
                     .style("stroke", lcolor)
                     .style("stroke-width", lwidth);
       }
+
+      // force main rect of the stat box be last item in the primitives to
+      // kept it on the top - for instance when colz is created
+      JSROOT.Painter.moveChildToEnd(this.main_rect);
+      JSROOT.Painter.moveChildToEnd(this.draw_g);
+
+      this.AddDrag("stat", this.main_rect, {
+         move : function(x, y, dx, dy) {
+            pthis.draw_g.attr("transform", "translate(" + x + "," + y + ")");
+
+            pthis.pavetext['fX1NDC'] += dx / Number(pthis.svg_pad(true).attr("width"));
+            pthis.pavetext['fX2NDC'] += dx / Number(pthis.svg_pad(true).attr("width"));
+            pthis.pavetext['fY1NDC'] -= dy / Number(pthis.svg_pad(true).attr("height"));
+            pthis.pavetext['fY2NDC'] -= dy / Number(pthis.svg_pad(true).attr("height"));
+         },
+         resize : function(width, height) {
+            pthis.pavetext['fX2NDC'] = pthis.pavetext['fX1NDC'] + width  / Number(pthis.svg_pad(true).attr("width"));
+            pthis.pavetext['fY1NDC'] = pthis.pavetext['fY2NDC'] - height / Number(pthis.svg_pad(true).attr("height"));
+
+            pthis.DrawPaveText();
+         }
+      });
    }
 
    JSROOT.TPavePainter.prototype.AddLine = function(txt) {
@@ -2662,7 +2647,7 @@
           .append("svg")
           .attr("class", "root_canvas")
           .style("background-color", fillcolor)
-          .attr("pointer-events", "all")
+          // .attr("pointer-events", "all")   // comment out while it hides mouse events
           .property('pad_painter', this) // this is custom property
           .property('mainpainter', null) // this is custom property
           .property('current_pad', "") // this is custom property
@@ -4290,7 +4275,6 @@
       if (isany) this.RedrawPad();
    }
 
-
    JSROOT.THistPainter.prototype.AddInteractive = function() {
       // only first painter in list allowed to add interactive functionality to the main pad
       if (!this.is_main_painter()) return;
@@ -5544,7 +5528,6 @@
             }
          }
       }
-      this.maxbin *= 1.05;
    }
 
    JSROOT.TH2Painter.prototype.FillStatistic = function(stat, dostat) {
@@ -7447,31 +7430,27 @@
       }
    }
 
-   JSROOT.HierarchyPainter.prototype.OpenOnline = function(server_address,
-         user_callback) {
-      if (!server_address)
-         server_address = "";
+   JSROOT.HierarchyPainter.prototype.OpenOnline = function(server_address, user_callback) {
+      if (!server_address) server_address = "";
 
       var painter = this;
 
-      var req = JSROOT.NewHttpRequest(server_address + "h.json?compact=3",
-            'object', function(result) {
-               painter.h = result;
-               if (painter.h == null)
-                  return;
+      var req = JSROOT.NewHttpRequest(server_address + "h.json?compact=3", 'object', function(result) {
+         painter.h = result;
+         if (painter.h == null) return;
 
-               // mark top hierarchy as online data and
-               painter.h['_online'] = server_address;
+         // mark top hierarchy as online data and
+         painter.h['_online'] = server_address;
 
-               painter.AddOnlineMethods(painter.h);
+         painter.AddOnlineMethods(painter.h);
 
-               if (painter.h != null)
-                  painter.RefreshHtml(true);
+         if (painter.h != null)
+            painter.RefreshHtml(true);
 
-               if (typeof user_callback == 'function')
-                  user_callback(painter);
+         if (typeof user_callback == 'function')
+            user_callback(painter);
 
-            });
+      });
 
       req.send(null);
    }
