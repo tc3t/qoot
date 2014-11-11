@@ -356,6 +356,7 @@ TApplication *TQtWidget::InitRint( Bool_t /*prompt*/, const char *appClassName, 
        if (!guiBackend.BeginsWith("qt",TString::kIgnoreCase)) {
          gEnv->SetValue("Gui.Backend", "qt");
        }
+
        TString guiFactory(gEnv->GetValue("Gui.Factory", "native"));
        guiFactory.ToLower();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,16,0)
@@ -366,8 +367,6 @@ TApplication *TQtWidget::InitRint( Bool_t /*prompt*/, const char *appClassName, 
          char *extLib = gSystem->DynamicPathName("libQtGui",kTRUE);
          if (extLib) {
             gEnv->SetValue("Gui.Factory", "qtgui");
-            if (gSystem->DynamicPathName("libQtGed", kTRUE))
-                gEnv->SetValue("Root.PadEditor", "QtGed");
          } else {
             gEnv->SetValue("Gui.Factory", "qt");
          }
