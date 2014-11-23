@@ -80,6 +80,15 @@ class TQtPen;
 class TQtPainter;
 class TQtFeedBackWidget;
 
+inline QColor Color_t_ToQColor(Color_t c)
+{
+#ifdef QOOT_32BIT_COLOR_T
+    return QColor(Color_t_Red(c), Color_t_Green(c), Color_t_Blue(c), Color_t_Alpha(c));
+#else
+    return QColor();
+#endif
+}
+
 //#define TRACE_TGQt() fprintf(stdout, "TGQt::%s() %d\n", __FUNCTION__, __LINE__)
 class TQtTextProxy {
 private:
@@ -269,7 +278,7 @@ public:
    virtual void      SetAlpha(Int_t cindex, Float_t a);
    virtual void      GetRGBA(Int_t cindex, Float_t &r, Float_t &g, Float_t &b, Float_t &a);
    virtual Float_t   GetAlpha(Int_t cindex);
-   virtual const QColor& ColorIndex(Color_t indx) const;
+   virtual QColor ColorIndex(Color_t indx) const;
 
    virtual Int_t LoadQt(const char *shareLibFileName);
    static void PostQtEvent(QObject *receiver, QEvent *event);

@@ -30,6 +30,8 @@
 #include "Rtypeinfo.h"
 #endif
 
+#include "qootConfig.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <snprintf.h>   // part of stdio.h on systems that have it
@@ -135,7 +137,77 @@ typedef short          Font_t;      //Font number (short)
 typedef short          Style_t;     //Style number (short)
 typedef short          Marker_t;    //Marker number (short)
 typedef short          Width_t;     //Line width (short)
-typedef short          Color_t;     //Color number (short)
+
+#ifndef QOOT_32BIT_COLOR_T
+    #error QOOT_32BIT_COLOR_T is not defined.
+#endif
+
+#if QOOT_32BIT_COLOR_T
+    typedef Int_t          Color_t;   // Either traditional color_t or RGBA value.
+
+    #if !defined(__CINT__)
+        static_assert(sizeof(Color_t) == 4, "Color_t has wrong size");
+    #endif
+
+    // Values should be in range [0,255]
+    inline Color_t Color_t_FromRgba(int r, int g, int b, int alpha = 255)
+    {
+        UInt_t c = (r & 0xFF) +
+            ((g & 0xFF) << 8) +
+            ((b & 0xFF) << 16);
+        // For alpha value, do lossy mapping from 0-255 to 1-128.
+        // 0 -> 1
+        // 255 -> 128
+        const UInt_t a = ((alpha & 0xFF) / 2) + 1;
+        return (c + (a << 24));
+    }
+
+    // Values should be in range [0, 1]
+    inline Color_t Color_t_FromRgbaF(double r, double g, double b, double alpha = 1)
+    {
+        return Color_t_FromRgba(static_cast<int>(r * 255 + 0.5),
+                                static_cast<int>(g * 255 + 0.5),
+                                static_cast<int>(b * 255 + 0.5),
+                                static_cast<int>(alpha * 255 + 0.5)
+                                );
+    }
+
+    // Note: Prerequisite for these functions is: Color_t_IsRgba(c) == true
+    inline UChar_t Color_t_Red(Color_t c) { return static_cast<UChar_t>((c & 0xFF)); }
+    inline UChar_t Color_t_Green(Color_t c) { return static_cast<UChar_t>((c & 0xFF00) >> 8); }
+    inline UChar_t Color_t_Blue(Color_t c) { return static_cast<UChar_t>((c & 0xFF0000) >> 16); }
+    inline UChar_t Color_t_Alpha(Color_t c)
+    {
+        // Values 0xff and 0 are reserved to mean classic Color_t. 
+        // Use values 1-128 with step granularity of two.
+        const UInt_t cu = static_cast<UInt_t>(c);
+        const auto rawVal = static_cast<UChar_t>((cu & 0xFF000000) >> 24);
+        return ((rawVal - 1) << 1) + ((rawVal == 0x80) ? 1 : 0);
+    }
+
+#else
+    typedef short        Color_t;   //Color number (short)
+#endif
+
+inline bool Color_t_IsRgba(Color_t c)
+{
+#ifdef QOOT_32BIT_COLOR_T
+    return ((c >> 24) != 0 && c != 0xffffffff); // Latter is for initialization of -1, which should be interpreted as classic Color_t.
+#else
+    return false;
+#endif
+}
+
+inline Short_t Color_t_ToIndex(Color_t c)
+{
+#ifdef QOOT_32BIT_COLOR_T
+    UShort_t c16 = static_cast<UShort_t>(c & 0xffff);
+    return static_cast<Short_t>(c16);
+#else
+    return c;
+#endif
+}
+
 typedef short          SCoord_t;    //Screen coordinates (short)
 typedef double         Coord_t;     //Pad world coordinates (double)
 typedef float          Angle_t;     //Graphics angle (float)
@@ -397,7 +469,7 @@ static const char *ImplFileName();
 #define ClassImp(name)
 #else
 #define ClassImpUnique(name,key) \
-   namespace ROOTDict { \
+namespace ROOTDict { \
       ::ROOT::TGenericClassInfo *GenerateInitInstance(const name*); \
       static int _R__UNIQUE_(_NAME2_(R__dummyint,key)) = \
          GenerateInitInstance(( name*)0x0)->SetImplFile(__FILE__, __LINE__); \

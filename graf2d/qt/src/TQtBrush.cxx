@@ -173,8 +173,16 @@ void  TQtBrush::SetFillAttributes(const TAttFill &rootFillAttributes)
  {
    // Set color index for to fill shapes
    //  cindex    : color index
-    if (cindex >= 0)  SetColor(gQt->ColorIndex(gQt->UpdateColor(cindex)));
-    else fAlpha = cindex;
+
+     if (Color_t_IsRgba(cindex))
+     {
+         setColor(Color_t_ToQColor(cindex));
+     }
+     else
+     {
+         if (cindex >= 0)  SetColor(gQt->ColorIndex(gQt->UpdateColor(cindex)));
+         else fAlpha = cindex;
+     }
  }
 //______________________________________________________________________________
 void TQtBrush::SetColor(const QColor &qtcolor)

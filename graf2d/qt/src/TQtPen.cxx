@@ -66,7 +66,10 @@ void  TQtPen::SetLineColor(Color_t cindex)
 
   if (fLineColor != cindex) {
     fLineColor = cindex;
-    if (fLineColor >= 0)  setColor(gQt->ColorIndex(gQt->UpdateColor(fLineColor)));
+    if (Color_t_IsRgba(fLineColor))
+        setColor(Color_t_ToQColor(fLineColor));
+    else if (Color_t_ToIndex(fLineColor) >= 0)
+        setColor(gQt->ColorIndex(gQt->UpdateColor(Color_t_ToIndex(fLineColor))));
   }
 }
 //______________________________________________________________________________

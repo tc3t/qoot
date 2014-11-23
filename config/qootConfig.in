@@ -1,0 +1,6 @@
+#ifndef QOOT_CONFIG_IN
+#define QOOT_CONFIG_IN
+
+#define QOOT_32BIT_COLOR_T  @qoot_32bit_color_t@
+
+#endif

@@ -1132,8 +1132,11 @@ Int_t TGQt::OpenPixmap(UInt_t w, UInt_t h)
 }
 
 //______________________________________________________________________________
-const QColor &TGQt::ColorIndex(Color_t ic) const
+QColor TGQt::ColorIndex(Color_t ic) const
 {
+    if (Color_t_IsRgba(ic))
+        return Color_t_ToQColor(ic);
+
    // Define the QColor object by ROOT color index
    QColor *colorBuffer=0;
    static QColor unknownColor;
@@ -2178,7 +2181,9 @@ void  TGQt::SetLineColor(Color_t cindex)
 
   if (fLineColor != cindex) {
     fLineColor = UpdateColor(cindex);
-    if (fLineColor >= 0) fQPen->SetLineColor(fLineColor);
+    //if (fLineColor >= 0) fQPen->SetLineColor(fLineColor);
+    if (Color_t_IsRgba(fLineColor) || Color_t_ToIndex(fLineColor) >= 0)
+        fQPen->SetLineColor(fLineColor);
   }
 }
 
@@ -2495,6 +2500,9 @@ void  TGQt::SetMarkerType( int type, int n, TPoint *xy )
 //______________________________________________________________________________
 int  TGQt::UpdateColor(int cindex)
 {
+    if (Color_t_IsRgba(cindex))
+        return cindex;
+
    // [protected] update the color parameters if needed.
 #define BIGGEST_RGB_VALUE 255  // 65535
    //  if (fSelectedWindow == NoOperation) return;

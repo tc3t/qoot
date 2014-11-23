@@ -115,6 +115,12 @@ else()
   set(aclocaldir ${prefix}/${CMAKE_INSTALL_ACLOCALDIR})
 endif()
 
+if(qoot_32bit_color_t)
+    set(qoot_32bit_color_t 1)
+else()
+    set(qoot_32bit_color_t 0)
+endif()
+
 set(LibSuffix ${SOEXT})
 
 set(buildx11 ${value${x11}})
@@ -458,6 +464,10 @@ execute_process(COMMAND cmake -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/t
 #---RConfigure.h---------------------------------------------------------------------------------------------
 configure_file(${PROJECT_SOURCE_DIR}/config/RConfigure.in include/RConfigure.h)
 install(FILES ${CMAKE_BINARY_DIR}/include/RConfigure.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+#---qootConfig.h---------------------------------------------------------------------------------------------
+configure_file(${PROJECT_SOURCE_DIR}/config/qootConfig.in include/qootConfig.h)
+install(FILES ${CMAKE_BINARY_DIR}/include/qootConfig.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 #---Configure and install various files----------------------------------------------------------------------
 execute_Process(COMMAND hostname OUTPUT_VARIABLE BuildNodeInfo OUTPUT_STRIP_TRAILING_WHITESPACE )
