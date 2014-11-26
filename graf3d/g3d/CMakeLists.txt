@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building ROOT graf3d/g3d package
 ############################################################################
 
+if(graf3d)
+
 set(libname Graf3d)
 
 ROOT_USE_PACKAGE(hist/hist)
@@ -15,3 +17,4 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF LinkDef.h DEPENDENCIES Graf Hist Gpad M
 ROOT_LINKER_LIBRARY(${libname} *.cxx *.c G__G3D.cxx DEPENDENCIES Graf Hist Gpad MathCore)
 ROOT_INSTALL_HEADERS()
 
+endif()

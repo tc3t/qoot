@@ -15,7 +15,7 @@ file(GLOB CINT_CXX_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cxx)
 list(APPEND CINT_CXX_SRCS  
             ${CMAKE_CURRENT_SOURCE_DIR}/src/dict/Apiif.cxx
             ${CMAKE_CURRENT_SOURCE_DIR}/src/dict/stdstrct.cxx)
-			
+            
 list(REMOVE_ITEM CINT_CXX_SRCS
             ${CMAKE_CURRENT_SOURCE_DIR}/src/config/sunos.cxx 
             ${CMAKE_CURRENT_SOURCE_DIR}/src/config/macos.cxx 
@@ -142,7 +142,9 @@ endif()
 ROOT_LINKER_LIBRARY(Cint loadfile.cxx LIBRARIES Cint_static ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
 
 #---Create the cint cint executable-------------------------------------------------------------------------
-ROOT_EXECUTABLE(cint.exe ${CMAKE_CURRENT_SOURCE_DIR}/main/cppmain.cxx LIBRARIES Cint NOINSTALL)
+if(cint_exe)
+    ROOT_EXECUTABLE(cint.exe ${CMAKE_CURRENT_SOURCE_DIR}/main/cppmain.cxx LIBRARIES Cint NOINSTALL)
+endif()
 
 #---Create the temporary cint_tmp executable----------------------------------------------------------------
 ROOT_EXECUTABLE(cint_tmp ${CMAKE_CURRENT_SOURCE_DIR}/main/cppmain.cxx 

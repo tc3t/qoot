@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building ROOT math/smatrix package
 ############################################################################
 
+if(smatrix)
+
 set(libname Smatrix)
 
 ROOT_USE_PACKAGE(math)
@@ -19,3 +21,4 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF LinkDef.h )
 ROOT_LINKER_LIBRARY(${libname} G__${libname}.cxx G__${libname}32.cxx LIBRARIES Core Cint)
 ROOT_INSTALL_HEADERS()
 
+endif()

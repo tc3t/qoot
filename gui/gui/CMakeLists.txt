@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building ROOT gui/gui package
 ############################################################################
 
+if(gui)
+
 ROOT_USE_PACKAGE(hist/hist)
 ROOT_USE_PACKAGE(net/net)
 ROOT_USE_PACKAGE(core/rint)
@@ -44,3 +46,4 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF LinkDef1.h  LinkDef2.h LinkDef3.h DEPEN
 ROOT_LINKER_LIBRARY(${libname} *.cxx G__Gui1.cxx G__Gui2.cxx G__Gui3.cxx LIBRARIES Cint Core DEPENDENCIES Gpad Graf MathCore)
 ROOT_INSTALL_HEADERS()
 
+endif()

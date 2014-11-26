@@ -8,7 +8,7 @@ add_subdirectory(gpad)
 add_subdirectory(graf)
 add_subdirectory(postscript)
 add_subdirectory(mathtext)
-if(WIN32)
+if(win32gdk)
   add_subdirectory(win32gdk)
 elseif(x11)
   add_subdirectory(x11)         # special CMakeLists.txt

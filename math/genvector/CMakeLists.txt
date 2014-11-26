@@ -2,6 +2,8 @@
 # CMakeLists.txt file for building ROOT math/genvector package
 ############################################################################
 
+if(genvector)
+
 set(libname GenVector)
 ROOT_USE_PACKAGE(math)
 
@@ -30,3 +32,4 @@ ROOT_GENERATE_ROOTMAP(${libname} LINKDEF Math/LinkDef_GenVector.h
 ROOT_LINKER_LIBRARY(${libname} *.cxx G__${libname}.cxx G__${libname}32.cxx LIBRARIES Core Cint)
 ROOT_INSTALL_HEADERS()
 
+endif()

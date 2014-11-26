@@ -1,1 +1,3 @@
-ROOT_LINKER_LIBRARY(mathtext *.cxx TYPE STATIC)
+if(mathtext)
+    ROOT_LINKER_LIBRARY(mathtext *.cxx TYPE STATIC)
+endif()

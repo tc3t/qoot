@@ -2,6 +2,9 @@
 # CMakeLists.txt file for building ROOT graf2d/win32gdk package
 # @author Pere Mato, CERN
 ############################################################################
+
+if(win32gdk)
+
 ROOT_USE_PACKAGE(gui/gui)
 include_directories(${FREETYPE_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/gdk/src 
 					${CMAKE_CURRENT_SOURCE_DIR}/gdk/src/gdk
@@ -108,3 +111,5 @@ install(FILES  ${gdkdlla}
 			   DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 ROOT_INSTALL_HEADERS()
+
+endif()
