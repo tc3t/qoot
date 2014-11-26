@@ -191,7 +191,7 @@ typedef short          Width_t;     //Line width (short)
 
 inline bool Color_t_IsRgba(Color_t c)
 {
-#ifdef QOOT_32BIT_COLOR_T
+#if QOOT_32BIT_COLOR_T
     return ((c >> 24) != 0 && c != 0xffffffff); // Latter is for initialization of -1, which should be interpreted as classic Color_t.
 #else
     return false;
@@ -200,7 +200,7 @@ inline bool Color_t_IsRgba(Color_t c)
 
 inline Short_t Color_t_ToIndex(Color_t c)
 {
-#ifdef QOOT_32BIT_COLOR_T
+#if QOOT_32BIT_COLOR_T
     UShort_t c16 = static_cast<UShort_t>(c & 0xffff);
     return static_cast<Short_t>(c16);
 #else

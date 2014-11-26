@@ -82,7 +82,7 @@ class TQtFeedBackWidget;
 
 inline QColor Color_t_ToQColor(Color_t c)
 {
-#ifdef QOOT_32BIT_COLOR_T
+#if QOOT_32BIT_COLOR_T
     return QColor(Color_t_Red(c), Color_t_Green(c), Color_t_Blue(c), Color_t_Alpha(c));
 #else
     return QColor();
