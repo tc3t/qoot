@@ -204,13 +204,13 @@ Gui.Factory:                qtgui
 Root.PadEditor:             QtGed
 # GUI style: Modern (flat popup menus) or Classic (win 95 style)
 Gui.Style:                  Modern
-Gui.DefaultFont:            -*-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1
-Gui.MenuFont:               -*-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1
-Gui.MenuHiFont:             -*-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1
-Gui.DocFixedFont:           -*-courier-medium-r-*-*-12-*-*-*-*-*-iso8859-1
-Gui.DocPropFont:            -*-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1
-Gui.IconFont:               -*-helvetica-medium-r-*-*-10-*-*-*-*-*-iso8859-1
-Gui.StatusFont:             -*-helvetica-medium-r-*-*-10-*-*-*-*-*-iso8859-1
+Gui.DefaultFont:            qt-default
+Gui.MenuFont:               qt-default
+Gui.MenuHiFont:             qt-default
+Gui.DocFixedFont:           qt-default
+Gui.DocPropFont:            qt-default
+Gui.IconFont:               qt-default
+Gui.StatusFont:             qt-default
 Gui.BackgroundColor:         #e0e0e0
 Gui.ForegroundColor:         black
 Gui.HighLightColor:          #d0d0d0

@@ -926,8 +926,8 @@ Bool_t TGQt::Init(void* /*display*/)
 
    //  Query the default font for Widget decoration.
    fFontTextCode = "ISO8859-1";
-   const char *default_font =
-      gEnv->GetValue("Gui.DefaultFont",  "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
+   const char *default_font = gEnv->GetValue("Gui.DefaultFont", "qt-default");
+      //gEnv->GetValue("Gui.DefaultFont",  "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
    QFont *dfFont = (QFont *)LoadQueryFont(default_font);
    QApplication::setFont(*dfFont);
    delete dfFont;
