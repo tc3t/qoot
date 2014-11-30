@@ -87,7 +87,7 @@ TApplicationImp *TQtGUIFactory::CreateApplicationImp(const char *classname, int 
 void TQtGUIFactory::CreateQClient()
 { 
     // gSystem->Load("libGui");
-    if (!gClient) new TGClient();
+    //if (!gClient) new TGClient();
    // ((TGQt *)TGQt::GetVirtualX())->SetQClientFilter(new TQClientFilter(new TGClient()));
 }
 //______________________________________________________________________________

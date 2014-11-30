@@ -38,10 +38,12 @@ if(builtin_freetype)
   add_dependencies(ASImage FREETYPE)
 endif()
 
-ROOT_GENERATE_DICTIONARY(G__ASImageGui TASPaletteEditor.h LINKDEF LinkDefGui.h)
-ROOT_GENERATE_ROOTMAP(ASImageGui LINKDEF LinkDefGui.h DEPENDENCIES Graf Hist Gui ASImage RIO )
-ROOT_LINKER_LIBRARY(ASImageGui TASPaletteEditor.cxx G__ASImageGui.cxx 
-                    LIBRARIES ${AFTERIMAGE_LIBRARIES} ${FREETYPE_LIBRARIES} ${ASEXTRA_LIBRARIES} ${X11_LIBRARIES}
-                    ${ZLIB_LIBRARY} DEPENDENCIES Gui ASImage)
+if(gui)
+  ROOT_GENERATE_DICTIONARY(G__ASImageGui TASPaletteEditor.h LINKDEF LinkDefGui.h)
+  ROOT_GENERATE_ROOTMAP(ASImageGui LINKDEF LinkDefGui.h DEPENDENCIES Graf Hist Gui ASImage RIO )
+  ROOT_LINKER_LIBRARY(ASImageGui TASPaletteEditor.cxx G__ASImageGui.cxx 
+                      LIBRARIES ${AFTERIMAGE_LIBRARIES} ${FREETYPE_LIBRARIES} ${ASEXTRA_LIBRARIES} ${X11_LIBRARIES}
+                      ${ZLIB_LIBRARY} DEPENDENCIES Gui ASImage)
+endif()
 
 ROOT_INSTALL_HEADERS()

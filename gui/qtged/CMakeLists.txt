@@ -22,7 +22,7 @@ endif()
 ROOT_GENERATE_DICTIONARY(G__QtGed TQtGedAttFrame.h TQtPadEditor.h TQtAxisEditor.h
                         TQtArrowEditor.h TQtLineEditor.h TQtMarkerEditor.h TQtGraphEditor.h
                         TQtGedEditor.h TQtGedFrames.h LINKDEF LinkDef.h)
-ROOT_GENERATE_ROOTMAP(QtGed LINKDEF LinkDef.h DEPENDENCIES Gui GQt )
+ROOT_GENERATE_ROOTMAP(QtGed LINKDEF LinkDef.h DEPENDENCIES GQt )
 ROOT_LINKER_LIBRARY(QtGed *.cxx ${HEADERS} ${mocfiles} G__QtGed.cxx LIBRARIES Core DEPENDENCIES QtGui GQt)
 
 if(qt5)

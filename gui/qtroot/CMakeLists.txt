@@ -22,8 +22,11 @@ endif()
 #endif()
 
 ROOT_GENERATE_DICTIONARY(G__QtRoot TQtRootGuiFactory.h LINKDEF LinkDef.h)
-ROOT_GENERATE_ROOTMAP(QtRoot LINKDEF LinkDef.h DEPENDENCIES Gui GQt )
-ROOT_LINKER_LIBRARY(QtRoot *.cxx ${mocfiles} G__QtRoot.cxx LIBRARIES Core DEPENDENCIES Gui GQt)
+#ROOT_GENERATE_ROOTMAP(QtRoot LINKDEF LinkDef.h DEPENDENCIES Gui GQt )
+#ROOT_LINKER_LIBRARY(QtRoot *.cxx ${mocfiles} G__QtRoot.cxx LIBRARIES Core DEPENDENCIES Gui GQt)
+ROOT_GENERATE_ROOTMAP(QtRoot LINKDEF LinkDef.h DEPENDENCIES GQt )
+ROOT_LINKER_LIBRARY(QtRoot *.cxx ${mocfiles} G__QtRoot.cxx LIBRARIES Core DEPENDENCIES GQt)
+
 
 if(qt5)
   qt5_use_modules(QtRoot Widgets PrintSupport)

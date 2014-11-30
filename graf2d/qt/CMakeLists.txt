@@ -31,7 +31,8 @@ endif()
 ROOT_GENERATE_DICTIONARY(G__GQt ${headers} LINKDEF LinkDef.h)
 ROOT_GENERATE_ROOTMAP(GQt LINKDEF LinkDef.h DEPENDENCIES Gui Gpad Graf Rint)
 
-ROOT_LINKER_LIBRARY(GQt *.cxx ${mocfiles} G__GQt.cxx LIBRARIES ${QT_LIBRARIES} DEPENDENCIES Gui Gpad Graf Rint)
+ROOT_LINKER_LIBRARY(GQt *.cxx ${mocfiles} G__GQt.cxx LIBRARIES ${QT_LIBRARIES} DEPENDENCIES Gpad Graf Rint)
+#ROOT_LINKER_LIBRARY(GQt *.cxx ${mocfiles} G__GQt.cxx LIBRARIES ${QT_LIBRARIES} DEPENDENCIES Gui Gpad Graf Rint)
 
 if(qt5)
   qt5_use_modules(GQt Widgets)

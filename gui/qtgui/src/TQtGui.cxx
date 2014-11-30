@@ -95,7 +95,8 @@ const QPixmap &TQtGui::GetPicture(const char *pictureName)
       }
 
       // Get ROOT Icon path:
-      QString iconPath = ".";
+      const QString iconPath = RootIconPath();
+      /*
       if (gClient) {
          // see: TGResourcePool::TGResourcePool
          TGPicturePool *pool  = gClient->GetPicturePool();
@@ -104,13 +105,16 @@ const QPixmap &TQtGui::GetPicture(const char *pictureName)
       }  else {
          iconPath = RootIconPath();
       }
+      */
       char *picnam = 0;
       picnam = gSystem->Which(iconPath.toLatin1().data(), pname.toLatin1(), kReadPermission);
       if (picnam) {
          p.load(picnam);
          AddPicture(p,pname.toLatin1(),kFALSE);
          pp = QPixmapCache::find(pname);
+         delete[] picnam;
       }
+      
    }
    if (!gDummyIcon && !pp) gDummyIcon = new QPixmap();
    return pp ? *pp : *gDummyIcon;

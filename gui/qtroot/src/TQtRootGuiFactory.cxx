@@ -25,7 +25,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "TQtRootGuiFactory.h"
-#include "TRootGuiFactory.h"
+//#include "TRootGuiFactory.h"
 #include "TQtRConfig.h"
 
 #include "TApplication.h"
@@ -65,7 +65,8 @@ TQtRootGuiFactory::TQtRootGuiFactory()
    // Restore the right TVirtualX pointer      
    if (TGQt::GetVirtualX())  gVirtualX = TGQt::GetVirtualX();
    // gSystem->Load("libGui");
-   fGuiProxy = new TRootGuiFactory(); 
+   //fGuiProxy = new TRootGuiFactory();
+   fGuiProxy = nullptr;
 }
 
 //______________________________________________________________________________
@@ -76,7 +77,8 @@ TQtRootGuiFactory::TQtRootGuiFactory(const char *name, const char *title)
    // Restore the right TVirtualX pointer      
    if (TGQt::GetVirtualX())  gVirtualX = TGQt::GetVirtualX();
    // gSystem->Load("libGui");
-   fGuiProxy = new TRootGuiFactory(name,title); 
+   //fGuiProxy = new TRootGuiFactory(name,title); 
+   fGuiProxy = nullptr;
 }
 //______________________________________________________________________________
 TApplicationImp *TQtRootGuiFactory::CreateApplicationImp(const char *classname, int *argc, char **argv)
@@ -100,7 +102,7 @@ TApplicationImp *TQtRootGuiFactory::CreateApplicationImp(const char *classname, 
 //______________________________________________________________________________
 void TQtRootGuiFactory::CreateQClient()
 { 
-    gfQtClient = new TGClient();
+    //gfQtClient = new TGClient();
    // ((TQt *)TQt::GetVirtualX())->SetQClientFilter(new TQClientFilter(new TGClient()));
 }
 

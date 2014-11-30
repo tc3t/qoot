@@ -37,8 +37,11 @@ ROOT_GENERATE_DICTIONARY(G__QtGui TBrowserCustom.h TEmbeddedPad.h
 						TQtColorSelect.h TQtMarkerSelect.h TQtPatternSelect.h
 						TQtPixmapBox.h TQtGuiFactory.h
 						LINKDEF LinkDef.h)
-ROOT_GENERATE_ROOTMAP(QtGui LINKDEF LinkDef.h DEPENDENCIES Gui GQt )
-ROOT_LINKER_LIBRARY(QtGui *.cxx ${HEADERS} ${mocfiles} G__QtGui.cxx LIBRARIES Core DEPENDENCIES Gui GQt)
+#ROOT_GENERATE_ROOTMAP(QtGui LINKDEF LinkDef.h DEPENDENCIES Gui GQt )
+#ROOT_LINKER_LIBRARY(QtGui *.cxx ${HEADERS} ${mocfiles} G__QtGui.cxx LIBRARIES Core DEPENDENCIES Gui GQt)
+ROOT_GENERATE_ROOTMAP(QtGui LINKDEF LinkDef.h DEPENDENCIES GQt )
+ROOT_LINKER_LIBRARY(QtGui *.cxx ${HEADERS} ${mocfiles} G__QtGui.cxx LIBRARIES Core DEPENDENCIES GQt)
+
 
 if(qt5)
   qt5_use_modules(QtGui Widgets PrintSupport)
