@@ -850,7 +850,7 @@ Bool_t TGQt::Init(void* /*display*/)
 {
    //*-*-*-*-*-*-*-*-*-*-*-*-*-*Qt GUI initialization-*-*-*-*-*-*-*-*-*-*-*-*-*-*
    //*-*                        ========================                      *-*
-   fprintf(stderr,"** $Id$ this=%p\n",this);
+    qDebug() << "** TGQt ptr = " << this;
 #ifndef R__QTWIN32
    extern void qt_x11_set_global_double_buffer(bool);
 //   qt_x11_set_global_double_buffer(false);
@@ -906,7 +906,13 @@ Bool_t TGQt::Init(void* /*display*/)
    fCursors[kArrowHor]    = new QCursor(Qt::SizeHorCursor);   //   horizontal resize LoadCursor(NULL, IDC_SIZEWE);  // (display, XC_sb_h_double_arrow);
    fCursors[kArrowVer]    = new QCursor(Qt::SizeVerCursor);   //  vertical resize LoadCursor(NULL, IDC_SIZENS)  (display, XC_sb_v_double_arrow);
    fCursors[kHand]        = new QCursor(Qt::PointingHandCursor); //  a pointing hand LoadCursor(NULL, IDC_NO);      // (display, XC_hand2);
-   fCursors[kRotate]      = new QCursor(Qt::ForbiddenCursor); // - a slashed circle LoadCursor(NULL, IDC_ARROW);    // (display, XC_exchange);
+
+   // Create rotate-icon from icon file.
+   // TODO: Use Gui.IconPath
+   const char* pRootSys = gSystem->Getenv("ROOTSYS");
+   QString sIconPath = (pRootSys) ? pRootSys + QString("/icons/rotate.png") : QString();
+   fCursors[kRotate] = new QCursor(QPixmap(sIconPath).scaled(QSize(16, 16))); // - a slashed circle LoadCursor(NULL, IDC_ARROW);    // (display, XC_exchange);
+   
    fCursors[kPointer]     = new QCursor(Qt::ArrowCursor);     // standard arrow cursor  / (display, XC_left_ptr);
    fCursors[kArrowRight]  = new QCursor(Qt::UpArrowCursor);   // - upwards arrow LoadCursor(NULL, IDC_ARROW);   // XC_arrow
    fCursors[kCaret]       = new QCursor(Qt::IBeamCursor);     //  ibeam/text entry LoadCursor(NULL, IDC_IBEAM);   // XC_xterm
