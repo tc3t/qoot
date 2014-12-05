@@ -148,7 +148,7 @@ public:
    void              EmbedInto(Int_t winid, Int_t ww, Int_t wh);
    void              EnterLeave(TPad *prevSelPad, TObject *prevSelObj);
    void              FeedbackMode(Bool_t set);
-   void              Flush();
+   virtual void      Flush();
    void              UseCurrentStyle(); // *MENU*
    void              ForceUpdate() { fCanvasImp->ForceUpdate(); }
    const char       *GetDISPLAY() const {return fDISPLAY.Data();}
