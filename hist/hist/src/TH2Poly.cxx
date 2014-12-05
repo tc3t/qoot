@@ -455,7 +455,6 @@ void TH2Poly::ChangePartition(Int_t n, Int_t m)
    }
 }
 
-
 //______________________________________________________________________________
 void TH2Poly::ClearBinContents()
 {

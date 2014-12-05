@@ -137,7 +137,6 @@ set(extra_veto
   tree/tree2a.C
   tree/tree4.C
   roostats/rs401d_FeldmanCousins.C  # Takes too much time
-  roostats/rs_bernsteinCorrection.C # Takes too much output :-)
   roofit/rf104_classfactory.C
   histfactory/ModifyInterpolation.C
   tree/copytree2.C
@@ -202,7 +201,8 @@ set(benchmarks-depends tutorial-hsimple
                        tutorial-fit-fit1
                        tutorial-hist-h1draw
                        tutorial-geom-na49view
-                       tutorial-tree-ntuple1)
+                       tutorial-tree-ntuple1
+                       tutorial-io-hadd)
 
 #--many roostats tutorials depending on having creating the file first with histfactory
 foreach(tname  ModelInspector OneSidedFrequentistUpperLimitWithBands StandardBayesianMCMCDemo StandardBayesianNumericalDemo
@@ -269,7 +269,8 @@ if(ROOT_python_FOUND)
   set(pyroot-benchmarks-depends tutorial-pyroot-hsimple
                                 tutorial-pyroot-fit1
                                 tutorial-pyroot-na49view
-                                tutorial-pyroot-h1draw)
+                                tutorial-pyroot-h1draw
+                                tutorial-pyroot-ntuple1)
   set(pyroot-fit1-depends tutorial-pyroot-fillrandom)
   set(pyroot-na49view-depends tutorial-pyroot-geometry)
 
