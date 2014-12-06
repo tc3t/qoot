@@ -1,6 +1,6 @@
 ############################################################################
 # CMakeLists.txt file for building ROOT gui/qtgui package
-# This modified version of a file originally by Pere Mato, CERN
+# This is a modified version of a file originally by Pere Mato, CERN
 ############################################################################
 
 ROOT_USE_PACKAGE(graf2d/qt)

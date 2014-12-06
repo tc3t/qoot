@@ -1,6 +1,6 @@
 ############################################################################
 # CMakeLists.txt file for building ROOT graf2d/asimage package
-# This modified version of a file originally by Pere Mato, CERN
+# This is a modified version of a file originally by Pere Mato, CERN
 ############################################################################
 
 #---Build afterimage library------------------------------------------------
