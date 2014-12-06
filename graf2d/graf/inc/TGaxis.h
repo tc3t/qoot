@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/graf:$Id$
 // Author: Rene Brun, Olivier Couet   12/12/94
 

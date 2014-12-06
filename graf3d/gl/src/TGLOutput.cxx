@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gl:$Id$
 // Author:  Richard Maunder, Olivier Couet  02/07/2005
 

@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 /* -*- C++ -*- */
 /*************************************************************************
  * Copyright(c) 1995~2005  Masaharu Goto (root-cint@cern.ch)

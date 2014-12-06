@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/gui:$Name$:$Id: TQtPad2Html.cxx 3601 2013-02-24 04:20:15Z fineroot $
 // Author: Valeri Fine 07/06/2006
 /****************************************************************************

@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // mathtext - A TeX/LaTeX compatible rendering library. Copyright (C)
 // 2008-2012 Yue Shi Lai <ylai@users.sourceforge.net>
 //

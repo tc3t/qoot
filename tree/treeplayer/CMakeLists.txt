@@ -1,6 +1,6 @@
 ############################################################################
 # CMakeLists.txt file for building ROOT tree/treeplayer package
-# @author Pere Mato, CERN
+# This modified version of a file originally by Pere Mato, CERN
 ############################################################################
 
 if(treeplayer)

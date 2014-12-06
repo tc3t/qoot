@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/mathcore:$Id$
 // Author: L. Moneta Wed Aug 30 11:05:34 2006
 

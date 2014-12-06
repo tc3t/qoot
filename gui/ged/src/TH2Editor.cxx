@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/ged:$Id$
 // Author: Carsten Hof   09/08/04
 // Authors mail: Carsten_Hof@web.de

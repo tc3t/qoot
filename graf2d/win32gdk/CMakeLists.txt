@@ -1,6 +1,6 @@
 ############################################################################
 # CMakeLists.txt file for building ROOT graf2d/win32gdk package
-# @author Pere Mato, CERN
+# This modified version of a file originally by Pere Mato, CERN
 ############################################################################
 
 if(win32gdk)

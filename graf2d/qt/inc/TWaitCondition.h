@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 #ifndef ROOT_TWaitCondition
 #define ROOT_TWaitCondition
 
@@ -33,7 +39,7 @@ class TWaitCondition
    public:
      TWaitCondition()  {}
      ~TWaitCondition() {}
-	 bool wait (unsigned long time=ULONG_MAX ) { if (time) {/* Wait() */}  return true;}
+     bool wait (unsigned long time=ULONG_MAX ) { if (time) {/* Wait() */}  return true;}
      void wakeOne () { /* Release();*/  }
 };
 

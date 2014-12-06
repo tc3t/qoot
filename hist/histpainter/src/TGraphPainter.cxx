@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/histpainter:$Id: TGraphPainter.cxx,v 1.00
 // Author: Olivier Couet
 

@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/x11:$Id$
 // Author: Rene Brun, Olivier Couet, Fons Rademakers   28/11/94
 

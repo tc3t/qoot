@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // @(#)root/postscript:$Id: TPDF.cxx,v 1.0
 // Author: Olivier Couet
 

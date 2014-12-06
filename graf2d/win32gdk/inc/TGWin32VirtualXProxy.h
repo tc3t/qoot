@@ -1,3 +1,9 @@
+//
+//
+// THIS IS MODIFIED VERSION OF THE FILE, below are the original notes.
+// 
+//
+
 // $Id: TGWin32VirtualXProxy.h,v 1.14 2006/05/15 13:31:01 rdm Exp $
 // Author: Valeriy Onuchin  08/08/2003
 
