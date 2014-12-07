@@ -437,7 +437,7 @@ void TGraphPolargram::PaintPolarDivisions(Bool_t optionLabels)
          textangular->SetTextColor(GetPolarColorLabel());
          textangular->SetTextFont(GetPolarLabelFont());
 
-         const char* form = (char *)" ";
+         const char* form = " ";
          TGaxis axis;
          if (TestBit(TGraphPolargram::kLabelOrtho)) {
             // Polar numbers are aligned with their axis.
@@ -553,7 +553,7 @@ void TGraphPolargram::PaintPolarDivisions(Bool_t optionLabels)
          textangular->SetTextColor(GetPolarColorLabel());
          textangular->SetTextFont(GetPolarLabelFont());
 
-         const char* form = (char *)" ";
+         const char* form = " ";
          TGaxis axis;
 
          if (TestBit(TGraphPolargram::kLabelOrtho)) {

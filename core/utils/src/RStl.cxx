@@ -135,8 +135,8 @@ void ROOT::RStl::WriteStreamer(FILE *file, G__ClassInfo &stlcl)
    string shortTypeName = GetLong64_Name( TClassEdit::ShortType(stlcl.Name(),TClassEdit::kDropStlDefault) );
    string noConstTypeName( TClassEdit::CleanType(shortTypeName.c_str(),2) );
 
-   streamerName += G__map_cpp_name((char *)shortTypeName.c_str());
-   string typedefName = G__map_cpp_name((char *)shortTypeName.c_str());
+   streamerName += G__map_cpp_name(shortTypeName.c_str());
+   string typedefName = G__map_cpp_name(shortTypeName.c_str());
 
    int nestedLoc=0;
    vector<string> splitName;

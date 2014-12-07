@@ -5312,7 +5312,7 @@ Pixmap_t TGWin32::CreatePixmap(Drawable_t id, const char *bitmap,
    GdkWindow *wid = (GdkWindow *)id;
    if (!id) wid =  GDK_ROOT_PARENT();
 
-   return (Pixmap_t) gdk_pixmap_create_from_data(wid, (char *) bitmap, width,
+   return (Pixmap_t) gdk_pixmap_create_from_data(wid, bitmap, width,
                                                  height, depth, &fore, &back);
 }
 
@@ -5326,7 +5326,7 @@ Pixmap_t TGWin32::CreateBitmap(Drawable_t id, const char *bitmap,
    if (!id) wid =  GDK_ROOT_PARENT();
 
    Pixmap_t ret = (Pixmap_t) gdk_bitmap_create_from_data(wid,
-                                                 (char *)bitmap, width, height);
+                                                 bitmap, width, height);
    return ret;
 }
 
@@ -5471,7 +5471,7 @@ Bool_t TGWin32::ParseColor(Colormap_t cmap, const char *cname,
 
    GdkColor xc;
 
-   if (gdk_color_parse((char *)cname, &xc)) {
+   if (gdk_color_parse(cname, &xc)) {
       color.fPixel = xc.pixel = RGB(xc.red, xc.green, xc.blue);
       color.fRed = xc.red;
       color.fGreen = xc.green;

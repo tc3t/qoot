@@ -336,7 +336,7 @@ void TContextMenu::Execute(TObject *object, TFunction *method, const char *param
 
       gROOT->SetFromPopUp(kTRUE);
       if (object) {
-         object->Execute((char *) method->GetName(), params);
+         object->Execute(method->GetName(), params);
       } else {
          char *cmd = Form("%s(%s);", method->GetName(),params);
          gROOT->ProcessLine(cmd);

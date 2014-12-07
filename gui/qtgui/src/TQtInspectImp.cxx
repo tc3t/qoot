@@ -181,7 +181,7 @@ void TQtInspectWidget::AddValues()
           isdate = kTRUE;
        }
 //*-*- Encode data member name
-       line[kname] = (char *)(rd->GetName());
+       line[kname] = rd->GetName();
 
 //*-*- Encode data value or pointer value
        Int_t offset = rd->GetThisOffset();
@@ -224,7 +224,7 @@ void TQtInspectWidget::AddValues()
 
        if (strcmp(member->GetFullTypeName(), "char*") &&
            strcmp(member->GetFullTypeName(), "const char*")) {
-           line[ktitle] = (char *)member->GetTitle();
+           line[ktitle] = member->GetTitle();
        }
        if (tlink) {
          tlink->SetName(member->GetTypeName());

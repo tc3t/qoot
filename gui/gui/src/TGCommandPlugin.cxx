@@ -139,7 +139,7 @@ void TGCommandPlugin::HandleCommand()
       gROOT->ProcessLine(string);
       fComboCmd->InsertEntry(string, 0, -1);
       if (app->InheritsFrom("TRint"))
-         Gl_histadd((char *)string);
+         Gl_histadd(string);
       gSystem->RedirectOutput(0);
       fStatus->LoadFile(pathtmp.Data());
       fStatus->ShowBottom();

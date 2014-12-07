@@ -731,13 +731,13 @@ Bool_t TRootContextMenu::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
             case kCM_BUTTON:
                if (parm1 == 1) {
                   const char *args = fDialog->GetParameters();
-                  GetContextMenu()->Execute((char *)args);
+                  GetContextMenu()->Execute(args);
                   delete fDialog;
                   fDialog = 0;
                }
                if (parm1 == 2) {
                   const char *args = fDialog->GetParameters();
-                  GetContextMenu()->Execute((char *)args);
+                  GetContextMenu()->Execute(args);
                }
                if (parm1 == 3) {
                   delete fDialog;
@@ -760,7 +760,7 @@ Bool_t TRootContextMenu::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
             case kTE_ENTER:
                {
                   const char *args = fDialog->GetParameters();
-                  GetContextMenu()->Execute((char *)args);
+                  GetContextMenu()->Execute(args);
                   delete fDialog;
                   fDialog = 0;
                }

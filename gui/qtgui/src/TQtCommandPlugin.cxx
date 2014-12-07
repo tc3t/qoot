@@ -118,7 +118,7 @@ void TQtCommandPlugin::HandleCommand()
       gApplication->SetBit(TApplication::kProcessRemotely);
       gROOT->ProcessLine(string.toLatin1().data());
       if (app->InheritsFrom("TRint"))
-         Gl_histadd((char *)string.toLatin1().data());
+         Gl_histadd(string.toLatin1().data());
       gSystem->RedirectOutput(0);      
       if (fTempFile.open(QIODevice::ReadOnly)) {
             //fUi->fStatus->appendPlainText(fTempFile.readAll());
