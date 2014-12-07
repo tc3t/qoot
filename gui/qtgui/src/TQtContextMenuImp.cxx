@@ -154,10 +154,11 @@ void  TQtContextMenuImp::Dialog( TObject *object, TMethod *method )
   connect(d,SIGNAL(helpRequested()),this,SLOT(HelpCB()));
   if (d->exec() == QDialog::Accepted )  {
     TObjArray *parList = d->GetParamList();
-    if (fExecute) fExecute->Execute(object,method,parList);
-    // TContextMenu *c=GetContextMenu();
-    //  c->Execute(object,method,parList); 
-      if (fHelpWidget) {
+    //if (fExecute) fExecute->Execute(object,method,parList);
+    TContextMenu* c = GetContextMenu();
+    if (c)
+        c->Execute(object,method,parList); 
+    if (fHelpWidget) {
 #if QT_VERSION < 0x50000
           fHelpWidget->hide();
 #endif
