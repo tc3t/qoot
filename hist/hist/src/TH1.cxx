@@ -1271,7 +1271,8 @@ Int_t TH1::BufferEmpty(Int_t action)
       }
    }
 
-   FillN(nbentries,&fBuffer[2],&fBuffer[1],2);
+   // call DoFillN which will not put entries in the buffer as FillN does
+   DoFillN(nbentries,&fBuffer[2],&fBuffer[1],2);
 
    // if action == 1 - delete the buffer
    if (action > 0) {
@@ -1887,7 +1888,7 @@ Double_t TH1::Chi2TestX(const TH1* h2,  Double_t &chi2, Int_t &ndf, Int_t &igood
    TAxis *yaxis2 = h2->GetYaxis();
    TAxis *zaxis1 = this->GetZaxis();
    TAxis *zaxis2 = h2->GetZaxis();
-
+   
    Int_t nbinx1 = xaxis1->GetNbins();
    Int_t nbinx2 = xaxis2->GetNbins();
    Int_t nbiny1 = yaxis1->GetNbins();
@@ -3161,7 +3162,7 @@ Int_t TH1::Fill(Double_t x)
 //
 //   -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-   if (fBuffer) return BufferFill(x,1);
+   if (fBuffer)  return BufferFill(x,1);
 
    Int_t bin;
    fEntries++;
@@ -3194,6 +3195,7 @@ Int_t TH1::Fill(Double_t x, Double_t w)
 //
 //   -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
+   
    if (fBuffer) return BufferFill(x,w);
 
    Int_t bin;
@@ -3250,31 +3252,45 @@ Int_t TH1::Fill(const char *namex, Double_t w)
 //______________________________________________________________________________
 void TH1::FillN(Int_t ntimes, const Double_t *x, const Double_t *w, Int_t stride)
 {
-//   -*-*-*-*-*-*Fill this histogram with an array x and weights w*-*-*-*-*
-//               =================================================
-//
-//    ntimes:  number of entries in arrays x and w (array size must be ntimes*stride)
-//    x:       array of values to be histogrammed
-//    w:       array of weighs
-//    stride:  step size through arrays x and w
-//
-//    If the storage of the sum of squares of weights has been triggered,
-//    via the function Sumw2, then the sum of the squares of weights is incremented
-//    by w[i]^2 in the bin corresponding to x[i].
-//    if w is NULL each entry is assumed a weight=1
-//
-//   -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+   // Fill this histogram with an array x and weights w.
+   //
+   //    ntimes:  number of entries in arrays x and w (array size must be ntimes*stride)
+   //    x:       array of values to be histogrammed
+   //    w:       array of weighs
+   //    stride:  step size through arrays x and w
+   //
+   //    If the weight is not equal to 1, the storage of the sum of squares of
+   //    weights is automatically triggered and the sum of the squares of weights is incremented
+   //    by w^2 in the bin corresponding to x.
+   //    if w is NULL each entry is assumed a weight=1
+
+   
+   //If a buffer is activated, fill buffer
+   if (fBuffer) {
+      ntimes *= stride;
+      Int_t i = 0;
+      for (i=0;i<ntimes;i+=stride) {
+         if (!fBuffer) break;   // buffer can be deleted in BufferFill when is empty
+         if (w) BufferFill(x[i],w[i]);
+         else BufferFill(x[i], 1.);
+      }
+      // fill the remaining entries if the buffer has been deleted 
+      if (i < ntimes && fBuffer==0) 
+         DoFillN((ntimes-i)/stride,&x[i],&w[i],stride);
+      return;
+   }
+   // call internal method 
+   DoFillN(ntimes, x, w, stride);
+}
+
+//______________________________________________________________________________
+void TH1::DoFillN(Int_t ntimes, const Double_t *x, const Double_t *w, Int_t stride)
+{
+   // internal method to fill histogram content from a vector
+   // called directly by TH1::BufferEmpty
 
    Int_t bin,i;
-   //If a buffer is activated, go via standard Fill (sorry)
-   //if (fBuffer) {
-   //   for (i=0;i<ntimes;i+=stride) {
-   //      if (w) Fill(x[i],w[i]);
-   //      else   Fill(x[i],0);
-   //   }
-   //   return;
-   //}
-
+   
    fEntries += ntimes;
    Double_t ww = 1;
    Int_t nbins   = fXaxis.GetNbins();
@@ -6582,8 +6598,8 @@ void TH1::Print(Option_t *option) const
    //                     for all bins in the current range (default 1-->nbins)
    //  If option "all" is given, bin contents and errors are also printed
    //                     for all bins including under and overflows.
-   //
-   printf( "TH1.Print Name  = %s, Entries= %d, Total sum= %g\n",GetName(),Int_t(fEntries),GetSumOfWeights());
+
+   printf( "TH1.Print Name  = %s, Entries= %d, Total sum= %g\n",GetName(),Int_t(GetEntries()),GetSumOfWeights());
    TString opt = option;
    opt.ToLower();
    Int_t all;
@@ -7345,6 +7361,7 @@ Double_t TH1::GetSumOfWeights() const
 {
    //   -*-*-*-*-*-*Return the sum of weights excluding under/overflows*-*-*-*-*
    //               ===================================================
+
    Int_t bin,binx,biny,binz;
    Double_t sum =0;
    for(binz=1; binz<=fZaxis.GetNbins(); binz++) {
