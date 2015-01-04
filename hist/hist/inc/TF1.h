@@ -200,6 +200,7 @@ public:
    static  Double_t DerivativeError();
    virtual Int_t    DistancetoPrimitive(Int_t px, Int_t py);
    virtual void     Draw(Option_t *option="");
+   virtual void     DrawOnPad(TVirtualPad* pPad, Option_t* option = "");
    virtual TF1     *DrawCopy(Option_t *option="") const;
    virtual TObject *DrawDerivative(Option_t *option="al"); // *MENU*
    virtual TObject *DrawIntegral(Option_t *option="al");   // *MENU*

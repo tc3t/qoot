@@ -1411,25 +1411,32 @@ Int_t TF1::DistancetoPrimitive(Int_t px, Int_t py)
 //______________________________________________________________________________
 void TF1::Draw(Option_t *option)
 {
-   // Draw this function with its current attributes.
-   //
-   // Possible option values are:
-   //   "SAME"  superimpose on top of existing picture
-   //   "L"     connect all computed points with a straight line
-   //   "C"     connect all computed points with a smooth curve
-   //   "FC"    draw a fill area below a smooth curve
-   //
-   // Note that the default value is "L". Therefore to draw on top
-   // of an existing picture, specify option "LSAME"
-   //
-   // NB. You must use DrawCopy if you want to draw several times the same
-   //     function in the current canvas.
+    DrawOnPad(gPad, option);
+}
 
-   TString opt = option;
-   opt.ToLower();
-   if (gPad && !opt.Contains("same")) gPad->Clear();
 
-   AppendPad(option);
+//______________________________________________________________________________
+void TF1::DrawOnPad(TVirtualPad* pPad, Option_t* option)
+{
+    // Draw this function with its current attributes.
+    //
+    // Possible option values are:
+    //   "SAME"  superimpose on top of existing picture
+    //   "L"     connect all computed points with a straight line
+    //   "C"     connect all computed points with a smooth curve
+    //   "FC"    draw a fill area below a smooth curve
+    //
+    // Note that the default value is "L". Therefore to draw on top
+    // of an existing picture, specify option "LSAME"
+    //
+    // NB. You must use DrawCopy if you want to draw several times the same
+    //     function in the current canvas.
+
+    TString opt = option;
+    opt.ToLower();
+    if (pPad && !opt.Contains("same")) pPad->Clear();
+
+    AppendToPad(pPad, option);
 }
 
 

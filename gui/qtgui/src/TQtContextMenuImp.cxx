@@ -35,6 +35,12 @@
 #  include <qlabel.h>
 #endif /* QT_VERSION */
 
+#include <QGridLayout>
+#include <QLabel>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLineEdit>
+
 #include "TGQt.h"
 #include "TSystem.h"
 #include "TQtLock.h"
@@ -56,6 +62,8 @@
 #include "TQtApplication.h"
 #include "TQtObjectDialog.h"
 #include "TObjectExecute.h"
+
+#include <TF1.h>
 
 
 //______________________________________________________________________________
@@ -133,6 +141,14 @@ void TQtContextMenuImp::CreatePopup () {
     a->setToolTip(tr("Copy the object pointer to the clipboard"));
     a = fPopupMenu->addAction("&Browse",     this,SLOT(BrowseCB()));
     a->setToolTip(tr("Open the ROOT Object Browser"));
+    if (object && dynamic_cast<TVirtualPad*>(object) != nullptr)
+    {
+        QMenu* pMenu = fPopupMenu->addMenu(tr("&Insert item to pad"));
+        if (pMenu)
+        {
+            a = pMenu->addAction(tr("TF1"), this, SLOT(InsertItemToPad_TF1()));
+        }
+    }
   }
 }
 //______________________________________________________________________________
@@ -270,6 +286,46 @@ void TQtContextMenuImp::BrowseCB()
   TContextMenu *c = GetContextMenu();
   TObject *object = c? c->GetSelectedObject() : 0;
   if (object) new TBrowser(object->GetName(),object);
+}
+//______________________________________________________________________________
+void TQtContextMenuImp::InsertItemToPad_TF1()
+{
+    auto pC = GetContextMenu();
+    auto pPad = pC ? dynamic_cast<TVirtualPad*>(pC->GetSelectedObject())
+                    : nullptr;
+    if (pPad)
+    {
+        QDialog dlg;
+        dlg.setWindowTitle(tr("Define new TF1"));
+        QGridLayout* pLayout = new QGridLayout(&dlg);
+        auto pEditName = new QLineEdit(&dlg);
+        auto pEditFormula = new QLineEdit(&dlg);
+        auto pEditMinX = new QLineEdit(&dlg);
+        auto pEditMaxX = new QLineEdit(&dlg);
+        pLayout->addWidget(new QLabel(tr("Name"), &dlg), 0, 0);
+        pLayout->addWidget(pEditName, 0, 1);
+        pLayout->addWidget(new QLabel(tr("Formula"), &dlg), 1, 0);
+        pLayout->addWidget(pEditFormula, 1, 1);
+        pLayout->addWidget(new QLabel(tr("Minimum x"), &dlg), 2, 0);
+        pLayout->addWidget(pEditMinX, 2, 1);
+        pLayout->addWidget(new QLabel(tr("Maximum x"), &dlg), 3, 0);
+        pLayout->addWidget(pEditMaxX, 3, 1);
+        auto pDlgButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok |
+                                                    QDialogButtonBox::Cancel,
+                                                  &dlg);
+        connect(pDlgButtonBox, SIGNAL(accepted()), &dlg, SLOT(accept()));
+        connect(pDlgButtonBox, SIGNAL(rejected()), &dlg, SLOT(reject()));
+        pLayout->addWidget(pDlgButtonBox, 4, 1, 1, 1);
+        if (dlg.exec() == QDialog::Accepted)
+        {
+            pPad->CreateAndDrawPrimitive<TF1>("same",
+                                                pEditName->text().toLatin1(),
+                                                pEditFormula->text().toLatin1(),
+                                                pEditMinX->text().toDouble(),
+                                                pEditMaxX->text().toDouble());
+            pPad->Update();
+        }
+    }
 }
 //______________________________________________________________________________
 void TQtContextMenuImp::CopyCB()

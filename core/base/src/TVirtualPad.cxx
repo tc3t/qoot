@@ -153,6 +153,31 @@ TObject* TVirtualPad::InsertPrimitive(TObject* pObj, Option_t* option, int pos)
 }
 
 //______________________________________________________________________________
+TObject* TVirtualPad::AdoptPrimitive(TObject* pObj,
+                                      Option_t* option,
+                                      int pos)
+{
+    if (!pObj)
+        return nullptr;
+    pObj->SetBit(kCanDelete);
+    TObject* pAdded = (pos >= 0) ? InsertPrimitive(pObj, option, pos) 
+                                : AppendPrimitive(pObj, option);
+    if (!pAdded)
+        delete pObj; // If primitive couldn't be added, delete it to prevent
+                     // leaking.
+    return pAdded;
+}
+
+//______________________________________________________________________________
+TObject* TVirtualPad::AdoptAndDrawPrimitive(TObject* pObj, Option_t* opt)
+{
+    pObj->SetBit(kCanDelete);
+    pObj->DrawOnPad(this, opt);
+    // TODO: Make sure that pObj was added to this and delete pObj if not.
+    return pObj;
+}
+
+//______________________________________________________________________________
 TPickerStackGuard::TPickerStackGuard(TObject *obj)
 {
    // Scope-guards ctor, pushe the object on stack.

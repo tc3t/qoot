@@ -122,6 +122,7 @@ class TQtContextMenuImp : public QObject, public TContextMenuImp
    void  CopyCB();
    void  InspectCB();
    void  BrowseCB();
+   void  InsertItemToPad_TF1();
    void  HelpCB();
 signals:
    void AboutToShow(QMenu *, TContextMenu *);
