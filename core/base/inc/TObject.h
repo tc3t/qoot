@@ -51,6 +51,7 @@ class TBuffer;
 class TObjArray;
 class TMethod;
 class TTimer;
+class TVirtualPad;
 
 
 class TObject {
@@ -103,6 +104,7 @@ public:
    virtual ~TObject();
 
    virtual void        AppendPad(Option_t *option="");
+   virtual void        AppendToPad(TVirtualPad* pPad, Option_t *option = "");
    virtual void        Browse(TBrowser *b);
    virtual const char *ClassName() const;
    virtual void        Clear(Option_t * /*option*/ ="") { }
@@ -112,6 +114,7 @@ public:
    virtual void        Delete(Option_t *option=""); // *MENU*
    virtual Int_t       DistancetoPrimitive(Int_t px, Int_t py);
    virtual void        Draw(Option_t *option="");
+   virtual void        DrawOnPad(TVirtualPad* pPad, Option_t* option = "");
    virtual void        DrawClass() const; // *MENU*
    virtual TObject    *DrawClone(Option_t *option="") const; // *MENU*
    virtual void        Dump() const; // *MENU*

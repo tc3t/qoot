@@ -159,6 +159,13 @@ void THashList::AddAt(TObject *obj, Int_t idx)
 }
 
 //______________________________________________________________________________
+void THashList::AddAt(TObject *obj, Option_t *opt, Int_t idx)
+{
+    TList::AddAt(obj, opt, idx);
+    fTable->Add(obj);
+}
+
+//______________________________________________________________________________
 Float_t THashList::AverageCollisions() const
 {
    // Return the average collision rate. The higher the number the longer

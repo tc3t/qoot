@@ -85,6 +85,7 @@ public:
    virtual void      AddLast(TObject *obj);
    virtual void      AddLast(TObject *obj, Option_t *opt);
    virtual void      AddAt(TObject *obj, Int_t idx);
+   virtual void      AddAt(TObject *obj, Option_t *opt, Int_t idx);
    virtual void      AddAfter(const TObject *after, TObject *obj);
    virtual void      AddAfter(TObjLink *after, TObject *obj);
    virtual void      AddBefore(const TObject *before, TObject *obj);

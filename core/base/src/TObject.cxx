@@ -166,13 +166,19 @@ void TObject::AppendPad(Option_t *option)
    // Append graphics object to current pad. In case no current pad is set
    // yet, create a default canvas with the name "c1".
 
-   if (!gPad) {
+   if (!gPad)
       gROOT->MakeDefCanvas();
-   }
-   if (!gPad->IsEditable()) return;
-   SetBit(kMustCleanup);
-   gPad->GetListOfPrimitives()->Add(this,option);
-   gPad->Modified(kTRUE);
+
+    AppendToPad(gPad, option);
+}
+
+//______________________________________________________________________________
+void TObject::AppendToPad(TVirtualPad* pPad, Option_t *option)
+{
+    if (!pPad || !pPad->IsEditable())
+        return;
+    SetBit(kMustCleanup);
+    pPad->AppendPrimitive(this, option);
 }
 
 //______________________________________________________________________________
@@ -255,8 +261,16 @@ Int_t TObject::DistancetoPrimitive(Int_t, Int_t)
 void TObject::Draw(Option_t *option)
 {
    // Default Draw method for all objects
+   DrawOnPad(gPad, option);
+}
 
-   AppendPad(option);
+//______________________________________________________________________________
+void TObject::DrawOnPad(TVirtualPad* pPad, Option_t* option)
+{
+    if (pPad == nullptr && gPad == nullptr)
+        AppendPad(option);
+    else
+        AppendToPad(pPad, option);
 }
 
 //______________________________________________________________________________

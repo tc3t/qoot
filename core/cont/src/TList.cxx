@@ -281,6 +281,25 @@ void TList::AddAt(TObject *obj, Int_t idx)
 }
 
 //______________________________________________________________________________
+void TList::AddAt(TObject *obj, Option_t *opt, Int_t idx)
+{
+    // Insert object at position idx in the list with option.
+
+    if (IsArgNull("AddAt", obj)) return;
+
+    TObjLink *lnk = LinkAt(idx);
+    if (!lnk)
+        TList::AddLast(obj, opt);
+    else if (lnk == fFirst)
+        TList::AddFirst(obj, opt);
+    else {
+        NewOptLink(obj, opt, lnk->Prev());
+        fSize++;
+        Changed();
+    }
+}
+
+//______________________________________________________________________________
 TObject *TList::After(const TObject *obj) const
 {
    // Returns the object after object obj. Obj is found using the

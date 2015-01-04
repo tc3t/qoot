@@ -43,6 +43,7 @@ public:
    void      AddLast(TObject *obj) { Add(obj); }
    void      AddLast(TObject *obj, Option_t *opt) { Add(obj, opt); }
    void      AddAt(TObject *obj, Int_t) { Add(obj); }
+   void      AddAt(TObject *obj, Option_t*, Int_t) { Add(obj); }
    void      AddAfter(const TObject *, TObject *obj) { Add(obj); }
    void      AddAfter(TObjLink *, TObject *obj) { Add(obj); }
    void      AddBefore(const TObject *, TObject *obj) { Add(obj); }

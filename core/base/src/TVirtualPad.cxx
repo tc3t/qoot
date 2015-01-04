@@ -13,6 +13,7 @@
 #include "X3DBuffer.h"
 #include "TClass.h"
 #include "TThreadSlots.h"
+#include "TList.h"
 
 //______________________________________________________________________________
 //
@@ -128,6 +129,27 @@ void TVirtualPad::PopTopLevelSelectable()
 {
    // Does nothing, unless you implement your own picking.
    // Remove top level selectable and all its' children.
+}
+
+//______________________________________________________________________________
+TObject* TVirtualPad::AppendPrimitive(TObject* pObj, Option_t* option)
+{
+    auto pPrimitiveList = GetListOfPrimitives();
+    return InsertPrimitive(pObj, option, (pPrimitiveList) ?
+                                    pPrimitiveList->GetSize() : 0);
+}
+
+//______________________________________________________________________________
+TObject* TVirtualPad::InsertPrimitive(TObject* pObj, Option_t* option, int pos)
+{
+    auto pPrimitiveList = GetListOfPrimitives();
+    if (!pPrimitiveList)
+        return nullptr; // Primitive list is not part of TVirtualPad so would
+                        // need a new virtual function that creates one. For now
+                        // simply ignore insertion if list if not available.
+    pPrimitiveList->AddAt(pObj, option, pos);
+    Modified(kTRUE);
+    return pObj;
 }
 
 //______________________________________________________________________________
