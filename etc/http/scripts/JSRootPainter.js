@@ -24,8 +24,11 @@
    // list of user painters, called with arguments painter(vis, obj, opt)
    JSROOT.fDrawFunc = new Array;
 
-   JSROOT.addDrawFunc = function(_name, _func) {
-      JSROOT.fDrawFunc.push({ name:_name, func:_func });
+   // add draw function for the class
+   // one could specify supported options list, separated with ';'
+   // One could specify several draw functions for different draw options
+   JSROOT.addDrawFunc = function(_name, _func, _opt) {
+      JSROOT.fDrawFunc.push({ name:_name, func:_func, opt:_opt });
    }
 
    JSROOT.gStyle = {
@@ -77,51 +80,73 @@
       }
    }
 
-   /**
-    * @fn menu JSROOT.Painter.createmenu(event, menuname) Creates popup menu
-    */
-   JSROOT.Painter.createmenu = function(event, menuname) {
-
+   JSROOT.createMenu = function(menuname) {
       if (!menuname) menuname = "root_ctx_menu";
 
-      var xMousePosition = event.clientX + window.pageXOffset;
-      var yMousePosition = event.clientY + window.pageYOffset;
+      var menu = { divid: menuname, code:"", cnt: 1, funcs : {} };
 
-      var x = document.getElementById(menuname);
-      if (x) x.parentNode.removeChild(x);
+      menu.add = function(name, arg, func) {
+         if (name.indexOf("header:")==0) {
+            this.code += "<li class='ui-widget-header'>"+name.substr(7)+"</li>";
+            return;
+         }
 
-      var d = document.createElement('div');
-      d.setAttribute('class', 'ctxmenu');
-      d.setAttribute('id', menuname);
-      document.body.appendChild(d);
-      d.style.left = xMousePosition + "px";
-      d.style.top = yMousePosition + "px";
-      d.onmouseover = function(e) {
-         this.style.cursor = 'pointer';
-      }
-      d.onclick = function(e) {
-         var x = document.getElementById(menuname);
-         if (x) x.parentNode.removeChild(x);
-      }
+         if (name=="endsub:") { this.code += "</ul></li>"; return; }
+         var close_tag = "</li>";
+         if (name.indexOf("sub:")==0) { name = name.substr(4); close_tag="<ul>"; }
 
-      document.body.onclick = function(e) {
-         var x = document.getElementById(menuname);
-         if (x)
-            x.parentNode.removeChild(x);
+         if (typeof arg == 'function') { func = arg; arg = name; }
+
+         if ((arg==null) || (typeof arg != 'string')) arg = name;
+         this.code += "<li cnt='" + this.cnt + "' arg='" + arg + "'>" + name + close_tag;
+         if (typeof func == 'function') this.funcs[this.cnt] = func; // keep call-back function
+
+         this.cnt++;
       }
 
-      return d;
-   }
+      menu.size = function() { return this.cnt-1; }
 
-   /**
-    * @fn void JSROOT.Painter.menuitem(menu, txt, func) Add item into popup menu
-    */
-   JSROOT.Painter.menuitem = function(menu, txt, func) {
-      var p = document.createElement('p');
-      menu.appendChild(p);
-      p.onclick = func;
-      p.setAttribute('class', 'ctxline');
-      p.innerHTML = txt;
+      menu.addDrawMenu = function(menu_name, opts, call_back) {
+         if (opts==null) opts = new Array;
+         if (opts.length==0) opts.push("");
+
+         this.add((opts.length > 1) ? ("sub:" + menu_name) : menu_name, opts[0], call_back);
+         if (opts.length<2) return;
+
+         for (var i=0;i<opts.length;i++) {
+            var name = opts[i];
+            if (name=="") name = '&lt;dflt&gt;';
+            this.add(name, opts[i], call_back);
+         }
+         this.add("endsub:");
+      }
+
+      menu.remove = function() { $("#"+menuname).remove(); }
+
+      menu.show = function(event) {
+         menu.remove();
+
+         document.body.onclick = function(e) { menu.remove(); }
+
+         $(document.body).append('<ul id="' + menuname + '">' + this.code + '</ul>');
+
+         $("#" + menuname)
+            .css('left', event.clientX + window.pageXOffset)
+            .css('top', event.clientY + window.pageYOffset)
+            .attr('class', 'ctxmenu')
+            .menu({
+               items: "> :not(.ui-widget-header)",
+               select: function( event, ui ) {
+                  var arg = ui.item.attr('arg');
+                  var cnt = ui.item.attr('cnt');
+                  var func = cnt ? menu.funcs[cnt] : null;
+                  menu.remove();
+                  if (typeof func == 'function') func(arg);
+              }
+         });
+      }
+
+      return menu;
    }
 
    JSROOT.Painter.Coord = {
@@ -866,7 +891,7 @@
          this['_hitemname'] = name;
    }
 
-   JSROOT.TBasePainter.prototype.GetItemName = function(name) {
+   JSROOT.TBasePainter.prototype.GetItemName = function() {
       return ('_hitemname' in this) ? this['_hitemname'] : null;
    }
 
@@ -1137,15 +1162,16 @@
 
    JSROOT.TObjectPainter.prototype.ForEachPainter = function(userfunc) {
       // Iterate over all known painters
+
+      var painter = $("#" + this.divid).children().eq(0).prop('painter');
+      if (painter!=null) { userfunc(painter); return; }
+
       var svg_c = this.svg_canvas();
-      if (svg_c!=null) {
-         userfunc(svg_c['pad_painter']);
-         var painters = svg_c['pad_painter'].painters;
-         for (var k in painters) userfunc(painters[k]);
-      } else {
-         var painter = $("#" + this.divid).children().eq(0).prop('painter');
-         if (painter!=null) userfunc(painter);
-      }
+      if (svg_c==null) return;
+
+      userfunc(svg_c['pad_painter']);
+      var painters = svg_c['pad_painter'].painters;
+      for (var k in painters) userfunc(painters[k]);
    }
 
    JSROOT.TObjectPainter.prototype.Cleanup = function() {
@@ -4329,14 +4355,15 @@
          // suppress any running zomming
          closeAllExtras();
 
-         var menu = JSROOT.Painter.createmenu(d3.event, 'root_ctx_menu');
+         var menu = JSROOT.createMenu();
 
          menu['painter'] = pthis;
 
-         JSROOT.Painter.menuitem(menu, pthis.histo['fName']);
-         JSROOT.Painter.menuitem(menu, "----------------");
+         menu.add("header:"+ pthis.histo['fName']);
 
          pthis.FillContextMenu(menu);
+
+         menu.show(d3.event)
       }
 
       function startTouchSel() {
@@ -4663,17 +4690,11 @@
    }
 
    JSROOT.THistPainter.prototype.FillContextMenu = function(menu) {
-      JSROOT.Painter.menuitem(menu, "Unzoom X", function() {
-         menu['painter'].Unzoom(true, false);
-      });
-      JSROOT.Painter.menuitem(menu, "Unzoom Y", function() {
-         menu['painter'].Unzoom(false, true);
-      });
-      JSROOT.Painter.menuitem(menu, "Unzoom", function() {
-         menu['painter'].Unzoom(true, true);
-      });
+      menu.add("Unzoom X", function() { menu['painter'].Unzoom(true, false); });
+      menu.add("Unzoom Y", function() { menu['painter'].Unzoom(false, true); });
+      menu.add("Unzoom", function() { menu['painter'].Unzoom(true, true); });
 
-      JSROOT.Painter.menuitem(menu, JSROOT.gStyle.Tooltip ? "Disable tooltip" : "Enable tooltip", function() {
+      menu.add(JSROOT.gStyle.Tooltip ? "Disable tooltip" : "Enable tooltip", function() {
          JSROOT.gStyle.Tooltip = !JSROOT.gStyle.Tooltip;
          menu['painter'].RedrawPad();
       });
@@ -4682,21 +4703,19 @@
 
          var item = this.options.Logx > 0 ? "Linear X" : "Log X";
 
-         JSROOT.Painter.menuitem(menu, item, function() {
+         menu.add(item, function() {
             menu['painter'].options.Logx = 1 - menu['painter'].options.Logx;
             menu['painter'].RedrawPad();
          });
 
          var item = this.options.Logy > 0 ? "Linear Y" : "Log Y";
-         JSROOT.Painter.menuitem(menu, item, function() {
+         menu.add(item, function() {
             menu['painter'].options.Logy = 1 - menu['painter'].options.Logy;
             menu['painter'].RedrawPad();
          });
       }
       if (this.draw_content)
-         JSROOT.Painter.menuitem(menu, "Toggle stat", function() {
-            menu['painter'].ToggleStat();
-         });
+         menu.add("Toggle stat", function() { menu['painter'].ToggleStat(); });
    }
 
    // ======= TH1 painter================================================
@@ -5143,7 +5162,7 @@
    JSROOT.TH1Painter.prototype.FillContextMenu = function(menu) {
       JSROOT.THistPainter.prototype.FillContextMenu.call(this, menu);
       if (this.draw_content)
-         JSROOT.Painter.menuitem(menu, "Auto zoom-in", function() { menu['painter'].AutoZoom(); });
+         menu.add("Auto zoom-in", function() { menu['painter'].AutoZoom(); });
    }
 
    JSROOT.TH1Painter.prototype.AutoZoom = function() {
@@ -5151,16 +5170,14 @@
       var right = this.GetSelectIndex("x", "right", 1);
 
       var dist = (right - left);
-
-      if (dist == 0)
-         return;
-
-      var min = this.histo.getBinContent(left + 1);
+      if (dist == 0) return;
 
       // first find minimum
+      var min = this.histo.getBinContent(left + 1);
       for (var indx = left; indx < right; indx++)
          if (this.histo.getBinContent(indx + 1) < min)
             min = this.histo.getBinContent(indx + 1);
+      if (min>0) return; // if all points positive, no chance for autoscale
 
       while ((left < right) && (this.histo.getBinContent(left + 1) <= min)) left++;
       while ((left < right) && (this.histo.getBinContent(right) <= min)) right--;
@@ -5212,9 +5229,9 @@
 
    JSROOT.TH2Painter.prototype.FillContextMenu = function(menu) {
       JSROOT.THistPainter.prototype.FillContextMenu.call(this, menu);
-      JSROOT.Painter.menuitem(menu, "Auto zoom-in", function() { menu['painter'].AutoZoom(); });
-      JSROOT.Painter.menuitem(menu, "Draw in 3D", function() { menu['painter'].Draw3D(); });
-      JSROOT.Painter.menuitem(menu, "Toggle col", function() {
+      menu.add("Auto zoom-in", function() { menu['painter'].AutoZoom(); });
+      menu.add("Draw in 3D", function() { menu['painter'].Draw3D(); });
+      menu.add("Toggle col", function() {
          if (menu['painter'].options.Color == 0)
             menu['painter'].options.Color = JSROOT.gStyle.DefaultCol;
          else
@@ -5223,7 +5240,7 @@
       });
 
       if (this.options.Color > 0)
-         JSROOT.Painter.menuitem(menu, "Toggle colz", function() { menu['painter'].ToggleColz(); });
+         menu.add("Toggle colz", function() { menu['painter'].ToggleColz(); });
    }
 
    JSROOT.TH2Painter.prototype.FindPalette = function(remove) {
@@ -5268,13 +5285,13 @@
 
       if ((i1 == i2) || (j1 == j2)) return;
 
-      var min = this.histo.getBinContent(i1 + 1, j1 + 1);
-
       // first find minimum
+      var min = this.histo.getBinContent(i1 + 1, j1 + 1);
       for (var i = i1; i < i2; i++)
          for (var j = j1; j < j2; j++)
             if (this.histo.getBinContent(i + 1, j + 1) < min)
                min = this.histo.getBinContent(i + 1, j + 1);
+      if (min>0) return; // if all points positive, no chance for autoscale
 
       var ileft = i2, iright = i1, jleft = j2, jright = j1;
 
@@ -6649,6 +6666,128 @@
       return painter;
    }
 
+   // ===========================================================
+
+
+   JSROOT.TTreePlayer = function(itemname) {
+      JSROOT.TBasePainter.call(this);
+      this.SetItemName(itemname);
+      this.hpainter = null;
+      return this;
+   }
+
+   JSROOT.TTreePlayer.prototype = Object.create( JSROOT.TBasePainter.prototype );
+
+   JSROOT.TTreePlayer.prototype.Show = function(divid) {
+      this.drawid = divid + "_draw";
+
+      $("#" + divid)
+        .html("<div class='treedraw_buttons' style='padding-left:0.5em'>" +
+            "<button class='treedraw_exe'>Draw</button>" +
+            " Expr:<input class='treedraw_varexp' style='width:12em'></input> " +
+            "<button class='treedraw_more'>More</button>" +
+            "</div>" +
+            "<div id='" + this.drawid + "' style='width:100%'></div>");
+
+      var player = this;
+
+      $("#" + divid).find('.treedraw_exe').click(function() { player.PerformDraw(); });
+      $("#" + divid).find('.treedraw_varexp')
+           .val("px:py")
+           .keyup(function(e){
+               if(e.keyCode == 13) player.PerformDraw();
+            });
+
+      $("#" + divid).find('.treedraw_more').click(function() {
+         $(this).remove();
+         $("#" + divid).find(".treedraw_buttons")
+         .append(" Cut:<input class='treedraw_cut' style='width:8em'></input>"+
+                 " Opt:<input class='treedraw_opt' style='width:5em'></input>"+
+                 " Num:<input class='treedraw_number' style='width:7em'></input>" +
+                 " First:<input class='treedraw_first' style='width:7em'></input>");
+
+         $("#" + divid +" .treedraw_opt").val("");
+         $("#" + divid +" .treedraw_number").val("").spinner({ numberFormat: "n", min: 0, page: 1000});
+         $("#" + divid +" .treedraw_first").val("").spinner({ numberFormat: "n", min: 0, page: 1000});
+      });
+
+      this.CheckResize();
+
+      this.SetDivId(divid);
+   }
+
+   JSROOT.TTreePlayer.prototype.PerformDraw = function() {
+
+      var frame = $("#" + this.divid);
+
+      var url = this.GetItemName() + '/exe.json.gz?compact=3&method=Draw';
+      var expr = frame.find('.treedraw_varexp').val();
+      var hname = "h_tree_draw";
+
+      var pos = expr.indexOf(">>");
+      if (pos<0) {
+         expr += ">>" + hname;
+      } else {
+         hname = expr.substr(pos+2);
+         if (hname[0]=='+') hname = hname.substr(1);
+         var pos2 = hname.indexOf("(");
+         if (pos2>0) hname = hname.substr(0, pos2);
+      }
+
+      if (frame.find('.treedraw_more').length==0) {
+         var cut = frame.find('.treedraw_cut').val();
+         var option = frame.find('.treedraw_opt').val();
+         var nentries = frame.find('.treedraw_number').val();
+         var firstentry = frame.find('.treedraw_first').val();
+
+         url += '&prototype="const char*,const char*,Option_t*,Long64_t,Long64_t"&varexp="' + expr + '"&selection="' + cut + '"';
+
+         // if any of optional arguments specified, specify all of them
+         if ((option!="") || (nentries!="") || (firstentry!="")) {
+            if (nentries=="") nentries = "1000000000";
+            if (firstentry=="") firstentry = "0";
+            url += '&option="' + option + '"&nentries=' + nentries + '&firstentry=' + firstentry;
+         }
+      } else {
+         url += '&prototype="Option_t*"&opt="' + expr + '"';
+      }
+      url += '&_ret_object_=' + hname;
+
+      var player = this;
+
+      var req = JSROOT.NewHttpRequest(url, 'object', function(res) {
+         if (res==0) return;
+         $("#"+player.drawid).empty();
+         player.hpainter = JSROOT.draw(player.drawid, res)
+      });
+      req.send();
+   }
+
+   JSROOT.TTreePlayer.prototype.CheckResize = function(force) {
+      $("#" + this.drawid).width($("#" + this.divid).width());
+      var h = $("#" + this.divid).height();
+      var h0 = $("#" + this.divid +" .treedraw_buttons").height();
+      if (h>h0+30) $("#" + this.drawid).height(h - 1 - h0);
+
+      if (this.hpainter) {
+         this.hpainter.CheckResize(force);
+      }
+   }
+
+   JSROOT.drawTreePlayer = function(hpainter, itemname) {
+      var mdi = hpainter.CreateDisplay();
+      if (mdi == null) return null;
+
+      var frame = mdi.FindFrame(itemname, true);
+      if (frame==null) return null;
+
+      var divid = frame.attr('id');
+
+      var player = new JSROOT.TTreePlayer(itemname);
+      player.Show(divid);
+      return player;
+   }
+
    // =========== painter of hierarchical structures =================================
 
    JSROOT.HierarchyPainter = function(name, frameid) {
@@ -6896,10 +7035,12 @@
 
    JSROOT.HierarchyPainter.prototype.CheckCanDo = function(node) {
       var cando = { expand : false, display : false, scan : true, open : false,
-                    img1 : "", img2 : "", html : "", ctxt : false };
+                    img1 : "", img2 : "", html : "", ctxt : false, typename : "" };
 
       var kind = node["_kind"];
       if (kind == null) kind = "";
+
+      if (kind.indexOf("ROOT.") == 0) cando.typename = kind.slice(5);
 
       cando.expand = ('_more' in node);
 
@@ -6946,7 +7087,7 @@
          cando.img1 = 'img_question';
          cando.expand = false;
          cando.display = true;
-      } else if ((kind.indexOf("ROOT.") == 0) && JSROOT.canDraw(kind.slice(5))) {
+      } else if ((cando.typename != "") && JSROOT.canDraw(cando.typename)) {
          cando.img1 = "img_histo1d";
          cando.scan = false;
          cando.display = true;
@@ -7256,6 +7397,19 @@
       return JSROOT.draw(divid, obj, drawopt);
    }
 
+   JSROOT.HierarchyPainter.prototype.player = function(itemname, option, call_back) {
+      var item = this.Find(itemname);
+
+      var player_func = (item && ('_player' in item)) ?  JSROOT.findFunction(item._player) : null;
+
+      var res = null;
+
+      if (player_func && this.CreateDisplay())
+         res = player_func(this, itemname, option);
+
+      if (typeof call_back=='function') call_back(res);
+   }
+
    JSROOT.HierarchyPainter.prototype.display = function(itemname, drawopt, call_back) {
 
       function do_call_back(res) {
@@ -7270,8 +7424,14 @@
 
       var updating = drawopt=="update";
 
+      var item = h.Find(itemname);
+
+      if (item!=null) {
+         var cando = this.CheckCanDo(item);
+         if (!cando.display) return this.player(itemname, drawopt, call_back);
+      }
+
       if (updating) {
-         var item = h.Find(itemname);
          if ((item==null) || ('_doing_update' in item)) return do_call_back(null);
          item['_doing_update'] = true;
       }
@@ -7291,7 +7451,6 @@
          } else
          mdi.ForEachPainter(function(p, frame) {
             if (p.GetItemName() != itemname) return;
-            console.log("Find painter for " + itemname);
             painter = p;
             mdi.ActivateFrame(frame);
             painter.RedrawObject(obj);
@@ -7572,24 +7731,31 @@
 
       var node = this.Find(itemname);
       var cando = this.CheckCanDo(node);
+      var opts = JSROOT.getDrawOptions(cando.typename, 'nosame');
 
       if (cando.display)
-         JSROOT.Painter.menuitem(menu, "Draw", function() { painter.display(itemname); });
+         menu.addDrawMenu("Draw", opts, function(arg) { painter.display(itemname, arg); });
 
       if (cando.expand || cando.display)
-         JSROOT.Painter.menuitem(menu, "Expand", function() { painter.expand(itemname); });
+         menu.add("Expand", function() { painter.expand(itemname); });
 
       var drawurl = onlineprop.server + onlineprop.itemname + "/draw.htm";
-      if (this.IsMonitoring())
-         drawurl += "?monitoring=" + this.MonitoringInterval();
+      var separ = "?";
+      if (this.IsMonitoring()) {
+         drawurl += separ + "monitoring=" + this.MonitoringInterval();
+         separ = "&";
+      }
 
       if (cando.display)
-         JSROOT.Painter.menuitem(menu, "Draw in new window", function() { window.open(drawurl); });
+         menu.addDrawMenu("Draw in new window", opts, function(arg) { window.open(drawurl+separ+"opt=" +arg); });
 
       if (cando.display)
-         JSROOT.Painter.menuitem(menu, "Draw as png", function() {
+         menu.add("Draw as png", function() {
             window.open(onlineprop.server + onlineprop.itemname + "/root.png?w=400&h=300&opt=");
          });
+
+      if ('_player' in node)
+         menu.add("Player", function() { painter.player(itemname); });
    }
 
    JSROOT.HierarchyPainter.prototype.ShowStreamerInfo = function(sinfo) {
@@ -7634,12 +7800,12 @@
 
       var cando = this.CheckCanDo(hitem);
 
-      if (!cando.display && !cando.ctxt && (itemname!="")) return;
+      // if (!cando.display && !cando.ctxt && (itemname!="")) return;
 
       var onlineprop = this.GetOnlineProp(itemname);
       var fileprop = this.GetFileProp(itemname);
 
-      var menu = JSROOT.Painter.createmenu(event);
+      var menu = JSROOT.createMenu();
 
       function qualifyURL(url) {
          function escapeHTML(s) {
@@ -7684,23 +7850,31 @@
             addr += "items=" + JSON.stringify(items);
          }
 
-         JSROOT.Painter.menuitem(menu, "Direct link", function() { window.open(addr); });
-         JSROOT.Painter.menuitem(menu, "Only items", function() { window.open(addr + "&nobrowser"); });
+         menu.add("Direct link", function() { window.open(addr); });
+         menu.add("Only items", function() { window.open(addr + "&nobrowser"); });
       } else
       if (onlineprop != null) {
          this.FillOnlineMenu(menu, onlineprop, itemname);
       } else
       if (fileprop != null) {
-         JSROOT.Painter.menuitem(menu, "Draw", function() { painter.display(itemname); });
+
+         var opts = JSROOT.getDrawOptions(cando.typename, 'nosame');
+
+         menu.addDrawMenu("Draw", opts, function(arg) { painter.display(itemname, arg); });
+
          var filepath = qualifyURL(fileprop.fileurl);
          if (filepath.indexOf(JSROOT.source_dir) == 0)
             filepath = filepath.slice(JSROOT.source_dir.length);
-         JSROOT.Painter.menuitem(menu, "Draw in new window", function() {
-             window.open(JSROOT.source_dir + "index.htm?nobrowser&file=" + filepath + "&item=" + fileprop.itemname);
+
+         menu.addDrawMenu("Draw in new window", opts, function(arg) {
+            window.open(JSROOT.source_dir + "index.htm?nobrowser&file=" + filepath + "&item=" + fileprop.itemname+"&opt="+arg);
          });
       }
 
-      JSROOT.Painter.menuitem(menu, "Close", function() {});
+      if (menu.size()>0) {
+         menu.add("Close");
+         menu.show(event);
+      }
 
       return false;
    }
@@ -7723,13 +7897,13 @@
 
    JSROOT.HierarchyPainter.prototype.CreateDisplay = function(force) {
       if ('disp' in this) {
-         if (!force && this['disp'].NumDraw() > 0) return true;
+         if (!force && this['disp'].NumDraw() > 0) return this['disp'];
          this['disp'].Reset();
          delete this['disp'];
       }
 
       // check that we can found frame where drawing should be done
-      if (document.getElementById(this['disp_frameid']) == null) return false;
+      if (document.getElementById(this['disp_frameid']) == null) return null;
 
       if (this['disp_kind'] == "tabs")
          this['disp'] = new JSROOT.TabsDisplay(this['disp_frameid']);
@@ -7739,7 +7913,7 @@
       else
          this['disp'] = new JSROOT.CollapsibleDisplay(this['disp_frameid']);
 
-      return true;
+      return this['disp'];
    }
 
    JSROOT.HierarchyPainter.prototype.CheckResize = function(force) {
@@ -7798,9 +7972,16 @@
    }
 
    JSROOT.MDIDisplay.prototype.CheckResize = function() {
-      this.ForEachPainter(function(painter) {
-         if ((painter.GetItemName()!=null) && (typeof painter['CheckResize'] == 'function'))
-             painter.CheckResize();
+      // perform resize for each frame
+      var resized_frame = null;
+
+      this.ForEachPainter(function(painter, frame) {
+         if ((painter.GetItemName()!=null) && (typeof painter['CheckResize'] == 'function')) {
+            // do not call resize for many painters on the same frame
+            if (resized_frame === frame) return;
+            painter.CheckResize();
+            resized_frame = frame;
+         }
       });
    }
 
@@ -8188,31 +8369,76 @@
    JSROOT.addDrawFunc("TLatex", JSROOT.Painter.drawText);
    JSROOT.addDrawFunc("TText", JSROOT.Painter.drawText);
    JSROOT.addDrawFunc("TPaveLabel", JSROOT.Painter.drawText);
-   JSROOT.addDrawFunc(/^TH1/, JSROOT.Painter.drawHistogram1D);
-   JSROOT.addDrawFunc("TProfile", JSROOT.Painter.drawHistogram1D);
-   JSROOT.addDrawFunc(/^TH2/, JSROOT.Painter.drawHistogram2D);
+   JSROOT.addDrawFunc(/^TH1/, JSROOT.Painter.drawHistogram1D, ";P;P0;same");
+   JSROOT.addDrawFunc("TProfile", JSROOT.Painter.drawHistogram1D, ";E1");
+   JSROOT.addDrawFunc(/^TH2/, JSROOT.Painter.drawHistogram2D, ";COL;COLZ;COL3;LEGO;same");
    JSROOT.addDrawFunc(/^TH3/, JSROOT.Painter.drawHistogram3D);
    JSROOT.addDrawFunc("THStack", JSROOT.Painter.drawHStack);
    JSROOT.addDrawFunc("TF1", JSROOT.Painter.drawFunction);
-   JSROOT.addDrawFunc(/^TGraph/, JSROOT.Painter.drawGraph);
-   JSROOT.addDrawFunc("TCutG", JSROOT.Painter.drawGraph);
-   JSROOT.addDrawFunc(/^RooHist/, JSROOT.Painter.drawGraph);
-   JSROOT.addDrawFunc(/^RooCurve/, JSROOT.Painter.drawGraph);
+   JSROOT.addDrawFunc(/^TGraph/, JSROOT.Painter.drawGraph,";L;P");
+   JSROOT.addDrawFunc("TCutG", JSROOT.Painter.drawGraph,";L;P");
+   JSROOT.addDrawFunc(/^RooHist/, JSROOT.Painter.drawGraph,";L;P");
+   JSROOT.addDrawFunc(/^RooCurve/, JSROOT.Painter.drawGraph,";L;P");
    JSROOT.addDrawFunc("TMultiGraph", JSROOT.Painter.drawMultiGraph);
    JSROOT.addDrawFunc("TStreamerInfoList", JSROOT.Painter.drawStreamerInfo);
 
-   JSROOT.getDrawFunc = function(classname) {
+   JSROOT.getDrawFunc = function(classname, drawopt) {
       if (typeof classname != 'string') return null;
+
+      var first_func = null;
 
       for (var i in JSROOT.fDrawFunc) {
          if ((typeof JSROOT.fDrawFunc[i].name) === "string") {
-            if (JSROOT.fDrawFunc[i].name == classname) return JSROOT.fDrawFunc[i].func;
+            if (JSROOT.fDrawFunc[i].name != classname) continue;
          } else {
-            if (classname.match(JSROOT.fDrawFunc[i].name)) return JSROOT.fDrawFunc[i].func;
+            if (!classname.match(JSROOT.fDrawFunc[i].name)) continue;
+         }
+         if (first_func == null) first_func = JSROOT.fDrawFunc[i].func;
+
+         if ((typeof drawopt=='string') && (drawopt!="")) {
+            // if drawoption specified, check it present in the list
+            if (JSROOT.fDrawFunc[i].opt == null) continue;
+            var opts = JSROOT.fDrawFunc[i].opt.split(';');
+            for (var j in opts) opts[j] = opts[j].toLowerCase();
+            if (opts.indexOf(drawopt.toLowerCase())<0) continue;
+         }
+
+         return JSROOT.fDrawFunc[i].func;
+      }
+      return first_func;
+   }
+
+   JSROOT.getDrawOptions = function(classname, selector) {
+      if ((typeof classname != 'string') || (classname=="")) return null;
+
+      var allopts = null, isany = false;
+
+      for (var i in JSROOT.fDrawFunc) {
+         if ((typeof JSROOT.fDrawFunc[i].name) === "string") {
+            if (JSROOT.fDrawFunc[i].name != classname) continue;
+         } else {
+            if (!classname.match(JSROOT.fDrawFunc[i].name)) continue;
+         }
+         isany = true;
+         if (JSROOT.fDrawFunc[i].opt == null) continue;
+         var opts = JSROOT.fDrawFunc[i].opt.split(';');
+         for (var i in opts) {
+            opts[i] = opts[i].toLowerCase();
+            if ((selector=='nosame') && (opts[i].indexOf('same')==0)) continue;
+
+            if (allopts==null) allopts = new Array;
+            if (allopts.indexOf(opts[i])<0) allopts.push(opts[i]);
          }
       }
-      return null;
+
+      if (isany && (allopts==null)) {
+         allopts = new Array;
+         allopts.push("");
+      }
+
+      return allopts;
    }
+
 
    JSROOT.canDraw = function(classname) {
       return JSROOT.getDrawFunc(classname) != null;
@@ -8224,7 +8450,7 @@
    JSROOT.draw = function(divid, obj, opt) {
       if ((typeof obj != 'object') || (!('_typename' in obj))) return null;
 
-      var draw_func = JSROOT.getDrawFunc(obj['_typename']);
+      var draw_func = JSROOT.getDrawFunc(obj['_typename'], opt);
 
       if (draw_func==null) return null;
 

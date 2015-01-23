@@ -394,8 +394,7 @@ TString TBufferJSON::JsonWriteMember(const void *ptr, TDataMember *member,
          while (cnt >= 0) {
             if (indexes[cnt] >= member->GetMaxIndex(cnt)) {
                fOutBuffer.Append(" ]");
-               indexes[cnt] = 0;
-               cnt--;
+               indexes[cnt--] = 0;
                if (cnt >= 0) indexes[cnt]++;
                continue;
             }
@@ -415,8 +414,6 @@ TString TBufferJSON::JsonWriteMember(const void *ptr, TDataMember *member,
                shift *= len;
 
                fValue.Clear();
-
-               WriteFastArray((Int_t *)ptr + shift, len);
 
                switch (tid) {
                   case kChar_t:
@@ -484,8 +481,7 @@ TString TBufferJSON::JsonWriteMember(const void *ptr, TDataMember *member,
                }
 
                fOutBuffer.Append(fValue);
-               cnt--;
-               indexes[cnt]++;
+               indexes[--cnt]++;
             }
          }
 
@@ -797,39 +793,41 @@ void TBufferJSON::JsonWriteObject(const void *obj, const TClass *cl, Bool_t chec
          }
 
       } else {
-         // write like blob values, but skipping first element with size
-         // TODO: make special handling for std::map, should pack each each pair in separate object
          const char* separ = "[";
-         TString blob;
 
-         for (Int_t k=1;k<=stack->fValues.GetLast();k++) {
-            blob.Append(separ); separ = fArraySepar.Data();
-            blob.Append(stack->fValues.At(k)->GetName());
+         if (fValue.Length() > 0) {
+            stack->fValues.Add(new TObjString(fValue));
+            fValue.Clear();
          }
 
-         if (fValue.Length()>0) {
-            blob.Append(separ);
-            blob.Append(fValue);
+         Int_t size = TString(stack->fValues.At(0)->GetName()).Atoi();
+
+         if ((size*2 == stack->fValues.GetLast()) &&
+              ((special_kind==TClassEdit::kMap) || (special_kind==TClassEdit::kMultiMap))) {
+            // special handling for std::map. Create entries like { 'first' : key, 'second' : value }
+            for (Int_t k=1;k<stack->fValues.GetLast();k+=2) {
+               fValue.Append(separ); separ = fArraySepar.Data();
+               fValue.Append("{");
+               fValue.Append("\"first\"");
+               fValue.Append(fSemicolon);
+               fValue.Append(stack->fValues.At(k)->GetName());
+               fValue.Append(fArraySepar);
+               fValue.Append("\"second\"");
+               fValue.Append(fSemicolon);
+               fValue.Append(stack->fValues.At(k+1)->GetName());
+               fValue.Append("}");
+            }
+         } else {
+            // for most stl containers write just like blob, but skipping first element with size
+            for (Int_t k=1;k<=stack->fValues.GetLast();k++) {
+               fValue.Append(separ); separ = fArraySepar.Data();
+               fValue.Append(stack->fValues.At(k)->GetName());
+            }
          }
 
-         blob.Append("]");
+         fValue.Append("]");
          stack->fValues.Delete();
-         fValue = blob;
       }
-
-      /*
-      switch(isstlcont) {
-         case TClassEdit::kVector : break;
-         case TClassEdit::kList   : break;
-         case TClassEdit::kDeque  : break;
-         case TClassEdit::kMap    : break;
-         case TClassEdit::kMultiMap : break;
-         case TClassEdit::kSet : break;
-         case TClassEdit::kMultiSet : break;
-         case TClassEdit::kBitSet : break;
-         default: break;
-      }
-      */
    }
 
    if ((special_kind==0) &&
@@ -2129,8 +2127,30 @@ void TBufferJSON::WriteArrayDouble32(const Double_t *d, Int_t n,
             }                                                                \
             PerformPostProcessing(Stack(0), elem);                           \
          }                                                                   \
-      }                                                                      \
-      else {                                                                 \
+      } else                                                                 \
+      if ((elem!=0) && (elem->GetArrayDim()>1) && (elem->GetArrayLength()==n)) { \
+         TArrayI indexes(elem->GetArrayDim() - 1);                           \
+         indexes.Reset(0);                                                   \
+         Int_t cnt = 0;                                                      \
+         while (cnt >= 0) {                                                  \
+            if (indexes[cnt] >= elem->GetMaxIndex(cnt)) {                    \
+               fValue.Append("]");                                           \
+               indexes[cnt--] = 0;                                           \
+               if (cnt >= 0) indexes[cnt]++;                                 \
+               continue;                                                     \
+            }                                                                \
+            fValue.Append(indexes[cnt] == 0 ? "[" : fArraySepar.Data());     \
+            if (++cnt == indexes.GetSize()) {                                \
+               Int_t shift = 0;                                              \
+               for (Int_t k = 0; k < indexes.GetSize(); k++)                 \
+                  shift = shift * elem->GetMaxIndex(k) + indexes[k];         \
+               Int_t len = elem->GetMaxIndex(indexes.GetSize());             \
+               shift *= len;                                                 \
+               TJSONWriteArrayContent((vname+shift), len);                   \
+               indexes[--cnt]++;                                             \
+            }                                                                \
+         }                                                                   \
+      } else {                                                               \
          TJSONWriteArrayContent(vname, n);                                   \
       }                                                                      \
    }
@@ -2503,6 +2523,11 @@ void TBufferJSON::ReadTString(TString & /*s*/)
    // Reads a TString
 }
 
+//______________________________________________________________________________
+void TBufferJSON::ReadStdString(std::string &/*s*/)
+{
+   // Reads a std::string
+}
 
 //______________________________________________________________________________
 void TBufferJSON::WriteBool(Bool_t b)
@@ -2650,10 +2675,21 @@ void TBufferJSON::WriteCharP(const Char_t *c)
 void TBufferJSON::WriteTString(const TString &s)
 {
    // Writes a TString
-   Info("WriteTString", "Write string value");
 
    TJSONPushValue();
 
+   fValue.Append("\"");
+   fValue.Append(s);
+   fValue.Append("\"");
+}
+
+//______________________________________________________________________________
+void TBufferJSON::WriteStdString(const std::string &s)
+{
+   // Writes a std::string
+
+   TJSONPushValue();
+   
    fValue.Append("\"");
    fValue.Append(s);
    fValue.Append("\"");
