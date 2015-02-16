@@ -137,12 +137,12 @@ public:
       SetContentType("_404_");
    }
 
-   void SetFile(const char* filename = 0)
+   void SetFile(const char *filename = 0)
    {
       // indicate that http request should response with file content
 
       SetContentType("_file_");
-      if (filename!=0) fContent = filename;
+      if (filename != 0) fContent = filename;
    }
 
    void SetXml()
@@ -159,7 +159,7 @@ public:
       SetContentType("application/json");
    }
 
-   void AddHeader(const char* name, const char* value)
+   void AddHeader(const char *name, const char *value)
    {
       // Add name:value pair to reply header
       // Same header can be specified only once
@@ -201,13 +201,13 @@ public:
       return fZipping;
    }
 
-   void SetExtraHeader(const char* name, const char* value)
+   void SetExtraHeader(const char *name, const char *value)
    {
       AddHeader(name, value);
    }
 
    // Fill http header
-   void FillHttpHeader(TString &buf, const char* header = 0);
+   void FillHttpHeader(TString &buf, const char *header = 0);
 
    // these methods used to return results of http request processing
 
@@ -231,7 +231,7 @@ public:
       return fContentType.Data();
    }
 
-   void SetBinData(void* data, Long_t length);
+   void SetBinData(void *data, Long_t length);
 
    Long_t GetContentLength() const
    {
@@ -246,6 +246,7 @@ public:
    ClassDef(THttpCallArg, 0) // Arguments for single HTTP call
 };
 
+// ______________________________________________________________________
 
 class THttpServer : public TNamed {
 
@@ -257,8 +258,10 @@ protected:
 
    Long_t       fMainThrdId;  //! id of the main ROOT process
 
-   TString      fJsRootSys;   //! location of JSROOT files
+   TString      fJSROOTSYS;   //! location of local JSROOT files
+   TString      fROOTSYS;     //! location of ROOT files
    TString      fTopName;     //! name of top folder, default - "ROOT"
+   TString      fJSROOT;      //! location of external JSROOT files
 
    TString      fDefaultPage; //! file name for default page name
    TString      fDefaultPageCont; //! content of the file content
@@ -271,7 +274,7 @@ protected:
    // Here any request can be processed
    virtual void ProcessRequest(THttpCallArg *arg);
 
-   static Bool_t VerifyFilePath(const char* fname);
+   static Bool_t VerifyFilePath(const char *fname);
 
 public:
 
@@ -282,6 +285,8 @@ public:
 
    TRootSniffer *GetSniffer() const
    {
+      // returns pointer on objects sniffer
+
       return fSniffer;
    }
 
@@ -293,13 +298,21 @@ public:
 
    void SetTopName(const char *top)
    {
+      // set name of top item in objects hierarchy
       fTopName = top;
    }
 
    const char *GetTopName() const
    {
+      // returns name of top item in objects hierarchy
       return fTopName.Data();
    }
+
+   void SetJSROOT(const char* location);
+
+   void SetDefaultPage(const char* filename);
+
+   void SetDrawPage(const char* filename);
 
    void SetTimer(Long_t milliSec = 100, Bool_t mode = kTRUE);
 
@@ -318,11 +331,23 @@ public:
    /** Unregister object */
    Bool_t Unregister(TObject *obj);
 
+   Bool_t RegisterCommand(const char *cmdname, const char *method, const char *icon = 0);
+
+   Bool_t Hide(const char *fullname, Bool_t hide = kTRUE);
+
+   Bool_t SetIcon(const char *fullname, const char *iconname);
+
+   Bool_t CreateItem(const char *fullname, const char *title);
+
+   Bool_t SetItemField(const char *fullname, const char *name, const char *value);
+
+   const char *GetItemField(const char *fullname, const char *name);
+
    /** Guess mime type base on file extension */
    static const char *GetMimeType(const char *path);
 
    /** Reads content of file from the disk */
-   static char* ReadFileContent(const char* filename, Int_t& len);
+   static char *ReadFileContent(const char *filename, Int_t &len);
 
    ClassDef(THttpServer, 0) // HTTP server for ROOT analysis
 };
