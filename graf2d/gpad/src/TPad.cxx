@@ -4476,7 +4476,7 @@ void TPad::Print(const char *filenam, Option_t *option)
    Int_t lenfil =  filename ? strlen(filename) : 0;
    TString opt = (!option) ? opt_default : option;
    Bool_t image = kFALSE;
-   
+
    if ( !lenfil )  {
       psname = GetName();
       psname += opt;
