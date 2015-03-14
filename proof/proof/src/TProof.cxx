@@ -1449,7 +1449,7 @@ Int_t TProof::AddWorkers(TList *workerList)
    else {
       // Not in Dynamic Workers mode
       PDB(kGlobal, 3)
-         Info("AddWorkers", "Will invoke GoParallel()");
+         Info("AddWorkers", "will invoke GoParallel()");
       GoParallel(nwrk, kFALSE, 0);
    }
 
@@ -1458,13 +1458,13 @@ Int_t TProof::AddWorkers(TList *workerList)
 
    // Update list of current workers
    PDB(kGlobal, 3)
-      Info("AddWorkers", "Will invoke SaveWorkerInfo()");
+      Info("AddWorkers", "will invoke SaveWorkerInfo()");
    SaveWorkerInfo();
 
    // Inform the client that the number of workers has changed
    if (fDynamicStartup && gProofServ) {
       PDB(kGlobal, 3)
-         Info("AddWorkers", "Will invoke SendParallel()");
+         Info("AddWorkers", "will invoke SendParallel()");
       gProofServ->SendParallel(kTRUE);
 
       if (goMoreParallel && fPlayer) {
@@ -1472,8 +1472,10 @@ Int_t TProof::AddWorkers(TList *workerList)
          // should invoke a special player's Process() to set only added workers
          // to the proper state
          PDB(kGlobal, 3)
-            Info("AddWorkers", "Will send the PROCESS message to selected workers");
+            Info("AddWorkers", "will send the PROCESS message to selected workers");
          fPlayer->JoinProcess(addedWorkers);
+         // Update merger counters (new workers are not yet active)
+         fMergePrg.SetNWrks(fActiveSlaves->GetSize() + addedWorkers->GetSize());
       }
    }
 
@@ -2760,6 +2762,7 @@ Int_t TProof::Collect(TMonitor *mon, Long_t timeout, Int_t endtype, Bool_t deact
    Int_t nact = 0;
    Long_t sto = -1;
    Int_t nsto = 60;
+   Int_t pollint = gEnv->GetValue("Proof.DynamicStartupPollInt", (Int_t) kPROOF_DynWrkPollInt_s);
    mon->ResetInterrupt();
    while ((nact = mon->GetActive(sto)) && (nto < 0 || nto > 0)) {
 
@@ -2786,7 +2789,7 @@ Int_t TProof::Collect(TMonitor *mon, Long_t timeout, Int_t endtype, Bool_t deact
       // Preemptive poll for new workers on the master only in Dynamic Mode and only
       // during processing (TODO: should work on Top Master only)
       if (TestBit(TProof::kIsMaster) && !IsIdle() && fDynamicStartup && !fIsPollingWorkers &&
-         ((fLastPollWorkers_s == -1) || (time(0)-fLastPollWorkers_s >= kPROOF_DynWrkPollInt_s))) {
+         ((fLastPollWorkers_s == -1) || (time(0)-fLastPollWorkers_s >= pollint))) {
          fIsPollingWorkers = kTRUE;
          if (PollForNewWorkers() > 0) DeActivateAsyncInput();
          fLastPollWorkers_s = time(0);

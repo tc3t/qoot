@@ -14,7 +14,7 @@
 
    JSROOT = {};
 
-   JSROOT.version = "3.4 dev 5/03/2015";
+   JSROOT.version = "3.4 dev 12/03/2015";
 
    JSROOT.source_dir = "";
    JSROOT.source_min = false;
@@ -119,9 +119,10 @@
       return value;
    }
 
+   JSROOT.debug = 0;
+
    // This should be similar to the jQuery.extend method
-   // Major complication - when same object appears N times in the source,
-   // it should be cloned once and inserted N times in the target and not cloned N times
+   // Just copy (not clone) all fields from source to the target object
    JSROOT.extend = function(tgt, src, map) {
       if (!map) map = { obj:[], clones:[] };
 
@@ -152,11 +153,9 @@
          map.clones.push(tgt);
       }
 
-      var k, ks = Object.keys(src);
-      for (i = 0; i < ks.length; i++) {
-         k = ks[i];
+      for (var k in src)
          tgt[k] = JSROOT.extend(tgt[k], src[k], map);
-      }
+
       return tgt;
    }
 
@@ -486,7 +485,7 @@
       } else {
          element = document.createElement("script");
          element.setAttribute('type', "text/javascript");
-         element.setAttribute('src', filename);//+ "?r=" + rnd;
+         element.setAttribute('src', filename);
       }
 
       if (element.readyState) { // Internet Explorer specific
@@ -512,6 +511,8 @@
       // one could specify kind of requirements
       // 'io' for I/O functionality (default)
       // '2d' for 2d graphic
+      // 'jq' jQuery and jQuery-ui
+      // 'jq2d' jQuery-dependend part of 2d graphic
       // '3d' for 3d graphic
       // 'simple' for basic user interface
       // 'load:' list of user-specific scripts at the end of kind string
@@ -551,6 +552,8 @@
                      '$$$style/JSRootPainter' + ext + ".css;";
       }
 
+      if (kind.indexOf('jq;')>=0) need_jquery = true;
+
       if (kind.indexOf('jq2d;')>=0) {
          allfiles += '$$$scripts/JSRootPainter.jquery' + ext + ".js;";
          need_jquery = true;
@@ -566,8 +569,8 @@
       }
 
       if (kind.indexOf("mathjax;")>=0) {
-         //allfiles += "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML;";
-         allfiles += "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG;";
+         allfiles += "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_SVG," +
+                      JSROOT.source_dir + "scripts/mathjax_config.js;";
          if (JSROOT.MathJax == 0) JSROOT.MathJax = 1;
       }
 
@@ -593,8 +596,9 @@
       JSROOT.loadScript(allfiles, function() {
          if (JSROOT.doing_assert.length==0) JSROOT.doing_assert = null;
          JSROOT.CallBack(callback);
-         if (JSROOT.doing_assert!=null)
+         if (JSROOT.doing_assert && (JSROOT.doing_assert.length>0)) {
             JSROOT.AssertPrerequisites('shift');
+         }
       }, debugout);
    }
 
@@ -2193,7 +2197,6 @@
       return JSROOT.Math.Landau(x, f['fParams'][i+1],f['fParams'][i+2], true);
    };
 
-
    // it is important to run this function at the end when all other
    // functions are available
    (function() {
@@ -2240,7 +2243,6 @@
          return;
       }
    })();
-
 
 })();
 
