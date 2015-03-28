@@ -1596,7 +1596,7 @@ Long64_t TProofPlayer::Finalize(TQueryResult *)
    return -1;
 }
 //______________________________________________________________________________
-void TProofPlayer::MergeOutput()
+void TProofPlayer::MergeOutput(Bool_t)
 {
    // Merge output (may not be used in this class).
 
@@ -1818,6 +1818,36 @@ Int_t TProofPlayer::GetLearnEntries()
 
    if (fEvIter) return fEvIter->GetLearnEntries();
    return -1;
+}
+
+//______________________________________________________________________________
+void TProofPlayerRemote::SetMerging(Bool_t on)
+{
+   // Switch on/off merge timer
+
+   if (on) {
+      if (!fMergeSTW) fMergeSTW = new TStopwatch();
+      PDB(kGlobal,1)
+         Info("SetMerging", "ON: mergers: %d", fProof->fMergersCount);
+      if (fNumMergers <= 0 && fProof->fMergersCount > 0)
+         fNumMergers = fProof->fMergersCount;
+   } else if (fMergeSTW) {
+      fMergeSTW->Stop();
+      Float_t rt = fMergeSTW->RealTime();
+      PDB(kGlobal,1)
+         Info("SetMerging", "OFF: rt: %f, mergers: %d", rt, fNumMergers);
+      if (fQuery) {
+         if (!fProof->TestBit(TProof::kIsClient) || fProof->IsLite()) {
+            // On the master (or in Lite()) we set the merging time and the numebr of mergers
+            fQuery->SetMergeTime(rt);
+            fQuery->SetNumMergers(fNumMergers);
+         } else {
+            // In a standard client we save the transfer-to-client time 
+            fQuery->SetRecvTime(rt);
+         }
+         PDB(kGlobal,2) fQuery->Print("F");
+      }
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -2887,6 +2917,11 @@ Long64_t TProofPlayerRemote::Finalize(Bool_t force, Bool_t sync)
          SetSelectorDataMembersFromOutputList();
 
          PDB(kLoop,1) Info("Finalize","Call Terminate()");
+         // This is the end of merging
+         SetMerging(kFALSE);
+         // We measure the merge time
+         fProof->fQuerySTW.Reset();
+         // Call Terminate now
          fSelector->Terminate();
 
          rv = fSelector->GetStatus();
@@ -3085,7 +3120,7 @@ Bool_t TProofPlayerRemote::SendSelector(const char* selector_file)
 }
 
 //______________________________________________________________________________
-void TProofPlayerRemote::MergeOutput()
+void TProofPlayerRemote::MergeOutput(Bool_t saveMemValues)
 {
    // Merge objects in output the lists.
 
@@ -3205,6 +3240,17 @@ void TProofPlayerRemote::MergeOutput()
       while ((obj = nxrm()))
          fOutput->Remove(obj);
       rmlist.SetOwner(kTRUE);
+   }
+
+   // If requested (typically in case of submerger to count possible side-effects in that process)
+   // save the measured memory usage
+   if (saveMemValues) {
+      TPerfStats::Stop();
+      // Save memory usage on master
+      Long_t vmaxmst, rmaxmst;
+      TPerfStats::GetMemValues(vmaxmst, rmaxmst);
+      TStatus *status = (TStatus *) fOutput->FindObject("PROOF_Status");
+      if (status) status->SetMemValues(vmaxmst, rmaxmst, kFALSE);
    }
 
    PDB(kOutput,1) fOutput->Print();
