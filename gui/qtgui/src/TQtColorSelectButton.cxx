@@ -93,6 +93,16 @@ static int boxSize = 22;
 
 TQtColorPopup *TQtColorPopup::fgColorPopup = 0;
 
+#if QOOT_32BIT_COLOR_T
+    // TODO: move to a better place.
+    Color_t Color_t_FromQColor(const QColor& qcolor)
+    {
+        auto color = Color_t_FromRgba(qcolor.red(), qcolor.green(), qcolor.blue(), qcolor.alpha());
+        return color;
+    }
+#endif
+
+
 //________________________________________________________________________________
 TQtColorFrame::TQtColorFrame(QWidget *p, const QColor &color, Int_t n): QToolButton(p),fActive(n),fColor()
 {
@@ -262,7 +272,7 @@ TQtColorPopup::~TQtColorPopup()
 //________________________________________________________________________________
 void TQtColorPopup::ColorSelectDialog()
 {
-   ColorSelected(QColorDialog::getColor(fCurrentColor, this));
+   ColorSelected(QColorDialog::getColor(fCurrentColor, this, QString(), QColorDialog::ShowAlphaChannel));
 }
 //________________________________________________________________________________
 void TQtColorPopup::ColorSelected(const QColor &color )
@@ -360,8 +370,14 @@ void TQtColorSelectButton::PopupDialog()
       ColorSelected();
       if (fColorEmitter)
       {
+#if QOOT_32BIT_COLOR_T
+            // TODO: check what functionality is lost by not using QColorMap.
+          auto color = Color_t_FromQColor(fColor);
+          fColorEmitter->ColorEmit(color);
+#else
           QColormap cmap = QColormap::instance();
           fColorEmitter->ColorEmit(cmap.pixel(fColor));
+#endif
       }
       emit colorSelected(fColor);
    }
