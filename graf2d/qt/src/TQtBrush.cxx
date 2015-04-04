@@ -182,7 +182,7 @@ void  TQtBrush::SetFillAttributes(const TAttFill &rootFillAttributes)
 
      if (Color_t_IsRgba(cindex))
      {
-         setColor(Color_t_ToQColor(cindex));
+         SetColor(Color_t_ToQColor(cindex));
      }
      else
      {
