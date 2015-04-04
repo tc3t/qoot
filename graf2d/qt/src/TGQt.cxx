@@ -353,7 +353,7 @@ inline bool TQtPainter::begin ( TGQt *dev, unsigned int useFeedBack)
         }
      }
      if (!(res= QPainter::begin(src)) ) {
-        Error("TGQt::Begin()","Can not create Qt painter for win=0x%lx dev=0x%lx\n",(Long_t)src,(Long_t)dev);
+        Error("TGQt::Begin()","Can not create Qt painter for win=%p dev=%p\n",(UIntPtr_t)src,(UIntPtr_t)dev);
         assert(0);
      } else {
         dev->fQPainter = (TQtPainter*)-1;
