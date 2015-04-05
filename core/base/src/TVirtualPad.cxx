@@ -132,15 +132,15 @@ void TVirtualPad::PopTopLevelSelectable()
 }
 
 //______________________________________________________________________________
-TObject* TVirtualPad::AppendPrimitive(TObject* pObj, Option_t* option)
+TObject* TVirtualPad::AppendPrimitiveImpl(TObject* pObj, Option_t* option)
 {
     auto pPrimitiveList = GetListOfPrimitives();
-    return InsertPrimitive(pObj, option, (pPrimitiveList) ?
+    return InsertPrimitiveImpl(pObj, option, (pPrimitiveList) ?
                                     pPrimitiveList->GetSize() : 0);
 }
 
 //______________________________________________________________________________
-TObject* TVirtualPad::InsertPrimitive(TObject* pObj, Option_t* option, int pos)
+TObject* TVirtualPad::InsertPrimitiveImpl(TObject* pObj, Option_t* option, int pos)
 {
     auto pPrimitiveList = GetListOfPrimitives();
     if (!pPrimitiveList)
@@ -153,15 +153,15 @@ TObject* TVirtualPad::InsertPrimitive(TObject* pObj, Option_t* option, int pos)
 }
 
 //______________________________________________________________________________
-TObject* TVirtualPad::AdoptPrimitive(TObject* pObj,
+TObject* TVirtualPad::AdoptPrimitiveImpl(TObject* pObj,
                                       Option_t* option,
                                       int pos)
 {
     if (!pObj)
         return nullptr;
     pObj->SetBit(kCanDelete);
-    TObject* pAdded = (pos >= 0) ? InsertPrimitive(pObj, option, pos) 
-                                : AppendPrimitive(pObj, option);
+    TObject* pAdded = (pos >= 0) ? InsertPrimitiveImpl(pObj, option, pos) 
+                                : AppendPrimitiveImpl(pObj, option);
     if (!pAdded)
         delete pObj; // If primitive couldn't be added, delete it to prevent
                      // leaking.
@@ -169,7 +169,7 @@ TObject* TVirtualPad::AdoptPrimitive(TObject* pObj,
 }
 
 //______________________________________________________________________________
-TObject* TVirtualPad::AdoptAndDrawPrimitive(TObject* pObj, Option_t* opt)
+TObject* TVirtualPad::AdoptAndDrawPrimitiveImpl(TObject* pObj, Option_t* opt)
 {
     pObj->SetBit(kCanDelete);
     pObj->DrawOnPad(this, opt);

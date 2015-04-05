@@ -89,8 +89,7 @@ int main(int argc, char* argv[])
         TH1F* pHist = new TH1F("h", "Transparent histogram example", 100, -3, 3);
         pHist->SetFillColor(Color_t_FromRgba(0, 255, 255, 128));
         pHist->FillRandom("gaus", 5000);
-        p->AdoptAndDrawPrimitive(pHist, "");
-        pHist = nullptr; // The histogram object is now handled by pad so null the existing pointer. Use the return value of AdoptAndDrawPrimitive if pointer to the object is needed.
+        pHist = p->AdoptAndDrawPrimitive(pHist, "");
     }
 
     // Create another one
@@ -98,8 +97,7 @@ int main(int argc, char* argv[])
         TH1F* pHist2 = new TH1F("h2", "test2", 100, -1, 1);
         pHist2->SetFillColor(Color_t_FromRgba(255, 0, 255, 128));
         pHist2->FillRandom("gaus", 5000);
-        p->AdoptAndDrawPrimitive(pHist2, "same");
-        pHist2 = nullptr; // The histogram object is now handled by pad so null the existing pointer. Use the return value of AdoptAndDrawPrimitive if pointer to the object is needed.
+        pHist2 = p->AdoptAndDrawPrimitive(pHist2, "same");
     }
 #endif
 

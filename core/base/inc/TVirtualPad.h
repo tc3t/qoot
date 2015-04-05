@@ -74,31 +74,35 @@ public:
    virtual Double_t AbsPixeltoX(Int_t px) = 0;
    virtual Double_t AbsPixeltoY(Int_t py) = 0;
    virtual void     AddExec(const char *name, const char *command) = 0;
-   virtual TObject* AppendPrimitive(TObject* pObj, Option_t* option); // If successful, returns pObj, otherwise nullptr.
-   virtual TObject* InsertPrimitive(TObject* pObj, Option_t* option, int pos); // If successful, returns pObj, otherwise nullptr.
-   virtual TObject* AdoptPrimitive(TObject* pObj /*Must have been created with new*/,
-                                    Option_t* option,
-                                    int pos = -1); // Like earlier InsertPrimitive, but ownership of pObj is transferred to this.
-                                                   // Note: This may invalidate pObj so caller must not touch it after this call.
-                                                   // To refer to pObj after this call, use the returned pointer, which in successful
-                                                   // cases is pObj.
+   virtual TObject* AppendPrimitiveImpl(TObject* pObj, Option_t* option); 
+   virtual TObject* InsertPrimitiveImpl(TObject* pObj, Option_t* option, int pos); 
+   virtual TObject* AdoptPrimitiveImpl(TObject* pObj, Option_t* option, int pos = -1);
+   virtual TObject* AdoptAndDrawPrimitiveImpl(TObject* pObj, Option_t* opt);
 
-   virtual TObject* AdoptAndDrawPrimitive(TObject* pObj, Option_t* opt);
+   template <class T> T* AdoptAndDrawPrimitive(T* pObj, Option_t* opt); // If successful, returns pObj, otherwise nullptr.
+   template <class T> T* AppendPrimitive(T* pObj, Option_t* option); // If successful, returns pObj, otherwise nullptr.
+   template <class T> T* InsertPrimitive(T* pObj, Option_t* option, int pos);
+   template <class T> T* AdoptPrimitive(T* pObj /*Must have been created with new*/,
+                                        Option_t* option,
+                                        int pos = -1); // Like earlier InsertPrimitive, but ownership of pObj is transferred to this.
+                                                       // Note: This may invalidate pObj so caller must not touch it after this call.
+                                                       // To refer to pObj after this call, use the returned pointer, which in successful
+                                                       // cases is pObj.
 
    template <class T, class T0>
-   TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0);
+   T* CreateAndDrawPrimitive(Option_t* opt, T0&& t0);
    template <class T, class T0, class T1>
-   TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1);
+   T* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1);
    template <class T, class T0, class T1, class T2>
-   TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2);
+   T* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2);
    template <class T, class T0, class T1, class T2, class T3> 
-   TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3);
+   T* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3);
    template <class T, class T0, class T1, class T2, class T3, class T4>
-   TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4);
+   T* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4);
    template <class T, class T0, class T1, class T2, class T3, class T4, class T5>
-   TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5);
+   T* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5);
    template <class T, class T0, class T1, class T2, class T3, class T4, class T5, class T6>
-   TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5, T6&& t6);
+   T* CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5, T6&& t6);
 
    virtual TLegend *BuildLegend(Double_t x1=0.5, Double_t y1=0.67, Double_t x2=0.88, Double_t y2=0.88, const char *title="") = 0;
    virtual TVirtualPad* cd(Int_t subpadnumber=0) = 0;
@@ -296,57 +300,74 @@ public:
 
 #define FWD(T, x) std::forward<T>(x)
 
-template <class T, class T0>
-TObject* CreateAndDrawPrimitive(Option_t* opt, T0&& t0)
+template <class T>
+T* TVirtualPad::AppendPrimitive(T* pObj, Option_t* option)
 {
-    T* p = new T(FWD(T0, t0));
-    return AdoptAndDrawPrimitive(p, opt);
+    return static_cast<T*>(AppendPrimitiveImpl(pObj, option));
+}
+
+template <class T>
+T* TVirtualPad::InsertPrimitive(T* pObj, Option_t* option, int pos)
+{
+    return static_cast<T*>(InsertPrimitiveImpl(pObj, option, pos));
+}
+
+template <class T>
+T* TVirtualPad::AdoptPrimitive(T* pObj, Option_t* option, int pos)
+{
+    return static_cast<T*>(AdoptPrimitiveImpl(pObj, option, pos));
+}
+
+template <class T>
+T* TVirtualPad::AdoptAndDrawPrimitive(T* pObj, Option_t* opt)
+{
+    return static_cast<T*>(AdoptAndDrawPrimitiveImpl(pObj, opt));
 }
 
 template <class T, class T0>
-TObject* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0)
+T* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0)
 {
     T* p = new T(FWD(T0, t0), FWD(T1, t1));
     return AdoptAndDrawPrimitive(p, opt);
 }
 
 template <class T, class T0, class T1>
-TObject* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1)
+T* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1)
 {
     T* p = new T(FWD(T0, t0), FWD(T1, t1));
     return AdoptAndDrawPrimitive(p, opt);
 }
 
 template <class T, class T0, class T1, class T2>
-TObject* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2)
+T* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2)
 {
     T* p = new T(FWD(T0, t0), FWD(T1, t1), FWD(T2, t2));
     return AdoptAndDrawPrimitive(p, opt);
 }
 
 template <class T, class T0, class T1, class T2, class T3>
-TObject* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3)
+T* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3)
 {
     T* p = new T(FWD(T0, t0), FWD(T1, t1), FWD(T2, t2), FWD(T3, t3));
     return AdoptAndDrawPrimitive(p, opt);
 }
 
 template <class T, class T0, class T1, class T2, class T3, class T4>
-TObject* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4)
+T* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4)
 {
     T* p = new T(FWD(T0, t0), FWD(T1, t1), FWD(T2, t2), FWD(T3, t3), FWD(T4, t4));
     return AdoptAndDrawPrimitive(p, opt);
 }
 
 template <class T, class T0, class T1, class T2, class T3, class T4, class T5>
-TObject* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5)
+T* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5)
 {
     T* p = new T(FWD(T0, t0), FWD(T1, t1), FWD(T2, t2), FWD(T3, t3), FWD(T4, t4), FWD(T5, t5));
     return AdoptAndDrawPrimitive(p, opt);
 }
 
 template <class T, class T0, class T1, class T2, class T3, class T4, class T5, class T6>
-TObject* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5, T6&& t6)
+T* TVirtualPad::CreateAndDrawPrimitive(Option_t* opt, T0&& t0, T1&& t1, T2&& t2, T3&& t3, T4&& t4, T5&& t5, T6&& t6)
 {
     T* p = new T(FWD(T0, t0), FWD(T1, t1), FWD(T2, t2), FWD(T3, t3), FWD(T4, t4), FWD(T5, t5), FWD(T6, t6));
     return AdoptAndDrawPrimitive(p, opt);
