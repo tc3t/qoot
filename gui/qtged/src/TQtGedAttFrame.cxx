@@ -142,6 +142,21 @@ void TQtGedAttInterfaceB::ResetPadOption(TVirtualPad *pad, TObject *object, Opti
        }
    }
 }
+
+//______________________________________________________________________________
+Color_t TQtGedAttInterfaceB::Pixel_tToColor_t(const Pixel_t pixel)
+{
+#if QOOT_32BIT_COLOR_T
+    static_assert(sizeof(pixel) == sizeof(Color_t), "Check what to do here if pixel size is not equal to Color_t");
+    if (Color_t_IsRgba(pixel))
+        return pixel;
+    else
+        return TColor::GetColor(pixel);
+#else
+    return TColor::GetColor(pixel);
+#endif
+}
+
 //______________________________________________________________________________
 void TQtGedAttInterfaceB::SetModel(TVirtualPad *pad, TObject *obj, Int_t /* event  */)
 {

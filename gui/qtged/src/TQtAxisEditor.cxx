@@ -465,7 +465,7 @@ void TQtAxisEditor::ChangeView()
 void TQtAxisEditor::DoAxisColor(Pixel_t color)
 {
    // Slot connected to the axis color.
-   fModel->SetAxisColor(TColor::GetColor(color));
+   fModel->SetAxisColor(Pixel_tToColor_t(color));
 }
 //______________________________________________________________________________
 void TQtAxisEditor::DoTickLength(double )
@@ -558,7 +558,7 @@ void TQtAxisEditor::DoTitleColor(Pixel_t color)
 {
    // Slot connected to the title color.
 
-   fModel->SetTitleColor(TColor::GetColor(color));
+   fModel->SetTitleColor(Pixel_tToColor_t(color));
 }
 
 //______________________________________________________________________________
@@ -623,7 +623,7 @@ void TQtAxisEditor::DoLabelColor(Pixel_t color)
 {
    // Slot connected to the label color.
 
-   fModel->SetLabelColor(TColor::GetColor(color));
+    fModel->SetLabelColor(Pixel_tToColor_t(color));
 }
 
 //______________________________________________________________________________

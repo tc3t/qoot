@@ -151,7 +151,7 @@ void TQtMarkerEditor::DoMarkerColor(Pixel_t color)
 {
    // Slot connected to the marker color.
 
-   fModel->SetMarkerColor(TColor::GetColor(color));
+   fModel->SetMarkerColor(Pixel_tToColor_t(color));
 }
 
 //______________________________________________________________________________

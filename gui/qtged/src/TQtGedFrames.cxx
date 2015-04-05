@@ -174,16 +174,7 @@ void TQtGedAttFillFrame::ConnectSignals2Slots()
 void TQtGedAttFillFrame::SetColor(Pixel_t pixel) 
 {
    // Change the model fill color
-#if QOOT_32BIT_COLOR_T
-   static_assert(sizeof(pixel) == sizeof(Color_t), "Check what to do here if pixel size is not equal to Color_t");
-   if (Color_t_IsRgba(pixel))
-       fModel->SetFillColor(pixel);
-   else
-       fModel->SetFillColor(TColor::GetColor(pixel));
-#else
-       fModel->SetFillColor(TColor::GetColor(pixel));
-#endif
-
+    fModel->SetFillColor(Pixel_tToColor_t(pixel));
 }
 //______________________________________________________________________________
 void TQtGedAttFillFrame::SetPattern(Style_t pattern) 
@@ -275,7 +266,7 @@ void TQtGedAttLineFrame::ConnectSignals2Slots()
 void TQtGedAttLineFrame::SetColor(Pixel_t pixel) 
 {
    // Change the model line color
-   fModel->SetLineColor(TColor::GetColor(pixel));
+   fModel->SetLineColor(Pixel_tToColor_t(pixel));
 }
 
 //______________________________________________________________________________
@@ -386,7 +377,7 @@ void TQtGedAttTextFrame::ConnectSignals2Slots()
 void TQtGedAttTextFrame::SetColor(Pixel_t pixel) 
 {
    // Change the model color
-   fModel->SetTextColor(TColor::GetColor(pixel));
+   fModel->SetTextColor(Pixel_tToColor_t(pixel));
 }
 
 //______________________________________________________________________________

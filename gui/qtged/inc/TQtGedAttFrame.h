@@ -166,6 +166,7 @@ public:
     virtual ~TQtGedAttInterfaceB() {  }
 
    static void ResetPadOption(TVirtualPad *pad, TObject *obj, Option_t *opt);
+   static Color_t Pixel_tToColor_t(Pixel_t);
    
    TCanvas *Canvas() const { return fCanvas;  }
    virtual QTDOCKCLASSTYPE *Dock()    const     = 0;
