@@ -8,6 +8,8 @@
 #include <TEnv.h>
 #include <TGQt.h>
 #include <TApplication.h>
+#include <TImage.h>
+#include <TH1D.h>
 #include <memory>
 
 int main(int argc, char* argv[])
@@ -66,6 +68,40 @@ int main(int argc, char* argv[])
     TGraph graph2(3, x, y);
     graph2.Draw("AL*");
     graph2.SetTitle("A graph in canvas widget");
+
+#if QOOT_32BIT_COLOR_T
+    // Create an example to demonstrate 32-bit Color_t with alpha channel.
+    // The example of canvas background is modified from example posted in https://root.cern.ch/phpBB3/viewtopic.php?p=31414#p31414
+    TImage* pImg = TImage::Open("../../tutorials/image/rose512.jpg");
+    TCanvas canvasForTransparencyDemonstration("td");
+    if (pImg)
+        pImg->Draw("x");
+
+    //Create a transparent pad filling the full canvas
+    TPad* p = new TPad("p", "p", 0, 0, 1, 1);
+    p->SetFillStyle(4000);
+    p->SetFrameFillStyle(4000);
+    p->Draw();
+    p->cd();
+
+    // Create histogram with transparent filling.
+    {
+        TH1F* pHist = new TH1F("h", "Transparent histogram example", 100, -3, 3);
+        pHist->SetFillColor(Color_t_FromRgba(0, 255, 255, 128));
+        pHist->FillRandom("gaus", 5000);
+        p->AdoptAndDrawPrimitive(pHist, "");
+        pHist = nullptr; // The histogram object is now handled by pad so null the existing pointer. Use the return value of AdoptAndDrawPrimitive if pointer to the object is needed.
+    }
+
+    // Create another one
+    {
+        TH1F* pHist2 = new TH1F("h2", "test2", 100, -1, 1);
+        pHist2->SetFillColor(Color_t_FromRgba(255, 0, 255, 128));
+        pHist2->FillRandom("gaus", 5000);
+        p->AdoptAndDrawPrimitive(pHist2, "same");
+        pHist2 = nullptr; // The histogram object is now handled by pad so null the existing pointer. Use the return value of AdoptAndDrawPrimitive if pointer to the object is needed.
+    }
+#endif
 
     if (bUseQt)
         return a.exec();
