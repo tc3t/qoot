@@ -10,9 +10,7 @@
 ** Copyright (C) 2004 by Valeri Fine. Brookhaven National Laboratory.
 **                                    All rights reserved.
 **
-** This file may be distributed under the terms of the Q Public License
-** as defined by Trolltech AS of Norway and appearing in the file
-** LICENSE.QPL included in the packaging of this file.
+** For the licensing terms see LICENSE_QtRoot.
 **
 *****************************************************************************/
 
