@@ -522,7 +522,7 @@
       var idF = axis['fTimeFormat'].indexOf('%F');
       if (idF < 0) return JSROOT.gStyle['TimeOffset'];
       var sof = axis['fTimeFormat'].substr(idF + 2);
-      if (sof == '1995-01-01 00:00:00s0') return JSROOT.gStyle['TimeOffset'];
+      if (sof == '1995-01-01 00:00:00s0') return 788918400000;
       // special case, used from DABC painters
       if ((sof == "0") || (sof == "")) return 0;
 
@@ -4584,8 +4584,9 @@
       // if (this.options.Func == 0) return; // in some cases on need to disable
       // functions drawing
 
-      // do not draw functions when 'same' option was used of kNoStats bit is set
-      if (this.histo.TestBit(JSROOT.TH1StatusBits.kNoStats) || (this.options.Same==1) || (this.options.NoStat==1)) return;
+      // do not draw functions when 'same' option was used
+      if (this.options.Same) return;
+      var nostat = this.histo.TestBit(JSROOT.TH1StatusBits.kNoStats) || (this.options.NoStat==1);
 
       var lastpainter = this;
 
@@ -4613,7 +4614,7 @@
          if (funcpainter != null) continue;
 
          if (func['_typename'] == 'TPaveText' || func['_typename'] == 'TPaveStats') {
-            funcpainter = JSROOT.Painter.drawPaveText(this.divid, func);
+            if (!nostat) funcpainter = JSROOT.Painter.drawPaveText(this.divid, func);
          } else
 
          if (func['_typename'] == 'TF1') {
