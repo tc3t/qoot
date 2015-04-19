@@ -1733,10 +1733,8 @@ void TStreamerInfo::BuildOld()
                }
                fNVirtualInfoLoc += infobase->fNVirtualInfoLoc;
             }
-            // FIXME: Presumably we're in emulated mode, but it still does not make any sense
-            // shouldn't it be element->SetNewType(-1) ?
             if (baseOffset < 0) {
-               baseOffset = 0;
+               element->SetNewType(-1);
             }
             element->SetOffset(baseOffset);
             offset += baseclass->Size();
@@ -4817,6 +4815,42 @@ void TStreamerInfo::Streamer(TBuffer &R__b)
          ResetBit(kIsCompiled);
          ResetBit(kBuildOldUsed);
          ResetBit(kBuildRunning);
+
+         if (R__b.GetParent() && R__b.GetVersionOwner() < 50000)
+         {
+            // In some older files, the type of the TStreamerElement was not
+            // as we (now) expect.
+            Int_t nobjects = fElements->GetEntriesFast();
+            TClass *basic = TStreamerBasicType::Class();
+            for (Int_t i = 0; i < nobjects; i++) {
+               TStreamerElement *el = (TStreamerElement*)fElements->UncheckedAt(i);
+               TStreamerElement *rel = 0;
+               if ( el->IsA() == basic ) {
+                  switch (el->GetType()) {
+                     default: break; /* nothing */
+                     case TStreamerInfo::kObject: /*61*/
+                        rel = new TStreamerObject(el->GetName(),el->GetTitle(),el->GetOffset(),el->GetTypeName());
+                        break;
+                     case TStreamerInfo::kAny: /*62*/
+                        rel = new TStreamerObjectAny(el->GetName(),el->GetTitle(),el->GetOffset(),el->GetTypeName());
+                        break;
+                     case TStreamerInfo::kObjectp: /* 63 */
+                        rel = new TStreamerObjectPointer(el->GetName(),el->GetTitle(),el->GetOffset(),el->GetTypeName());
+                        break;
+                     case TStreamerInfo::kObjectP: /* 64 */
+                        rel = new TStreamerObjectPointer(el->GetName(),el->GetTitle(),el->GetOffset(),el->GetTypeName());
+                        break;
+                     case TStreamerInfo::kTString: /* 65 */
+                        rel = new TStreamerObject(el->GetName(),el->GetTitle(),el->GetOffset(),el->GetTypeName());
+                        break;
+                  }
+                  if (rel) {
+                     (*fElements)[i] = rel;
+                     delete el;
+                  }
+               }
+            }
+         }
          return;
       }
       //====process old versions before automatic schema evolution
