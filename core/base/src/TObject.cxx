@@ -658,8 +658,12 @@ void TObject::SaveAs(const char *filename, Option_t *option) const
 
    //==============Save object as a root file===============================
    if (filename && strstr(filename,".root")) {
+#if QOOT_32BIT_COLOR_T
+       Error("SaveAs", "Saving .root files is not available when using 32bit Color_t");
+#else
       if (gDirectory) gDirectory->SaveObjectAs(this,filename,"");
       return;
+#endif
    }
 
    //==============Save object as a XML file================================

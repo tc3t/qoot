@@ -296,6 +296,54 @@ TFile::TFile(const char *fname1, Option_t *option, const char *ftitle, Int_t com
    //  in the system.rootrc file.
    //
 
+#if QOOT_32BIT_COLOR_T
+    {
+        Error("TFile", "Opening or creating .root files is not available when using 32bit Color_t, file '%s'", fname1);
+        // Initialization copied from default constructor, needed in order to prevent crashing in destructor.
+        fD = -1;
+        fFree = 0;
+        fWritten = 0;
+        fSumBuffer       = 0;
+        fSum2Buffer      = 0;
+        fClassIndex      = 0;
+        fCompress        = 0;
+        fProcessIDs      = 0;
+        fNProcessIDs     = 0;
+        fOffset          = 0;
+        fArchive         = 0;
+        fCacheRead       = 0;
+        fCacheReadMap    = new TMap();
+        fCacheWrite      = 0;
+        fArchiveOffset   = 0;
+        fReadCalls       = 0;
+        fInfoCache       = 0;
+        fOpenPhases      = 0;
+        fNoAnchorInName  = kFALSE;
+        fIsRootFile      = kTRUE;
+        fIsArchive       = kFALSE;
+        fInitDone        = kFALSE;
+        fMustFlush       = kTRUE;
+        fAsyncHandle     = 0;
+        fAsyncOpenStatus = kAOSNotAsync;
+        SetBit(kBinaryFile, kTRUE);
+
+        fBEGIN          = 0;
+        fEND            = 0;
+        fBytesRead      = 0;
+        fBytesReadExtra = 0;
+        fBytesWrite     = 0;
+        fCompress       = 0;
+        fNbytesFree     = 0;
+        fNbytesInfo     = 0;
+        fSeekFree       = 0;
+        fSeekInfo       = 0;
+        fUnits          = 0;
+        fVersion        = 0;
+
+        MakeZombie();
+        return;
+    }
+#else
    if (!gROOT)
       ::Fatal("TFile::TFile", "ROOT system not initialized");
 
@@ -494,6 +542,7 @@ zombie:
    }
    MakeZombie();
    gDirectory = gROOT;
+#endif // QOOT_32BIT_COLOR_T
 }
 
 //______________________________________________________________________________
