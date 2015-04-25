@@ -235,3 +235,9 @@ endif()
 if(ROOT_davix_FOUND)
   ROOT_ADD_TEST(test-stressIOPlugins-http COMMAND stressIOPlugins http FAILREGEX "FAILED|Error in")
 endif()
+
+#--executables------------------------------------------------------------------------------
+if(TARGET g2root)
+  ROOT_ADD_TEST(test-g2root COMMAND g2root)
+endif()
+
