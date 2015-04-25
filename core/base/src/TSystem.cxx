@@ -1204,6 +1204,21 @@ char *TSystem::ExpandPathName(const char *)
 }
 
 //______________________________________________________________________________
+TString TSystem::ExpandedPathName(const char* psz)
+{
+    // Like ExpandPathName(const char*), but returns result as TString.
+    const char* pszExpanded = ExpandPathName(psz);
+    if (pszExpanded)
+    {
+        TString s = pszExpanded;
+        delete[] pszExpanded;
+        return std::move(s);
+    }
+    else
+        return TString();
+}
+
+//______________________________________________________________________________
 Bool_t TSystem::AccessPathName(const char *, EAccessMode)
 {
    // Returns FALSE if one can access a file using the specified access mode.

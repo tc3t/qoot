@@ -428,6 +428,7 @@ public:
    virtual const char     *PrependPathName(const char *dir, TString& name);
    virtual Bool_t          ExpandPathName(TString &path);
    virtual char           *ExpandPathName(const char *path);
+   virtual TString         ExpandedPathName(const char* path);
    virtual Bool_t          AccessPathName(const char *path, EAccessMode mode = kFileExists);
    virtual Bool_t          IsPathLocal(const char *path);
    virtual int             CopyFile(const char *from, const char *to, Bool_t overwrite = kFALSE);
