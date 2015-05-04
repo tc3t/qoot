@@ -203,7 +203,7 @@ Gui.Backend:                qt
 Gui.Factory:                qtgui
 Root.PadEditor:             QtGed
 # GUI style: modern (flat popup menus), modern-flat (flat frames), or classic (win 95 style)
-Gui.Style:                  modern
+Gui.Style:                  modern-flat
 Gui.DefaultFont:            qt-default
 Gui.MenuFont:               qt-default
 Gui.MenuHiFont:             qt-default
