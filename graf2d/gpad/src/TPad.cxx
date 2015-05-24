@@ -5174,7 +5174,7 @@ void TPad::SaveAs(const char *filename, Option_t * /*option*/) const
 #if QOOT_32BIT_COLOR_T
        Error("SaveAs", "Saving .root files is not available when using 32bit Color_t");
 #else
-       ((TPad*)this)->Print(psname,"root");
+      ((TPad*)this)->Print(psname,"root");
 #endif
    }
    else if (psname.EndsWith(".xml"))
