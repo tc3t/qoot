@@ -120,15 +120,16 @@ void TQCanvasMenu::Popup(TObject *obj, double x, double y, QMouseEvent *e)
    QString buffer=klass->GetName();
    buffer+="::";
    buffer+=obj->GetName();
-   fPopup->addAction(buffer, this, SLOT( Execute(int) )/*, 0,curId*/); curId++;
+   auto pAct0 = fPopup->addAction(buffer, this, SLOT( Execute() )/*, 0,curId*/);
+   pAct0->setData(int(curId++));
    klass->GetMenuItems(&fMethods);
    fPopup->addSeparator();
    TIter iter(&fMethods);
    TMethod *method=0;
    while ( (method = dynamic_cast<TMethod*>(iter())) != 0) {
       buffer=method->GetName();
-      fPopup->addAction(buffer, this, SLOT( Execute(int) )/*, 0,curId*/);
-      curId++;
+      auto pAct = fPopup->addAction(buffer, this, SLOT( Execute() )/*, 0,curId*/);
+      pAct->setData(int(curId++));
    }
    // hold the position where the mouse was clicked
    fMousePosX= x;
@@ -138,6 +139,18 @@ void TQCanvasMenu::Popup(TObject *obj, double x, double y, QMouseEvent *e)
    // the visible rectangle can get outside the screen (M.T. 03.06.02)
    fPopup->popup(e->globalPos(), 0);
 
+}
+
+//______________________________________________________________________________
+void TQCanvasMenu::Execute()
+{
+    // Previously this slot received int parameter. As a quick&dirty solution use sender() to receive it through data() of QAction.
+    auto pAction = dynamic_cast<const QAction*>(sender());
+    if (!pAction)
+        return;
+
+    const int id = pAction->data().toInt();
+    Execute(id);
 }
 
 //______________________________________________________________________________

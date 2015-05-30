@@ -61,6 +61,7 @@ public:
    char* CreateArgumentTitle(TMethodArg *argument);
 
 public slots:
+   void Execute();
    void Execute(int id);
 
 protected:

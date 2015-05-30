@@ -41,21 +41,30 @@ TQRootDialog::TQRootDialog(QWidget *wparent, const char *wname, WFlags f,
 
    
 
-   fArgBox = new QDialog(this/*, "args"*/);
+   fArgBox = new QWidget(this/*, "args"*/);
    fArgBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
                  QSizePolicy::Expanding));
-   QDialog *hbox = new QDialog(this/*,"buttons"*/);
-   hbox->setObjectName("buttons");
-   QPushButton *bOk = new QPushButton("Apply",hbox/*,"Apply"*/);
+
+   QPushButton *bOk = new QPushButton("Apply", fArgBox/*,"Apply"*/);
    bOk->setObjectName("Apply");
-   QPushButton *bCancel = new QPushButton("Cancel",hbox/*,"Close"*/);
+   QPushButton *bCancel = new QPushButton("Cancel", fArgBox/*,"Close"*/);
    bOk->setObjectName("Close");
-   QVBoxLayout* pHboxLayout = new QVBoxLayout;
-   pHboxLayout->addWidget(bOk);
-   pHboxLayout->addWidget(bCancel);
-   fArgBox->setLayout(pHboxLayout);
 
+   auto hbox = new QWidget(this/*,"buttons"*/);
+   {
+       hbox->setObjectName("buttons");
+       auto* pHboxLayout = new QHBoxLayout;
+       pHboxLayout->addWidget(bOk);
+       pHboxLayout->addWidget(bCancel);
+       hbox->setLayout(pHboxLayout);
+   }
 
+   {
+       QVBoxLayout* pArgBoxLayout = new QVBoxLayout;
+       pArgBoxLayout->addWidget(hbox);
+       fArgBox->setLayout(pArgBoxLayout);
+   }
+   
    connect(bCancel,SIGNAL (clicked()), this, SLOT(close()));
    connect(bOk,SIGNAL( clicked() ), this, SLOT( ExecuteMethod() ));
 
@@ -152,8 +161,14 @@ void TQRootDialog::Add(const char* argname, const char* value, const char* /*typ
 
    QString s;
    s = value;
-   new QLabel(argname,fArgBox);
+   auto pLabel = new QLabel(argname,fArgBox);
    QLineEdit* lineEdit = new  QLineEdit(fArgBox);
+   auto pLayout = dynamic_cast<QVBoxLayout*>(fArgBox->layout());
+   if (pLayout)
+   {
+       pLayout->insertWidget(0, pLabel);
+       pLayout->insertWidget(1, lineEdit);
+   }
    if (fLineEdit) {
       fLineEdit->setGeometry(10,10, 130, 30);
       fLineEdit->setFocus();
