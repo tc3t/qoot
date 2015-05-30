@@ -3,7 +3,7 @@
 ############################################################################
 
 if(gui)
-  ROOT_EXECUTABLE(basicQootExample basicQootExample.cpp LIBRARIES Core Gui GQt QtGui QtGed)
+  ROOT_EXECUTABLE(basicQootExample basicQootExample.cpp LIBRARIES Core Gui GQt QtGui QtGed QtGSI)
 else()
   ROOT_EXECUTABLE(basicQootExample basicQootExample.cpp LIBRARIES Core GQt QtGui QtGed)
 endif()
