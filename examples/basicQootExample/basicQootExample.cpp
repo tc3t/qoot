@@ -11,22 +11,58 @@
 #include <TImage.h>
 #include <TH1D.h>
 #include <memory>
+#include <iostream>
+
+// QtGSI includes->
+#include "TQApplication.h"
+#include "TQRootApplication.h"
+#include "TBrowser.h"
+#include "TQRootCanvas.h"
+#include "TQRootDialog.h"
+// <- QtGSI includes
+
+int qtGsiMain(int argc, char ** argv)
+{
+    gEnv->SetValue("Gui.Backend", "native");
+    gEnv->SetValue("Gui.Factory", "native");
+    TQApplication app("app",&argc,argv);
+    TQRootApplication a( argc, argv, 0);
+    //w->show();
+    TBrowser browser;
+    a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
+
+    TQRootCanvas qrc;
+    qrc.cd();
+    const double x[] = { 1, 2, 3 };
+    const double y[] = { 2, 3, 2 };
+    TGraph graph(3, x, y);
+    graph.Draw("AL*");
+    qrc.show();
+
+    TQRootDialog qrd(nullptr, "dialog", 0, &graph);
+    qrd.show();
+
+    a.exec();
+    return 0;
+}
 
 int main(int argc, char* argv[])
 {
     const double x[] = { 1, 2, 3 };
     const double y[] = { 2, 3, 2 };
 
+    std::string sGui;
+    std::cout << "Choose gui implementation (one of qtgui, qt, qtgsi, native): ";
+    std::cin >> sGui;
+
+    if (sGui == "qtgsi")
+        return qtGsiMain(argc, argv);
+
     QApplication a(argc, argv);
 
-    const auto sGuiFactory = QInputDialog::getItem(nullptr,
-                                                    "Choose Gui.Factory",
-                                                    "Choose Gui.Factory",
-                                                    QStringList() << "qtgui" << "qt");
+    gEnv->SetValue("Gui.Factory", sGui.c_str());
 
-    gEnv->SetValue("Gui.Factory", sGuiFactory.toLatin1().constData());
-
-    const bool bUseQt = (sGuiFactory != "native");
+    const bool bUseQt = (sGui != "native");
 
     std::unique_ptr<QWidget> spWidget;
 
