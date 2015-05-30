@@ -24,14 +24,6 @@
 
 #ifndef __CINT__
 #include "qobject.h"
-# if (QT_VERSION > 0x039999) // Added by cholm@nbi.dk - for Qt 3
-#  include <q3popupmenu.h>
-typedef Q3PopupMenu QPopupMenu;
-# else 
-class QPopupMenu;
-# endif
-#else
-class QPopupMenu;
 #endif
 
 #ifndef ROOT_TList
@@ -49,6 +41,7 @@ class QMouseEvent;
 class QResizeEvent;
 class QPaintEvent;
 class QWidget;
+class QMenu;
 
 class TQCanvasMenu : public QObject {
 #ifndef __CINT__
@@ -72,7 +65,7 @@ public slots:
 
 protected:
    TObject* fCurrObj;         // current selected object
-   QPopupMenu  *fPopup;       // Qt popup menu
+   QMenu  *fPopup;       // Qt popup menu
    TList fMethods;            // list of Root metheds associated with the selected object
    TCanvas *fc;               // pointer to the ROOT canvas
    TQRootDialog *fDialog;     // the TQRootDialog which is used to prompt for

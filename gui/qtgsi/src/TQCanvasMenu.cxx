@@ -15,14 +15,7 @@
 #include "qpushbutton.h"
 #include "qlabel.h"
 #include "qpainter.h"
-#if  (QT_VERSION > 0x039999) // Added by cholm@nbi.dk - for Qt 4
 # include "qmenu.h"
-# include "q3popupmenu.h"
-typedef Q3PopupMenu QPopupMenu;
-#else
-# include "qpopupmenu.h"
-#endif
-
 
 #include "TQCanvasMenu.h"
 #include "TClass.h"
@@ -42,7 +35,7 @@ TQCanvasMenu::TQCanvasMenu(QWidget* parent, TCanvas *canvas)
    // ctor, create the popup menu
 
    fc       = canvas;
-   fPopup   = new QPopupMenu;
+   fPopup   = new QMenu;
    fCurrObj = 0;
    fParent  = parent;
    fTabWin  = 0;
@@ -56,7 +49,7 @@ TQCanvasMenu::TQCanvasMenu(QWidget* parent, QWidget *tabWin, TCanvas *canvas)
    // ctor, create the popup menu
 
    fc       = canvas;
-   fPopup   = new QPopupMenu;
+   fPopup   = new QMenu;
    fParent  = parent;
    fTabWin  = tabWin;
    fCurrObj = 0;
@@ -127,14 +120,14 @@ void TQCanvasMenu::Popup(TObject *obj, double x, double y, QMouseEvent *e)
    QString buffer=klass->GetName();
    buffer+="::";
    buffer+=obj->GetName();
-   fPopup->insertItem(buffer, this, SLOT( Execute(int) ), 0,curId); curId++;
+   fPopup->addAction(buffer, this, SLOT( Execute(int) )/*, 0,curId*/); curId++;
    klass->GetMenuItems(&fMethods);
-   fPopup->insertSeparator();
+   fPopup->addSeparator();
    TIter iter(&fMethods);
    TMethod *method=0;
    while ( (method = dynamic_cast<TMethod*>(iter())) != 0) {
       buffer=method->GetName();
-      fPopup->insertItem(buffer, this, SLOT( Execute(int) ), 0,curId);
+      fPopup->addAction(buffer, this, SLOT( Execute(int) )/*, 0,curId*/);
       curId++;
    }
    // hold the position where the mouse was clicked

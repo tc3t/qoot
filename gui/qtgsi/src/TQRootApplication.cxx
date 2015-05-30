@@ -20,8 +20,10 @@ bool TQRootApplication::fgWarning=kFALSE;
 ClassImp(TQRootApplication)
    
 //______________________________________________________________________________
-void qMessageOutput( QtMsgType type, const char *msg )
+void qMessageOutput(QtMsgType type, const QMessageLogContext &, const QString& sMsg)
 {
+   const auto s = sMsg.toLatin1();
+   const auto msg = s.data();
    switch ( type ) {
       case QtDebugMsg:
          if(TQRootApplication::fgDebug)
@@ -51,14 +53,15 @@ TQRootApplication::TQRootApplication(int &argc, char **argv, int poll) :
    if (poll == 0) {
       fQTimer = new QTimer( this );
       QObject::connect( fQTimer, SIGNAL(timeout()),this, SLOT(Execute()) );
-      fQTimer->start( 20, FALSE );
+      fQTimer->setSingleShot(false);
+      fQTimer->start( 20 );
       fRTimer = new TTimer(20);
       fRTimer->Start(20, kFALSE);
    }
 
    // install a msg-handler
    fgWarning = fgDebug = kFALSE;
-   qInstallMsgHandler( qMessageOutput );
+   qInstallMessageHandler(qMessageOutput);
 }
 
 //______________________________________________________________________________

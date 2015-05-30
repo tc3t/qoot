@@ -26,14 +26,7 @@
 #ifndef __CINT__
 # include "qlineedit.h"
 # include "qnamespace.h"
-# if (QT_VERSION > 0x039999) // Added by cholm@nbi.dk - for Qt 4
-#  include "qlist.h"
-#  include "q3vbox.h"
-typedef Q3VBox QVBox;
-using namespace Qt;
-# else
-#  include "qvbox.h"
-# endif
+# include "qlist.h"
 #endif
 
 #ifndef ROOT_TObject
@@ -57,7 +50,11 @@ typedef WindowFlags WFlags;
 #endif
 #endif
 
-class TQRootDialog: public QVBox
+#if (QT_VERSION > 0x050000)
+    typedef Qt::WindowFlags WFlags;
+#endif
+
+class TQRootDialog: public QWidget
 {
 #ifndef __CINT__
    Q_OBJECT
@@ -80,7 +77,7 @@ public slots:
 
 protected:
    void closeEvent( QCloseEvent* ce);
-   QVBox *fArgBox;         // Box layout
+   QWidget *fArgBox;         // Box layout
    QLineEdit *fLineEdit;   // LineEdit widget for arguments
    TObject *fCurObj;       // Selected object
    TMethod *fCurMethod;    // method to be executed

@@ -323,7 +323,7 @@ if(gviz)
 endif()
 
 #---Check for Qt4 installation-------------------------------------------------------
-if(qt4 OR qtgsi)
+if(qt4)
   message(STATUS "Looking for Qt4")
   find_package(Qt4 COMPONENTS QtCore QtGui)
   if(NOT QT4_FOUND)

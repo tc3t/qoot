@@ -16,10 +16,7 @@
 #include "qlabel.h"
 #include "qobject.h"
 #include "qlineedit.h"
-#if (QT_VERSION > 0x039999) // Added by cholm@nbi.dk - for Qt 4
-# include "q3hbox.h"
-typedef Q3HBox QHBox;
-#endif
+#include <QVBoxLayout>
 
 #include "TQRootDialog.h"
 #include "TMethod.h"
@@ -33,7 +30,6 @@ ClassImp(TQRootDialog)
 //______________________________________________________________________________
 TQRootDialog::TQRootDialog(QWidget *wparent, const char *wname, WFlags f,
                          TObject* obj, TMethod *method ) :
-   QVBox(wparent,wname, f | WType_Modal | WStyle_Dialog   ),
    fLineEdit(0),
    fParent(wparent)
 {
@@ -42,14 +38,30 @@ TQRootDialog::TQRootDialog(QWidget *wparent, const char *wname, WFlags f,
    fCurMethod=method;
    setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
                             QSizePolicy::Expanding));
-   fArgBox = new QVBox(this, "args");
+
+   
+
+   fArgBox = new QDialog(this/*, "args"*/);
    fArgBox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,
                  QSizePolicy::Expanding));
-   QHBox *hbox = new QHBox(this,"buttons");
-   QPushButton *bOk = new QPushButton("Apply",hbox,"Apply");
-   QPushButton *bCancel = new QPushButton("Cancel",hbox,"Close");
+   QDialog *hbox = new QDialog(this/*,"buttons"*/);
+   hbox->setObjectName("buttons");
+   QPushButton *bOk = new QPushButton("Apply",hbox/*,"Apply"*/);
+   bOk->setObjectName("Apply");
+   QPushButton *bCancel = new QPushButton("Cancel",hbox/*,"Close"*/);
+   bOk->setObjectName("Close");
+   QVBoxLayout* pHboxLayout = new QVBoxLayout;
+   pHboxLayout->addWidget(bOk);
+   pHboxLayout->addWidget(bCancel);
+   fArgBox->setLayout(pHboxLayout);
+
+
    connect(bCancel,SIGNAL (clicked()), this, SLOT(close()));
    connect(bOk,SIGNAL( clicked() ), this, SLOT( ExecuteMethod() ));
+
+   QVBoxLayout* pMainLayout = new QVBoxLayout;
+   pMainLayout->addWidget(fArgBox);
+   setLayout(pMainLayout);
 }
 
 //______________________________________________________________________________
@@ -66,7 +78,7 @@ void TQRootDialog::ExecuteMethod()
    typedef QList<QLineEdit*>::iterator iter;
    for (iter st = fList.begin(); st != fList.end(); ++st) {
      QString s = (*st)->text();
-      TObjString *t = new TObjString( (const char*) s );
+      TObjString *t = new TObjString( s.toLatin1() );
       tobjlist.AddLast((TObject*) t) ;
    }
 #else
@@ -91,7 +103,7 @@ void TQRootDialog::ExecuteMethod()
 #if (QT_VERSION > 0x039999) // Added by cholm@nbi.dk - for Qt 4
          for (iter st = fList.begin(); st != fList.end(); ++st) {
             QString s = (*st)->text();
-            value[l++] = atoi ( s );
+            value[l++] = s.toInt();
          }
 #else
          for ( QLineEdit* st = fList.first(); st; st = fList.next()) {
