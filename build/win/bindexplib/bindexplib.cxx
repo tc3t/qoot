@@ -149,7 +149,7 @@ GetSZStorageClass(BYTE storageClass)
 void AddHex(std::string& buf, long val, bool caps=false)
 {
    buf += "0x";
-   int len=buf.length();
+   size_t len=buf.length();
    while (val) {
       char hex = (char)(val & 16);
       val = val >> 4;
@@ -340,7 +340,7 @@ DumpExternals(PIMAGE_SYMBOL pSymbolTable, FILE *fout, unsigned cSymbols)
 + * Utility func, strstr with size
 + */
 const char* StrNStr(const char* start, const char* find, size_t &size) {
-   int len;
+   size_t len;
    const char* hint;
 
    if (!start || !find || !size) {
@@ -530,14 +530,14 @@ DumpObjFile(PIMAGE_FILE_HEADER pImageFileHeader, FILE *fout, int full, int fort)
 {
    PIMAGE_SYMBOL PCOFFSymbolTable;
    PIMAGE_SECTION_HEADER PCOFFSectionHeaders;
-   DWORD COFFSymbolCount;
+   DWORD_PTR COFFSymbolCount;
 
    PCOFFSymbolTable = (PIMAGE_SYMBOL)
-      ((DWORD)pImageFileHeader + pImageFileHeader->PointerToSymbolTable);
+      ((DWORD_PTR)pImageFileHeader + pImageFileHeader->PointerToSymbolTable);
    COFFSymbolCount = pImageFileHeader->NumberOfSymbols;
 
    PCOFFSectionHeaders = (PIMAGE_SECTION_HEADER)
-      ((DWORD)pImageFileHeader          +
+      ((DWORD_PTR)pImageFileHeader          +
       IMAGE_SIZEOF_FILE_HEADER +
       pImageFileHeader->SizeOfOptionalHeader);
 
@@ -600,7 +600,10 @@ DumpFile(LPSTR filename, FILE *fout, int full, int fort)
 #endif
    }
    /* Does it look like a i386 COFF OBJ file??? */
-   else if ((dosHeader->e_magic == 0x014C) && (dosHeader->e_sp == 0)) {
+   else if (
+	   ((dosHeader->e_magic == IMAGE_FILE_MACHINE_I386) || (dosHeader->e_magic == IMAGE_FILE_MACHINE_AMD64))
+	   && (dosHeader->e_sp == 0)
+	   ) {
       /*
       * The two tests above aren't what they look like.  They're
       * really checking for IMAGE_FILE_HEADER.Machine == i386 (0x14C)
@@ -718,7 +721,7 @@ Usage:
          */
          TCHAR *filename = argv[arg];
          TCHAR path[2048];
-         int i = strlen(filename);
+         __int64 i = (__int64)strlen(filename);
          i--;
          while( filename[i] != '\\' && filename[i] != '/'  && i >=0) i--;
          do
