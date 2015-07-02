@@ -564,8 +564,6 @@ void RooAbsArg::addParameters(RooArgSet& params, const RooArgSet* nset,Bool_t st
 {
   // INTERNAL helper function for getParameters()
 
-  RooArgSet parList("parameters") ;
-
   RooFIter siter = serverMIterator() ;
   RooAbsArg* server ;
 
@@ -607,13 +605,12 @@ RooArgSet* RooAbsArg::getParameters(const RooArgSet* nset, Bool_t stripDisconnec
   // is getObservables()
 
 
-  RooArgSet parList("parameters") ;
+  RooArgSet* parList = new RooArgSet("parameters");
 
-  addParameters(parList,nset,stripDisconnected) ;
+  addParameters(*parList, nset, stripDisconnected);
 
-  RooArgList tmp(parList) ;
-  tmp.sort() ;
-  return new RooArgSet(tmp) ;
+  parList->sort();
+  return parList;
 }
 
 
@@ -741,15 +738,14 @@ Bool_t RooAbsArg::dependsOn(const RooAbsCollection& serverList, const RooAbsArg*
   // Test whether we depend on (ie, are served by) any object in the
   // specified collection. Uses the dependsOn(RooAbsArg&) member function.
 
-  Bool_t result(kFALSE);
   RooFIter sIter = serverList.fwdIterator();
   RooAbsArg* server ;
-  while ((!result && (server=sIter.next()))) {
+  while ((server=sIter.next())) {
     if (dependsOn(*server,ignoreArg,valueOnly)) {
-      result= kTRUE;
+      return kTRUE;
     }
   }
-  return result;
+  return kFALSE;
 }
 
 
@@ -1093,11 +1089,14 @@ Bool_t RooAbsArg::recursiveRedirectServers(const RooAbsCollection& newSet, Bool_
 
 
   // Cyclic recursion protection
-  static RooLinkedList callStack ;
-  if (callStack.findArg(this)) {
-    return kFALSE ;
-  } else {
-    callStack.Add(this) ;
+  static std::set<const RooAbsArg*> callStack;
+  {
+    std::set<const RooAbsArg*>::iterator it = callStack.lower_bound(this);
+    if (it != callStack.end() && this == *it) {
+      return kFALSE;
+    } else {
+      callStack.insert(it, this);
+    }
   }
 
   // Do not recurse into newset if not so specified
@@ -1122,7 +1121,7 @@ Bool_t RooAbsArg::recursiveRedirectServers(const RooAbsCollection& newSet, Bool_
     ret |= server->recursiveRedirectServers(newSet,mustReplaceAll,nameChange,recurseInNewSet) ;
   }
 
-  callStack.Remove(this) ;
+  callStack.erase(this);
   return ret ;
 }
 
@@ -2037,7 +2036,8 @@ void RooAbsArg::registerCache(RooAbsCache& cache)
 void RooAbsArg::unRegisterCache(RooAbsCache& cache)
 {
   // Unregister a RooAbsCache. Called from the RooAbsCache destructor
-  std::remove(_cacheList.begin(), _cacheList.end(), &cache);
+  _cacheList.erase(std::remove(_cacheList.begin(), _cacheList.end(), &cache),
+	  _cacheList.end());
 }
 
 

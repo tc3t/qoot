@@ -82,6 +82,7 @@ set(CINTDLLCFLAGS "${CINT_C_DEFINITIONS} -DG__HAVE_CONFIG -DG__NOMAKEINFO -DG__S
 
 if(MACOSX_TMPNAM_DEPRECATED OR CMAKE_COMPILER_IS_GNUCXX)
   ROOT_ADD_CXX_FLAG(_cxxflags -Wno-deprecated-declarations)
+  ROOT_ADD_CXX_FLAG(_cxxflags -Wno-strict-aliasing)
 endif()
 ROOT_ADD_CXX_FLAG(_cxxflags -Wno-ignored-qualifiers)
 add_definitions(${_cxxflags})
@@ -144,7 +145,7 @@ foreach(_name ${CINTSTLDLLNAMES})
 
     set_source_files_properties(${Dictionary}.cxx 
                                  COMPILE_FLAGS "${CINTDLLCXXFLAGS} -DG__CINTBODY -I${HEADER_OUTPUT_PATH}"
-                                )                                
+                                )
                                 
     add_Library(${_name}Dict SHARED ${Dictionary}.cxx )
     set_Target_properties(${_name}Dict PROPERTIES PREFIX ${libprefix} SUFFIX ${libsuffix} FOLDER Dictionaries MACOSX_RPATH 1)
