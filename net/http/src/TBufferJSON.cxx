@@ -35,6 +35,7 @@
 
 #include <typeinfo>
 #include <string>
+#include <string.h>
 #include <locale.h>
 
 #include "Compression.h"
@@ -46,6 +47,7 @@
 #include "TClassTable.h"
 #include "TClassEdit.h"
 #include "TDataType.h"
+#include "TRealData.h"
 #include "TDataMember.h"
 #include "TMath.h"
 #include "TExMap.h"
@@ -180,11 +182,11 @@ TBufferJSON::~TBufferJSON()
 }
 
 //______________________________________________________________________________
-TString TBufferJSON::ConvertToJSON(const TObject *obj, Int_t compact)
+TString TBufferJSON::ConvertToJSON(const TObject *obj, Int_t compact, const char *member_name)
 {
    // converts object, inherited from TObject class, to JSON string
 
-   return ConvertToJSON(obj, (obj ? obj->IsA() : 0), compact);
+   return ConvertToJSON(obj, (obj ? obj->IsA() : 0), compact, member_name);
 }
 
 //______________________________________________________________________________
@@ -204,14 +206,38 @@ void TBufferJSON::SetCompact(int level)
 
 //______________________________________________________________________________
 TString TBufferJSON::ConvertToJSON(const void *obj, const TClass *cl,
-                                   Int_t compact)
+                                   Int_t compact, const char *member_name)
 {
-   // converts any type of object to JSON string
-   // following values of compact
+   // Converts any type of object to JSON string
+   //
+   // One should provide pointer on object and its class name
+   // Following values of compact parameter can be used
    //   0 - no any compression
    //   1 - exclude spaces in the begin
    //   2 - remove newlines
    //   3 - exclude spaces as much as possible
+   // When member_name specified, converts only this data member
+
+   if ((member_name!=0) && (obj!=0)) {
+      TRealData *rdata = cl->GetRealData(member_name);
+      if (rdata==0) return TString();
+      TDataMember *member = rdata->GetDataMember();
+      if (member==0) return TString();
+
+      Int_t arraylen = -1;
+      if (member->GetArrayIndex()!=0) {
+         TRealData *idata = cl->GetRealData(member->GetArrayIndex());
+         TDataMember *imember = (idata!=0) ? idata->GetDataMember() : 0;
+         if ((imember!=0) && (strcmp(imember->GetTrueTypeName(),"int")==0)) {
+            arraylen = *((int *) ((char *) obj + idata->GetThisOffset()));
+         }
+      }
+
+      void *ptr = (char *) obj + rdata->GetThisOffset();
+      if (member->IsaPointer()) ptr = *((char **) ptr);
+
+      return TBufferJSON::ConvertToJSON(ptr, member, compact, arraylen);
+   }
 
    TBufferJSON buf;
 
@@ -224,9 +250,13 @@ TString TBufferJSON::ConvertToJSON(const void *obj, const TClass *cl,
 
 //______________________________________________________________________________
 TString TBufferJSON::ConvertToJSON(const void *ptr, TDataMember *member,
-                                   Int_t compact)
+                                   Int_t compact, Int_t arraylen)
 {
-   // converts selected data member into json
+   // Converts selected data member into json
+   //
+   // Parameter ptr specifies address in memory, where data member is located
+   // compact parameter defines compactness of produced JSON (from 0 to 3)
+   // arraylen (when specified) is array length for this data member,  //[fN] case
 
    if ((ptr == 0) || (member == 0)) return TString("null");
 
@@ -244,12 +274,12 @@ TString TBufferJSON::ConvertToJSON(const void *ptr, TDataMember *member,
 
    buf.SetCompact(compact);
 
-   return buf.JsonWriteMember(ptr, member, mcl);
+   return buf.JsonWriteMember(ptr, member, mcl, arraylen);
 }
 
 //______________________________________________________________________________
 TString TBufferJSON::JsonWriteMember(const void *ptr, TDataMember *member,
-                                     TClass *memberClass)
+                                     TClass *memberClass, Int_t arraylen)
 {
    // Convert single data member to JSON structures
    // Returns string with converted member
@@ -269,7 +299,7 @@ TString TBufferJSON::JsonWriteMember(const void *ptr, TDataMember *member,
 
       if (ptr == 0) {
          fValue = "null";
-      } else if (member->GetArrayDim() == 0) {
+      } else if ((member->GetArrayDim() == 0) && (arraylen<0)) {
          switch (tid) {
             case kChar_t:
                JsonWriteBasic(*((Char_t *)ptr));
@@ -333,8 +363,8 @@ TString TBufferJSON::JsonWriteMember(const void *ptr, TDataMember *member,
             case kVoid_t:
                break;
          }
-      } else if (member->GetArrayDim() == 1) {
-         Int_t n = member->GetMaxIndex(0);
+      } else if ((member->GetArrayDim() == 1) || (arraylen>=0)) {
+         Int_t n = (arraylen>=0) ? arraylen : member->GetMaxIndex(0);
          switch (tid) {
             case kChar_t:
                WriteFastArray((Char_t *)ptr, n);
