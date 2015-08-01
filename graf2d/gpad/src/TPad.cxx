@@ -503,17 +503,11 @@ TVirtualPad *TPad::cd(Int_t subpadnumber)
       return gPad;
    }
 
-   TObject *obj;
    if (!fPrimitives) fPrimitives = new TList;
-   TIter    next(fPrimitives);
-   while ((obj = next())) {
-      if (obj->InheritsFrom(TPad::Class())) {
-         Int_t n = ((TPad*)obj)->GetNumber();
-         if (n == subpadnumber) {
-            return ((TPad*)obj)->cd();
-         }
-      }
-   }
+   auto pPad = GetPad(subpadnumber, TPad::Class());
+   if (pPad)
+       return pPad->cd();
+
    return 0;
 }
 
@@ -2830,7 +2824,7 @@ TObject *TPad::GetPrimitive(const char *name) const
 
 
 //______________________________________________________________________________
-TVirtualPad *TPad::GetPad(Int_t subpadnumber) const
+TVirtualPad *TPad::GetPad(Int_t subpadnumber, TClass* pBaseClass) const
 {
    // Get a pointer to subpadnumber of this pad.
 
@@ -2842,12 +2836,19 @@ TVirtualPad *TPad::GetPad(Int_t subpadnumber) const
    if (!fPrimitives) return 0;
    TIter    next(GetListOfPrimitives());
    while ((obj = next())) {
-      if (obj->InheritsFrom(TVirtualPad::Class())) {
+      if (obj->InheritsFrom(pBaseClass)) {
          TVirtualPad *pad = (TVirtualPad*)obj;
          if (pad->GetNumber() == subpadnumber) return pad;
       }
    }
    return 0;
+}
+
+
+//______________________________________________________________________________
+TVirtualPad *TPad::GetPad(Int_t subpadnumber) const
+{
+    return GetPad(subpadnumber, TVirtualPad::Class());
 }
 
 

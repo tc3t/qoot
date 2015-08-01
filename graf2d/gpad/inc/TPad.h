@@ -248,6 +248,7 @@ public:
    virtual TObject  *GetPrimitive(const char *name) const;  //obsolete, use FindObject instead
    virtual TObject  *GetSelected() const;
    virtual TVirtualPad  *GetPad(Int_t subpadnumber) const;
+   TVirtualPad*      GetPad(Int_t subpadnumber, TClass* pBaseClass) const; // pBaseClass must be TVirtualPad::Class() or Class() of a class derived from TVirtualPad.
    virtual TObject  *GetPadPointer() const {return fPadPointer;}
    TVirtualPad      *GetPadSave() const;
    TVirtualPad      *GetSelectedPad() const;
