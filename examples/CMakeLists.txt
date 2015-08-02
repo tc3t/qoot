@@ -1,2 +1,3 @@
 add_subdirectory(basicQootExample)
+add_subdirectory(graphDrawingPerformanceExample)
 
