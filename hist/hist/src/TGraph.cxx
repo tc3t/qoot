@@ -166,7 +166,8 @@ TGraph::TGraph(const TGraph &gr)
    fNpoints = gr.fNpoints;
    fMaxSize = gr.fMaxSize;
    if (gr.fFunctions) fFunctions = (TList*)gr.fFunctions->Clone();
-   else fFunctions = new TList;
+   else fFunctions = nullptr;
+   //else fFunctions = new TList;
    fHistogram = 0;
    fMinimum = gr.fMinimum;
    fMaximum = gr.fMaximum;
@@ -215,7 +216,8 @@ TGraph& TGraph::operator=(const TGraph &gr)
       }
 
       if (gr.fFunctions) fFunctions = (TList*)gr.fFunctions->Clone();
-      else fFunctions = new TList;
+      else fFunctions = nullptr;
+      //else fFunctions = new TList;
 
       if (fHistogram) delete fHistogram;
       if (gr.fHistogram) fHistogram = new TH1F(*(gr.fHistogram));
@@ -774,7 +776,8 @@ Bool_t TGraph::CtorAllocate()
    fMaximum = -1111;
    fMinimum = -1111;
    SetBit(kClipFrame);
-   fFunctions = new TList;
+   //fFunctions = new TList;
+   fFunctions = nullptr;
    if (fNpoints <= 0) {
       fNpoints = 0;
       fMaxSize   = 0;
@@ -1649,6 +1652,15 @@ TH1F *TGraph::GetHistogram() const
 
 
 //______________________________________________________________________________
+TList* TGraph::GetListOfFunctions(bool bCreateListIfNull)
+{
+    if (!fFunctions && bCreateListIfNull)
+        fFunctions = new TList;
+    return fFunctions;
+}
+
+
+//______________________________________________________________________________
 Int_t TGraph::GetPoint(Int_t i, Double_t &x, Double_t &y) const
 {
    // Get x and y values for point number i.
@@ -2456,7 +2468,7 @@ void TGraph::UseCurrentStyle()
    }
    if (fHistogram) fHistogram->UseCurrentStyle();
 
-   TIter next(GetListOfFunctions());
+   TIter next(fFunctions);
    TObject *obj;
 
    while ((obj = next())) {

@@ -123,7 +123,7 @@ public:
    Bool_t                GetEditable() const;
    TF1                  *GetFunction(const char *name) const;
    TH1F                 *GetHistogram() const;
-   TList                *GetListOfFunctions() const { return fFunctions; }
+   TList                *GetListOfFunctions(bool bCreateListIfNull = true /*true by default for compatibility*/);
    virtual Double_t      GetCorrelationFactor() const;
    virtual Double_t      GetCovariance() const;
    virtual Double_t      GetMean(Int_t axis=1) const;

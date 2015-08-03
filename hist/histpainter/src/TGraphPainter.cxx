@@ -685,7 +685,7 @@ Int_t TGraphPainter::DistancetoPrimitiveHelper(TGraph *theGraph, Int_t px, Int_t
 
    // Loop on the list of associated functions and user objects
    TObject *f;
-   TList *functions = theGraph->GetListOfFunctions();
+   TList *functions = theGraph->GetListOfFunctions(false);
    TIter   next(functions);
    while ((f = (TObject*) next())) {
       Int_t dist;
@@ -1191,7 +1191,7 @@ void TGraphPainter::PaintGraph(TGraph *theGraph, Int_t npoints, const Double_t *
    gPad->SetBit(TGraph::kClipFrame, theGraph->TestBit(TGraph::kClipFrame));
 
    TF1 *fit = 0;
-   TList *functions = theGraph->GetListOfFunctions();
+   TList *functions = theGraph->GetListOfFunctions(false);
    TObject *f;
    if (functions) {
       f = (TF1*)functions->First();
@@ -3343,7 +3343,7 @@ void TGraphPainter::PaintGraphSimple(TGraph *theGraph, Option_t *option)
 
    // Paint associated objects in the list of functions (for instance
    // the fit function).
-   TList *functions = theGraph->GetListOfFunctions();
+   TList *functions = theGraph->GetListOfFunctions(false);
    if (!functions) return;
    TObjOptLink *lnk = (TObjOptLink*)functions->FirstLink();
    TObject *obj;
@@ -3582,7 +3582,7 @@ void TGraphPainter::PaintStats(TGraph *theGraph, TF1 *fit)
 
    Int_t dofit;
    TPaveStats *stats  = 0;
-   TList *functions = theGraph->GetListOfFunctions();
+   TList *functions = theGraph->GetListOfFunctions(false);
    TIter next(functions);
    TObject *obj;
    while ((obj = next())) {
