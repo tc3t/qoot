@@ -105,6 +105,13 @@ public:
             Error("PaintGraph", "illegal number of points (%d)", npoints);
             return;
         }
+        auto pPad = gPad;
+        if (!pPad)
+        {
+            Error("RestrictedPaintGraph", "gPad is null.");
+            return;
+        }
+        auto& rPad = *pPad;
         TString opt = chopt;
         opt.ToUpper();
         opt.ReplaceAll("SAME", "");
@@ -141,10 +148,10 @@ public:
         if (optionAxis) {
 #if 0 // Disable due to use of histogram.
             if (theGraph->GetHistogram()) {
-                rwxmin = gPad->GetUxmin();
-                rwxmax = gPad->GetUxmax();
-                rwymin = gPad->GetUymin();
-                rwymax = gPad->GetUymax();
+                rwxmin = rPad.GetUxmin();
+                rwxmax = rPad.GetUxmax();
+                rwymin = rPad.GetUymin();
+                rwymax = rPad.GetUymax();
                 minimum = theGraph->GetHistogram()->GetMinimumStored();
                 maximum = theGraph->GetHistogram()->GetMaximumStored();
                 if (minimum == -1111) { //this can happen after unzooming
@@ -155,8 +162,8 @@ public:
                     maximum = theGraph->GetHistogram()->GetYaxis()->GetXmax();
                     theGraph->GetHistogram()->SetMaximum(maximum);
                 }
-                uxmin = gPad->PadtoX(rwxmin);
-                uxmax = gPad->PadtoX(rwxmax);
+                uxmin = rPad.PadtoX(rwxmin);
+                uxmax = rPad.PadtoX(rwxmax);
             }
             else {
 
@@ -175,16 +182,16 @@ public:
             if (theGraph->GetMaximum() != -1111) rwymax = maximum = theGraph->GetMaximum();
             if (uxmin < 0 && rwxmin >= 0) uxmin = 0.9*rwxmin;
             if (uxmax > 0 && rwxmax <= 0) {
-                if (gPad->GetLogx()) uxmax = 1.1*rwxmax;
+                if (rPad.GetLogx()) uxmax = 1.1*rwxmax;
                 else                 uxmax = 0;
             }
             if (minimum < 0 && rwymin >= 0) minimum = 0.9*rwymin;
             if (maximum > 0 && rwymax <= 0) {
-                //if(gPad->GetLogy()) maximum = 1.1*rwymax;
+                //if(rPad.GetLogy()) maximum = 1.1*rwymax;
                 //else                maximum = 0;
             }
-            if (minimum <= 0 && gPad->GetLogy()) minimum = 0.001*maximum;
-            if (uxmin <= 0 && gPad->GetLogx()) {
+            if (minimum <= 0 && rPad.GetLogy()) minimum = 0.001*maximum;
+            if (uxmin <= 0 && rPad.GetLogx()) {
                 if (uxmax > 1000) uxmin = 1;
                 else              uxmin = 0.001*uxmax;
             }
@@ -214,7 +221,7 @@ public:
                 theGraph->GetHistogram()->Paint(chopth); // Draw histogram axis, title and grid
             }
             else {
-                if (gPad->GetLogy()) {
+                if (rPad.GetLogy()) {
                     theGraph->GetHistogram()->SetMinimum(rwymin);
                     theGraph->GetHistogram()->SetMaximum(rwymax);
                     theGraph->GetHistogram()->GetYaxis()->SetLimits(rwymin, rwymax);
@@ -227,12 +234,12 @@ public:
         {
             Double_t x0, y0, x1, y1;
             ComputeRange(x0, y0, x1, y1);
-            gPad->Range(x0, y0, x1, y1);
-            gPad->RangeAxis(x0, y0, x1, y1);
+            rPad.Range(x0, y0, x1, y1);
+            rPad.RangeAxis(x0, y0, x1, y1);
         }
 
         // Set Clipping option
-        gPad->SetBit(TGraph::kClipFrame, theGraph->TestBit(TGraph::kClipFrame));
+        rPad.SetBit(TGraph::kClipFrame, theGraph->TestBit(TGraph::kClipFrame));
 
 #if 0 // Disabled as irrelevant.
         TF1 *fit = 0;
@@ -254,20 +261,20 @@ public:
         //if (fit) PaintStats(theGraph, fit);
 #endif
 
-        rwxmin = gPad->GetUxmin();
-        rwxmax = gPad->GetUxmax();
-        rwymin = gPad->GetUymin();
-        rwymax = gPad->GetUymax();
-        uxmin = gPad->PadtoX(rwxmin);
-        uxmax = gPad->PadtoX(rwxmax);
+        rwxmin = rPad.GetUxmin();
+        rwxmax = rPad.GetUxmax();
+        rwymin = rPad.GetUymin();
+        rwymax = rPad.GetUymax();
+        uxmin = rPad.PadtoX(rwxmin);
+        uxmax = rPad.PadtoX(rwxmax);
         /* // Disable due to use of histogram.
         if (theGraph->GetHistogram() && !theGraph->InheritsFrom("TGraphPolar")) {
             maximum = theGraph->GetHistogram()->GetMaximum();
             minimum = theGraph->GetHistogram()->GetMinimum();
         }
         else {
-            maximum = gPad->PadtoY(rwymax);
-            minimum = gPad->PadtoY(rwymin);
+            maximum = rPad.PadtoY(rwymax);
+            minimum = rPad.PadtoY(rwymin);
         }
         */
 
@@ -281,7 +288,7 @@ public:
         {
             std::vector<double> xMod(x, x + npoints);
             std::vector<double> yMod(y, y + npoints);
-            gPad->PaintPolyLine(npoints, xMod.data(), yMod.data());
+            rPad.PaintPolyLine(npoints, xMod.data(), yMod.data());
         }
 #if 0 // Disabled due to use of gxworkl et al.
         // Draw the graph with a polyline or a fill area
@@ -291,7 +298,7 @@ public:
         auto gyworkl = new Double_t[2 * npoints + 10];
 
         if (optionLine || optionFill) {
-            gPad->PaintPolyLine(npoints, x, y);
+            rPad.PaintPolyLine(npoints, x, y);
             x1 = x[0];
             xn = x[npoints - 1];
             y1 = y[0];
@@ -312,22 +319,22 @@ public:
                     Int_t bord = gStyle->GetDrawBorder();
                     if (optionR) {
                         if (optionFill) {
-                            gPad->PaintFillArea(npt, gyworkl, gxworkl);
-                            if (bord) gPad->PaintPolyLine(npt, gyworkl, gxworkl);
+                            rPad.PaintFillArea(npt, gyworkl, gxworkl);
+                            if (bord) rPad.PaintPolyLine(npt, gyworkl, gxworkl);
                         }
                         else {
                             //if (TMath::Abs(theGraph->GetLineWidth())>99) PaintPolyLineHatches(theGraph, npt, gyworkl, gxworkl);
-                            gPad->PaintPolyLine(npt, gyworkl, gxworkl);
+                            rPad.PaintPolyLine(npt, gyworkl, gxworkl);
                         }
                     }
                     else {
                         if (optionFill) {
-                            gPad->PaintFillArea(npt, gxworkl, gyworkl);
-                            if (bord) gPad->PaintPolyLine(npt, gxworkl, gyworkl);
+                            rPad.PaintFillArea(npt, gxworkl, gyworkl);
+                            if (bord) rPad.PaintPolyLine(npt, gxworkl, gyworkl);
                         }
                         else {
                             //if (TMath::Abs(theGraph->GetLineWidth())>99) PaintPolyLineHatches(theGraph, npt, gxworkl, gyworkl);
-                            gPad->PaintPolyLine(npt, gxworkl, gyworkl);
+                            rPad.PaintPolyLine(npt, gxworkl, gyworkl);
                         }
                     }
                     gxwork[0] = gxwork[npt - 1];  gywork[0] = gywork[npt - 1];
@@ -418,8 +425,8 @@ public:
                 npt++;
                 if (i == npoints) {
                     ComputeLogs(npt, optionZ, gxworkl, gxwork, gyworkl, gywork);
-                    if (optionR)  gPad->PaintPolyMarker(npt, gyworkl, gxworkl);
-                    else          gPad->PaintPolyMarker(npt, gxworkl, gyworkl);
+                    if (optionR)  rPad.PaintPolyMarker(npt, gyworkl, gxworkl);
+                    else          rPad.PaintPolyMarker(npt, gxworkl, gyworkl);
                     npt = 0;
                 }
             }
@@ -435,8 +442,8 @@ public:
                 npt++;
                 if (i == npoints) {
                     ComputeLogs(npt, optionZ, gxworkl, gxwork, gyworkl, gywork);
-                    if (optionR) gPad->PaintPolyMarker(npt, gyworkl, gxworkl);
-                    else         gPad->PaintPolyMarker(npt, gxworkl, gyworkl);
+                    if (optionR) rPad.PaintPolyMarker(npt, gyworkl, gxworkl);
+                    else         rPad.PaintPolyMarker(npt, gxworkl, gyworkl);
                     npt = 0;
                 }
             }
@@ -472,19 +479,19 @@ public:
                     yhigh = y[i - 1];
                     if (xlow  < uxmin) xlow = uxmin;
                     if (xhigh > uxmax) xhigh = uxmax;
-                    if (!optionOne) ylow = TMath::Max((Double_t)0, gPad->GetUymin());
-                    else            ylow = gPad->GetUymin();
+                    if (!optionOne) ylow = TMath::Max((Double_t)0, rPad.GetUymin());
+                    else            ylow = rPad.GetUymin();
                     gxwork[0] = xlow;
                     gywork[0] = ylow;
                     gxwork[1] = xhigh;
                     gywork[1] = yhigh;
                     ComputeLogs(2, optionZ, gxworkl, gxwork, gyworkl, gywork);
-                    if (gyworkl[0] < gPad->GetUymin()) gyworkl[0] = gPad->GetUymin();
-                    if (gyworkl[1] < gPad->GetUymin()) continue;
-                    if (gyworkl[1] > gPad->GetUymax()) gyworkl[1] = gPad->GetUymax();
-                    if (gyworkl[0] > gPad->GetUymax()) continue;
+                    if (gyworkl[0] < rPad.GetUymin()) gyworkl[0] = rPad.GetUymin();
+                    if (gyworkl[1] < rPad.GetUymin()) continue;
+                    if (gyworkl[1] > rPad.GetUymax()) gyworkl[1] = rPad.GetUymax();
+                    if (gyworkl[0] > rPad.GetUymax()) continue;
 
-                    gPad->PaintBox(gxworkl[0], gyworkl[0], gxworkl[1], gyworkl[1]);
+                    rPad.PaintBox(gxworkl[0], gyworkl[0], gxworkl[1], gyworkl[1]);
                 }
             }
             else {
@@ -492,18 +499,18 @@ public:
                     xhigh = x[i - 1];
                     ylow = y[i - 1] - dbar;
                     yhigh = y[i - 1] + dbar;
-                    xlow = TMath::Max((Double_t)0, gPad->GetUxmin());
+                    xlow = TMath::Max((Double_t)0, rPad.GetUxmin());
                     gxwork[0] = xlow;
                     gywork[0] = ylow;
                     gxwork[1] = xhigh;
                     gywork[1] = yhigh;
                     ComputeLogs(2, optionZ, gxworkl, gxwork, gyworkl, gywork);
-                    gPad->PaintBox(gxworkl[0], gyworkl[0], gxworkl[1], gyworkl[1]);
+                    rPad.PaintBox(gxworkl[0], gyworkl[0], gxworkl[1], gyworkl[1]);
                 }
             }
 #endif
         }
-        gPad->ResetBit(TGraph::kClipFrame);
+        rPad.ResetBit(TGraph::kClipFrame);
         /*
         delete[] gxwork;
         delete[] gywork;
