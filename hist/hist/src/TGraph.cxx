@@ -569,7 +569,7 @@ void TGraph::Apply(TF1 *f)
    for (Int_t i = 0; i < fNpoints; i++) {
       fY[i] = f->Eval(fX[i], fY[i]);
    }
-   if (gPad) gPad->Modified();
+   //if (gPad) gPad->Modified();
 }
 
 
@@ -2106,7 +2106,7 @@ Int_t TGraph::RemovePoint(Int_t ipoint)
 
    Double_t **ps = ShrinkAndCopy(fNpoints - 1, ipoint);
    CopyAndRelease(ps, ipoint + 1, fNpoints--, ipoint);
-   if (gPad) gPad->Modified();
+   //if (gPad) gPad->Modified();
    return ipoint;
 }
 
@@ -2260,7 +2260,7 @@ void TGraph::SetPoint(Int_t i, Double_t x, Double_t y)
    }
    fX[i] = x;
    fY[i] = y;
-   if (gPad) gPad->Modified();
+   //if (gPad) gPad->Modified();
 }
 
 
