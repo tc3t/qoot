@@ -63,6 +63,7 @@ public:
         {
             case 0: BaseClass::Paint(opt); break;
             case 1: RestrictedPaintGraph(this, GetN(), GetX(), GetY(), opt); break;
+            case 2: break;
         }
     }
 
@@ -593,7 +594,7 @@ public:
 
         nRow++;
         m_spPaintMethod.reset(new QComboBox(this));
-        m_spPaintMethod->addItems(QStringList() << "TGraph::Paint()" << "Without histogram");
+        m_spPaintMethod->addItems(QStringList() << "TGraph::Paint()" << "Without histogram" << "No paint");
         connect(m_spPaintMethod.get(), static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::OnPaintMethodUpdated);
         rLayout.addWidget(new QLabel(tr("Paint method"), this), nRow, 0);
         rLayout.addWidget(m_spPaintMethod.get(), nRow, 1);
