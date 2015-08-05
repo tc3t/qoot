@@ -529,7 +529,8 @@ public:
     enum
     {
         GraphUpdateMethodSetAndSetPoint,
-        GraphUpdateMethodSetPoint
+        GraphUpdateMethodSetPoint,
+        GraphUpdateMethodReplaceRandom
     };
     typedef int GraphUpdateMethod;
 
@@ -585,7 +586,7 @@ public:
 
         nRow++;
         m_spUpdateMethod.reset(new QComboBox(this));
-        m_spUpdateMethod->addItems(QStringList() << "Set&SetPoint" << "SetPoint");
+        m_spUpdateMethod->addItems(QStringList() << "Append_Set&SetPoint" << "Append_SetPoint" << "Replace random");
         connect(m_spUpdateMethod.get(), static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::OnUpdateMethodChanged);
         rLayout.addWidget(new QLabel(tr("Update method"), this), nRow, 0);
         rLayout.addWidget(m_spUpdateMethod.get(), nRow, 1);
@@ -655,7 +656,9 @@ public:
             const auto nOldSize = graph.GetN();
             const double newVal = (&graph != &m_graphs.front()) ? rand() : m_spFpsDisplay->text().toDouble();
 
-            if (m_updateMethod == GraphUpdateMethodSetAndSetPoint)
+            if (nOldSize == 0 && m_updateMethod == GraphUpdateMethodReplaceRandom)
+                m_updateMethod = GraphUpdateMethodSetAndSetPoint;
+            else if (m_updateMethod == GraphUpdateMethodSetAndSetPoint)
             {
                 graph.Set(nOldSize + 1);
                 graph.SetPoint(nOldSize, m_counter, newVal);
@@ -663,6 +666,11 @@ public:
             else if (m_updateMethod == GraphUpdateMethodSetPoint)
             {
                 graph.SetPoint(nOldSize, m_counter, newVal);
+            }
+            else if (m_updateMethod == GraphUpdateMethodReplaceRandom)
+            {
+                const auto index = rand() % nOldSize;
+                graph.SetPoint(index, graph.GetX()[index], newVal);
             }
 
         }
