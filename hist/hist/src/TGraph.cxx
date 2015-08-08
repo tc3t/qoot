@@ -1814,17 +1814,39 @@ Int_t TGraph::InsertPoint()
       if (dpx * dpx + dpy * dpy < 25) ipoint = 0;
       else                      ipoint = fNpoints;
    }
-   Double_t **ps = ExpandAndCopy(fNpoints + 1, ipoint);
-   CopyAndRelease(ps, ipoint, fNpoints++, ipoint + 1);
-
-   // To avoid redefenitions in descendant classes
-   FillZero(ipoint, ipoint + 1);
-
-   fX[ipoint] = gPad->PadtoX(gPad->AbsPixeltoX(px));
-   fY[ipoint] = gPad->PadtoY(gPad->AbsPixeltoY(py));
+   InsertPointAt(ipoint, gPad->PadtoX(gPad->AbsPixeltoX(px)), gPad->PadtoY(gPad->AbsPixeltoY(py)));
    gPad->Modified();
    return ipoint;
 }
+
+
+//______________________________________________________________________________
+Int_t TGraph::InsertPointAt(Int_t pos, Double_t x, Double_t y)
+{
+    // Insert point at pos pushing existing points one step right. Resizes array so that pos is valid if possible.
+    // If pos < 0, adds point to beginning.
+    // Returns index of the newly added point, -1 if no point was inserted.
+
+    if (pos < 0)
+        pos = 0;
+    if (pos == std::numeric_limits<Int_t>::max()) // To avoid integer overflow in pos + 1 later.
+        return -1;
+
+    if (pos >= fNpoints)
+        SetPoint(pos, x, y);
+    else
+    {
+        const auto nOldSize = fNpoints;
+        SetPoint(fNpoints, 0, 0); // Insert point using SetPoint() to get it's allocation behaviour.
+        CopyPoints(nullptr, pos, nOldSize, pos + 1);
+        // To avoid redefinitions in descendant classes
+        FillZero(pos, pos + 1);
+    }
+    fX[pos] = x;
+    fY[pos] = y;
+    return pos;
+}
+
 
 //______________________________________________________________________________
 Double_t TGraph::Integral(Int_t first, Int_t last) const
@@ -2200,8 +2222,11 @@ void TGraph::Set(Int_t n)
 
    if (n < 0) n = 0;
    if (n == fNpoints) return;
-   Double_t **ps = Allocate(n);
-   CopyAndRelease(ps, 0, TMath::Min(fNpoints, n), 0);
+   if (n >= fMaxSize)
+   {
+       Double_t **ps = Allocate(n);
+       CopyAndRelease(ps, 0, fNpoints, 0);
+   }
    if (n > fNpoints) {
       FillZero(fNpoints, n, kFALSE);
    }
