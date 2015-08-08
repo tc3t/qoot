@@ -28,6 +28,8 @@
 
 #include "TContextMenuImp.h"
 #include "TContextMenu.h"
+#include <memory>
+#include "TToggle.h"
 
 #ifndef __CINT__
 	//#include <QGlobal>
@@ -67,14 +69,18 @@ class TQtMenutItem : public QObject {
 
 private:
   TMethod *fMethod;
+  std::unique_ptr<TToggle> fToggle;
   TObject *fObject;
   TContextMenu *fContextMenu;
 public:
-  TQtMenutItem( TContextMenu *menu,TMethod *m,TObject *o): fMethod(m),fObject(o),fContextMenu(menu){}
+  TQtMenutItem( TContextMenu *menu,TMethod *m,std::unique_ptr<TToggle> spToggle,TObject *o): fMethod(m),fToggle(std::move(spToggle)),fObject(o),fContextMenu(menu){}
   ~TQtMenutItem() { }
+
+  TToggle* GetTogglePtr() { return fToggle.get(); }
 
 public slots:
   void Exec(){ fContextMenu->Action(fObject, fMethod); }
+  void ExecToggle() { fContextMenu->Action(fObject, fToggle.get());}
 };
 
 class TObjectExecute;

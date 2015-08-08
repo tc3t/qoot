@@ -261,9 +261,21 @@ void TQtContextMenuImp::UpdateProperties()
           classPtr = method->GetClass();
        }
        //*-*  Create a popup item.
-       TQtMenutItem *menuItem = new TQtMenutItem(c,method,object);
+       const auto menuType = method->IsMenuItem();
+       TQtMenutItem *menuItem = new TQtMenutItem(c, method, (menuType == kMenuToggle) ? std::unique_ptr<TToggle>(new TToggle) : std::unique_ptr<TToggle>(), object);
        fItems.push_back(menuItem);
-       propertiesMenu->addAction(method->GetName(),menuItem,SLOT(Exec()));
+       
+       auto pToggle = menuItem->GetTogglePtr();
+       if (pToggle)
+       {
+           auto pAction = propertiesMenu->addAction(method->GetName(), menuItem, SLOT(ExecToggle()));
+           pAction->setCheckable(true);
+           pToggle->SetToggledObject(object, method);
+           pToggle->SetOnValue(1);
+           pAction->setChecked(pToggle->GetState());
+       }
+       else
+           propertiesMenu->addAction(method->GetName(), menuItem, SLOT(Exec()));
     }
     // Delete linked list of methods.
     delete methodList;
