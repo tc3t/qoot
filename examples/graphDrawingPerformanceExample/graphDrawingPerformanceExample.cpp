@@ -287,8 +287,8 @@ public:
 
         if (optionLine)
         {
-            std::vector<double> xMod(x, x + npoints);
-            std::vector<double> yMod(y, y + npoints);
+            std::vector<Double_t> xMod(x, x + npoints);
+            std::vector<Double_t> yMod(y, y + npoints);
             rPad.PaintPolyLine(npoints, xMod.data(), yMod.data());
         }
 #if 0 // Disabled due to use of gxworkl et al.
@@ -435,8 +435,15 @@ public:
         }
 
         // Draw the graph with the current polymarker on every points
-        if (optionMark) {
-            /* // Disabled due to use of gxworkl et al.
+        // or with a '*' on every points
+        if (optionMark || optionStar) {
+            if (optionStar)
+                theGraph->SetMarkerStyle(3);
+            std::vector<Double_t> xMod(x, x + npoints);
+            std::vector<Double_t> yMod(y, y + npoints);
+            if (optionR) rPad.PaintPolyMarker(npoints, yMod.data(), xMod.data());
+            else         rPad.PaintPolyMarker(npoints, xMod.data(), yMod.data());
+            /*
             npt = 0;
             for (i = 1; i <= npoints; i++) {
                 gxwork[npt] = x[i - 1];      gywork[npt] = y[i - 1];
@@ -531,6 +538,7 @@ public:
     {
         GraphUpdateMethodSetAndSetPoint,
         GraphUpdateMethodSetPoint,
+        GraphUpdateMethodInsertPointAt,
         GraphUpdateMethodReplaceRandom
     };
     typedef int GraphUpdateMethod;
@@ -587,7 +595,7 @@ public:
 
         nRow++;
         m_spUpdateMethod.reset(new QComboBox(this));
-        m_spUpdateMethod->addItems(QStringList() << "Append_Set&SetPoint" << "Append_SetPoint" << "Replace random");
+        m_spUpdateMethod->addItems(QStringList() << "Append_Set&SetPoint" << "Append_SetPoint" << "Append_InsertPointAt" << "Replace random");
         connect(m_spUpdateMethod.get(), static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::OnUpdateMethodChanged);
         rLayout.addWidget(new QLabel(tr("Update method"), this), nRow, 0);
         rLayout.addWidget(m_spUpdateMethod.get(), nRow, 1);
@@ -667,6 +675,10 @@ public:
             else if (m_updateMethod == GraphUpdateMethodSetPoint)
             {
                 graph.SetPoint(nOldSize, m_counter, newVal);
+            }
+            else if (m_updateMethod == GraphUpdateMethodInsertPointAt)
+            {
+                graph.InsertPointAt(nOldSize, m_counter, newVal);
             }
             else if (m_updateMethod == GraphUpdateMethodReplaceRandom)
             {
