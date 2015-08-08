@@ -1011,21 +1011,15 @@ void TMultiGraph::Paint(Option_t *option)
    if (!fGraphs) return;
    if (fGraphs->GetSize() == 0) return;
 
-   char *l;
-   Int_t nch = strlen(option);
-
    TString chopt = option;
    chopt.ToUpper();
 
-   l = (char*)strstr(chopt.Data(),"3D");
-   if (l) {
-      l = (char*)strstr(chopt.Data(),"L");
-      if (l) PaintPolyLine3D(chopt.Data());
+   if (chopt.Contains("3D")) {
+      if (chopt.Contains("L")) PaintPolyLine3D(chopt.Data());
       return;
    }
 
-   l = (char*)strstr(chopt.Data(),"PADS");
-   if (l) {
+   if (chopt.Contains("PADS")) {
       chopt.ReplaceAll("PADS","");
       PaintPads(chopt.Data());
       return;
@@ -1033,9 +1027,9 @@ void TMultiGraph::Paint(Option_t *option)
 
    TGraph *g;
 
-   l = (char*)strstr(chopt.Data(),"A");
-   if (l) {
-      *l = ' ';
+   const auto nIndexOfA = chopt.Index("A");
+   if (nIndexOfA != kNPOS) {
+      chopt[nIndexOfA] = ' ';
       TIter   next(fGraphs);
       Int_t npt = 100;
       Double_t maximum, minimum, rwxmin, rwxmax, rwymin, rwymax, uxmin, uxmax, dx, dy;
@@ -1053,7 +1047,7 @@ void TMultiGraph::Paint(Option_t *option)
       if (fHistogram) {
          //cleanup in case of a previous unzoom
          if (fHistogram->GetMinimum() >= fHistogram->GetMaximum()) {
-            nch = strlen(fHistogram->GetXaxis()->GetTitle());
+            Int_t nch = strlen(fHistogram->GetXaxis()->GetTitle());
             firstx = fHistogram->GetXaxis()->GetFirst();
             lastx  = fHistogram->GetXaxis()->GetLast();
             timedisplay = fHistogram->GetXaxis()->GetTimeDisplay();
