@@ -2126,7 +2126,9 @@ Int_t TGraph::RemovePoint()
          break;
       }
    }
-   return RemovePoint(ipoint);
+   const auto removedPoint = RemovePoint(ipoint);
+   if (removedPoint >= 0 && gPad)
+       gPad->Modified();
 }
 
 
