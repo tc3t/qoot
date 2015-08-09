@@ -1402,7 +1402,7 @@ void TGraph::FitPanel()
 Double_t TGraph::GetCorrelationFactor() const
 {
    // Return graph correlation factor
-
+   
    Double_t rms1 = GetRMS(1);
    if (rms1 == 0) return 0;
    Double_t rms2 = GetRMS(2);
@@ -1431,16 +1431,14 @@ Double_t TGraph::GetCovariance() const
 //______________________________________________________________________________
 Double_t TGraph::GetMean(Int_t axis) const
 {
-   // Return mean value of X (axis=1)  or Y (axis=2)
+    // Return mean value of X (axis=1)  or Y (axis=2)
+    
+    if (axis < 1 || axis > 2) return 0;
+    if (fNpoints <= 0) return 0;
+    
+    const auto rv = (axis == 1) ? TMath::Mean(fX, fX + fNpoints) : TMath(fY, fY + fNpoints);
 
-   if (axis < 1 || axis > 2) return 0;
-   if (fNpoints <= 0) return 0;
-   Double_t sumx = 0;
-   for (Int_t i = 0; i < fNpoints; i++) {
-      if (axis == 1) sumx += fX[i];
-      else           sumx += fY[i];
-   }
-   return sumx / fNpoints;
+    return rv;
 }
 
 
