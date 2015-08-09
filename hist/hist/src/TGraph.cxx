@@ -1433,11 +1433,12 @@ Double_t TGraph::GetMean(Int_t axis) const
 {
     // Return mean value of X (axis=1)  or Y (axis=2)
     
-    if (axis < 1 || axis > 2) return 0;
-    if (fNpoints <= 0) return 0;
-    
-    const auto rv = (axis == 1) ? TMath::Mean(fX, fX + fNpoints) : TMath(fY, fY + fNpoints);
+    if (axis != 'x' && axis != 'y' && axis != 1 && axis != 2)
+        return 0;
+    if (fNpoints <= 0)
+        return 0;
 
+    const auto rv = (axis == 1 || axis == 'x') ? TMath::Mean(fX, fX + fNpoints) : TMath::Mean(fY, fY + fNpoints);
     return rv;
 }
 
