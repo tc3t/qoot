@@ -339,6 +339,17 @@ if(DEFINED c++11)   # For backward compatibility
   set(cxx11 ${c++11} CACHE BOOL "" FORCE)
 endif()
 
+#---Apply minimal or gminimal------------------------------------------------------------------
+foreach(opt ${root_build_options})
+  if(NOT opt MATCHES "thread|cxx11|cling|builtin_llvm|builtin_ftgl|explicitlink")
+    if(minimal)
+      set(${opt} OFF CACHE BOOL "" FORCE)
+    elseif(gminimal AND NOT opt MATCHES "x11|cocoa")
+      set(${opt} OFF CACHE BOOL "" FORCE)
+    endif()
+  endif()
+endforeach()
+
 #---Avoid creating dependencies to 'non-statndard' header files -------------------------------
 include_regular_expression("^[^.]+$|[.]h$|[.]icc$|[.]hxx$|[.]hpp$")
 
