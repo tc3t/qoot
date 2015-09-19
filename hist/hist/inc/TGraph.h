@@ -75,6 +75,7 @@ protected:
    virtual void       FillZero(Int_t begin, Int_t end, Bool_t from_ctor = kTRUE);
    Double_t         **ShrinkAndCopy(Int_t size, Int_t iend);
    virtual Bool_t     DoMerge(const TGraph * g);       
+   Double_t*          GetPtrToValuesByAxisImpl(Int_t axis) const;
 
 public:
    // TGraph status bits
@@ -138,6 +139,8 @@ public:
    virtual Double_t      GetErrorYlow(Int_t bin)  const;
    Double_t             *GetX()  const {return fX;}
    Double_t             *GetY()  const {return fY;}
+   Double_t             *GetPtrToValuesByAxis(Int_t axis) { return GetPtrToValuesByAxisImpl(axis); }
+   const Double_t       *GetPtrToValuesByAxis(Int_t axis) const { return GetPtrToValuesByAxisImpl(axis); }
    virtual Double_t     *GetEX() const {return 0;}
    virtual Double_t     *GetEY() const {return 0;}
    virtual Double_t     *GetEXhigh() const {return 0;}
@@ -162,6 +165,7 @@ public:
    virtual Double_t      Integral(Int_t first=0, Int_t last=-1) const;
    virtual Bool_t        IsEditable() const {return !TestBit(kNotEditable);}
    virtual Int_t         IsInside(Double_t x, Double_t y) const;
+   virtual Bool_t        IsValidAxis(Int_t axis) const;
    virtual void          LeastSquareFit(Int_t m, Double_t *a, Double_t xmin=0, Double_t xmax=0);
    virtual void          LeastSquareLinearFit(Int_t n, Double_t &a0, Double_t &a1, Int_t &ifail, Double_t xmin=0, Double_t xmax=0);
    virtual Int_t         Merge(TCollection* list);

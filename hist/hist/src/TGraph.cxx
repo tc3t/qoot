@@ -1404,10 +1404,10 @@ Double_t TGraph::GetCorrelationFactor() const
 {
    // Return graph correlation factor
    
-   Double_t rms1 = GetRMS(1);
-   if (rms1 == 0) return 0;
-   Double_t rms2 = GetRMS(2);
-   if (rms2 == 0) return 0;
+   Double_t rms1 = GetRMS('x');
+   if (TMath::IsNaN(rms1) || rms1 == 0) return std::numeric_limits<Double_t>::quiet_NaN();
+   Double_t rms2 = GetRMS('y');
+   if (TMath::IsNaN(rms2) || rms2 == 0) return std::numeric_limits<Double_t>::quiet_NaN();
    return GetCovariance() / rms1 / rms2;
 }
 
@@ -1417,7 +1417,7 @@ Double_t TGraph::GetCovariance() const
 {
    // Return covariance of vectors x,y
 
-   if (fNpoints <= 0) return 0;
+   if (fNpoints <= 0) return std::numeric_limits<Double_t>::quiet_NaN();
    Double_t sum = fNpoints, sumx = 0, sumy = 0, sumxy = 0;
 
    for (Int_t i = 0; i < fNpoints; i++) {
@@ -1433,13 +1433,16 @@ Double_t TGraph::GetCovariance() const
 Double_t TGraph::GetMean(Int_t axis) const
 {
     // Return mean value of X (axis=1)  or Y (axis=2)
-    
-    if (axis != 'x' && axis != 'y' && axis != 1 && axis != 2)
+
+    const Double_t* pVals = GetPtrToValuesByAxis(axis);
+    if (!pVals)
         return std::numeric_limits<Double_t>::quiet_NaN();
+    
     if (fNpoints <= 0)
         return std::numeric_limits<Double_t>::quiet_NaN();
 
-    const auto rv = (axis == 1 || axis == 'x') ? TMath::Mean(fX, fX + fNpoints) : TMath::Mean(fY, fY + fNpoints);
+    const auto rv = TMath::Mean(pVals, pVals + fNpoints);
+
     return rv;
 }
 
@@ -1449,21 +1452,39 @@ Double_t TGraph::GetRMS(Int_t axis) const
 {
    // Return RMS of X (axis=1)  or Y (axis=2)
 
-   if (axis < 1 || axis > 2) return 0;
-   if (fNpoints <= 0) return 0;
+    const Double_t* pVals = GetPtrToValuesByAxis(axis);
+    if (!pVals)
+        return std::numeric_limits<Double_t>::quiet_NaN();
+
+   if (fNpoints <= 0) return std::numeric_limits<Double_t>::quiet_NaN();
    Double_t sumx = 0, sumx2 = 0;
    for (Int_t i = 0; i < fNpoints; i++) {
-      if (axis == 1) {
-         sumx += fX[i];
-         sumx2 += fX[i] * fX[i];
-      } else           {
-         sumx += fY[i];
-         sumx2 += fY[i] * fY[i];
-      }
+         sumx += pVals[i];
+         sumx2 += pVals[i] * pVals[i];
+
    }
    Double_t x = sumx / fNpoints;
    Double_t rms2 = TMath::Abs(sumx2 / fNpoints - x * x);
    return TMath::Sqrt(rms2);
+}
+
+
+//______________________________________________________________________________
+Bool_t TGraph::IsValidAxis(Int_t axis) const
+{
+    return GetPtrToValuesByAxis(axis) != nullptr;
+}
+
+
+//______________________________________________________________________________
+Double_t* TGraph::GetPtrToValuesByAxisImpl(Int_t axis) const
+{
+    if (axis == 1 || axis == 'x' || axis == 'X')
+        return fX;
+    else if (axis == 2 || axis == 'y' || axis == 'Y')
+        return fY;
+    else
+        return nullptr;
 }
 
 
