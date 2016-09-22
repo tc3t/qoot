@@ -68,6 +68,7 @@ TString stime(time_t* t, bool utc = false, bool display_time_zone = true)
 
 int main(int argc, char* argv[])
 {
+#if 0
         TApplication app("a", &argc, argv);
         double f = 1.8;
 
@@ -147,10 +148,10 @@ int main(int argc, char* argv[])
 
         app.Run();
 
-#if 0
+#else
 
 
-    const double x[] = { 1, 2, 3 };
+    const double x[] = { 1, 200, 300 };
     const double y[] = { 2, 3, 2 };
 
     std::string sGui;
@@ -187,13 +188,15 @@ int main(int argc, char* argv[])
 
         auto pGraph = new TGraph(3, x, y);
 
-        pGraph->InsertPointAt(pGraph->GetN(), -1, 0);
+        //pGraph->InsertPointAt(pGraph->GetN(), -1, 0);
         //pGraph->GetXaxis()->SetTimeFormat("DD.MM.YYYY HH:mm:dd");
         //pGraph->GetXaxis()->SetTimeFormat("%d\/%m\/%y%F2000-02-28 13:00:01"); // Tällä ei kaadu
         //pGraph->GetXaxis()->SetTimeFormat("%d/%m/%y %H:%M:%S%F2000-02-28 13:00:01"); // Ei kaadu
-        pGraph->GetXaxis()->SetTimeFormat("%d/%m/%y %H:%M:%S%F1970-01-01 00:00:00"); // Kaatuu jos on negatiivisia x-arvoja.
+        //pGraph->GetXaxis()->SetTimeFormat("%d/%m/%y %H:%M:%S%F1970-01-01 00:00:00"); // Kaatuu jos on negatiivisia x-arvoja.
         //pGraph->GetXaxis()->SetTimeFormat("%d/%m/%y %H:%M:%S%F1970-00-00 00:00:00 GMT"); // Ei kaadu ainakaan samalla testillä kun edellinen. Erona se, että tässä tapauksessa
                                                                                          // käytetään konversioon gmtime()-funktiota kun taas edellisessä käytössä on localtime().
+
+        pGraph->GetXaxis()->SetTimeFormat("%d/%m/%y %H:%M:%S%F2016-08-21 12:00:00");
         pGraph->GetXaxis()->SetTimeDisplay(1);
         pGraph->Draw("AL*");
         pGraph->SetTitle("A graph in TQtWidget");

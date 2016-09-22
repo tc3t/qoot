@@ -37,9 +37,17 @@ set(FASTCGI_LIBRARY "")
 add_definitions(-DHTTP_WITHOUT_FASTCGI)
 endif()
 
+add_definitions(-DUSE_WEBSOCKET)
+
+# look for the realtime extensions library and use it if it exists
+find_library(RT_LIBRARY rt)
+if(RT_LIBRARY)
+  set(RT_LIBRARIES ${RT_LIBRARY})
+endif()
+
 ROOT_GENERATE_DICTIONARY(G__HTTP *.h LINKDEF LinkDef.h)
 ROOT_GENERATE_ROOTMAP(RHTTP LINKDEF LinkDef.h DEPENDENCIES Thread Tree Hist Gpad Graf RIO XMLIO)
-ROOT_LINKER_LIBRARY(RHTTP *.cxx civetweb/civetweb.c G__HTTP.cxx LIBRARIES ${SYSLIBS} ${ZLIB_LIBRARY} ${FASTCGI_LIBRARY} DEPENDENCIES Thread Tree Hist Gpad Graf RIO XMLIO)
+ROOT_LINKER_LIBRARY(RHTTP *.cxx civetweb/civetweb.c G__HTTP.cxx LIBRARIES ${SYSLIBS} ${ZLIB_LIB} ${RT_LIBRARIES} ${FASTCGI_LIBRARY} DEPENDENCIES Thread Tree Hist Gpad Graf RIO XMLIO)
 
 ROOT_INSTALL_HEADERS()
 

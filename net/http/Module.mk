@@ -34,9 +34,13 @@ HTTPDEP      := $(HTTPO:.o=.d) $(HTTPDO:.o=.d)
 HTTPLIB      := $(LPATH)/libRHTTP.$(SOEXT)
 HTTPMAP      := $(HTTPLIB:.$(SOEXT)=.rootmap)
 
-HTTPCXXFLAGS = $(HTTPINCDIR:%=-I%) $(FASTCGIINCDIR:%=-I%) $(FASTCGIFLAGS)
+HTTPCXXFLAGS = $(HTTPINCDIR:%=-I%) $(FASTCGIINCDIR:%=-I%) $(FASTCGIFLAGS) -DUSE_WEBSOCKET
 
 HTTPLIBEXTRA += $(ZLIBLIBDIR) $(ZLIBCLILIB)
+
+ifeq ($(PLATFORM),linux)
+HTTPLIBEXTRA += -lrt
+endif
 
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HTTPH))
@@ -80,3 +84,5 @@ distclean::     distclean-$(MODNAME)
 
 ##### extra rules ######
 $(HTTPO) $(HTTPDO) : CXXFLAGS += $(HTTPCXXFLAGS)
+
+$(CIVETWEBO) : CFLAGS += -DUSE_WEBSOCKET

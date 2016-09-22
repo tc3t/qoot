@@ -30,7 +30,7 @@ ROOT_GENERATE_DICTIONARY(G__ASImage TASImage.h TASImagePlugin.h TASPluginGS.h LI
 ROOT_GENERATE_ROOTMAP(ASImage LINKDEF LinkDef.h DEPENDENCIES Graf MathCore)
 ROOT_LINKER_LIBRARY(ASImage TASImage.cxx TASPluginGS.cxx  G__ASImage.cxx 
                     LIBRARIES Core ${AFTERIMAGE_LIBRARIES} ${FREETYPE_LIBRARIES} ${ASEXTRA_LIBRARIES} ${X11_LIBRARIES}
-                    ${ZLIB_LIBRARY} DEPENDENCIES Graf)
+                    ${ZLIB_LIB} DEPENDENCIES Graf)
 if(builtin_afterimage)
   add_dependencies(ASImage AFTERIMAGE)
 endif()
@@ -39,11 +39,11 @@ if(builtin_freetype)
 endif()
 
 if(gui)
-  ROOT_GENERATE_DICTIONARY(G__ASImageGui TASPaletteEditor.h LINKDEF LinkDefGui.h)
-  ROOT_GENERATE_ROOTMAP(ASImageGui LINKDEF LinkDefGui.h DEPENDENCIES Graf Hist Gui ASImage RIO )
-  ROOT_LINKER_LIBRARY(ASImageGui TASPaletteEditor.cxx G__ASImageGui.cxx 
-                      LIBRARIES ${AFTERIMAGE_LIBRARIES} ${FREETYPE_LIBRARIES} ${ASEXTRA_LIBRARIES} ${X11_LIBRARIES}
-                      ${ZLIB_LIBRARY} DEPENDENCIES Gui ASImage)
+ROOT_GENERATE_DICTIONARY(G__ASImageGui TASPaletteEditor.h LINKDEF LinkDefGui.h)
+ROOT_GENERATE_ROOTMAP(ASImageGui LINKDEF LinkDefGui.h DEPENDENCIES Graf Hist Gui ASImage RIO )
+ROOT_LINKER_LIBRARY(ASImageGui TASPaletteEditor.cxx G__ASImageGui.cxx 
+                    LIBRARIES ${AFTERIMAGE_LIBRARIES} ${FREETYPE_LIBRARIES} ${ASEXTRA_LIBRARIES} ${X11_LIBRARIES}
+                      ${ZLIB_LIB} DEPENDENCIES Gui ASImage)
 endif()
 
 ROOT_INSTALL_HEADERS()

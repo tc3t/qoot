@@ -60,6 +60,7 @@
 #include "TStreamer.h"
 #include "TStreamerInfoActions.h"
 #include "RVersion.h"
+#include "Riostream.h"
 #include "TClonesArray.h"
 #include "TVirtualMutex.h"
 #include "TInterpreter.h"
@@ -186,7 +187,17 @@ TString TBufferJSON::ConvertToJSON(const TObject *obj, Int_t compact, const char
 {
    // converts object, inherited from TObject class, to JSON string
 
-   return ConvertToJSON(obj, (obj ? obj->IsA() : 0), compact, member_name);
+   TClass *clActual = 0;
+   void *ptr = (void *) obj;
+
+   if (obj!=0) {
+      clActual = TObject::Class()->GetActualClass(obj);
+      if (!clActual) clActual = TObject::Class(); else
+      if (clActual != TObject::Class())
+         ptr = (void *) ((Long_t) obj - clActual->GetBaseClassOffset(TObject::Class()));
+   }
+
+   return ConvertToJSON(ptr, clActual, compact, member_name);
 }
 
 //______________________________________________________________________________
@@ -275,6 +286,47 @@ TString TBufferJSON::ConvertToJSON(const void *ptr, TDataMember *member,
    buf.SetCompact(compact);
 
    return buf.JsonWriteMember(ptr, member, mcl, arraylen);
+}
+
+//______________________________________________________________________________
+Int_t TBufferJSON::ExportToFile(const char* filename, const TObject *obj, const char* option)
+{
+   // Convert object into JSON and store in text file
+   // Returns size of the produce file
+   // Used in TObject::SaveAs()
+
+   if (!obj || !filename || (*filename==0)) return 0;
+
+   Int_t compact = 0;
+   if (option && (*option >= '0') && (*option <='3')) compact = TString(option,1).Atoi();
+
+   TString json = TBufferJSON::ConvertToJSON(obj, compact);
+
+   std::ofstream ofs (filename);
+   ofs << json.Data();
+   ofs.close();
+
+   return json.Length();
+}
+
+//______________________________________________________________________________
+Int_t TBufferJSON::ExportToFile(const char* filename, const void *obj, const TClass *cl, const char* option)
+{
+   // Convert object into JSON and store in text file
+   // Returns size of the produce file
+
+   if (!obj || !cl || !filename || (*filename==0)) return 0;
+
+   Int_t compact = 0;
+   if (option && (*option >= '0') && (*option <='3')) compact = TString(option,1).Atoi();
+
+   TString json = TBufferJSON::ConvertToJSON(obj, cl, compact);
+
+   std::ofstream ofs (filename);
+   ofs << json.Data();
+   ofs.close();
+
+   return json.Length();
 }
 
 //______________________________________________________________________________
@@ -975,7 +1027,7 @@ void TBufferJSON::JsonStreamCollection(TCollection *col, const TClass *)
          sopt.Append("\"");
       }
 
-      JsonWriteObject(obj, obj->IsA());
+      WriteObjectAny(obj, TObject::Class());
 
       first = kFALSE;
    }
