@@ -4361,6 +4361,7 @@ void TPad::Print(const char *filenam, Option_t *option)
    //              "tiff" - a TIFF file is produced
    //               "cxx" - a C++ macro file is produced
    //               "xml" - a XML file
+   //              "json" - a JSON file
    //              "root" - a ROOT binary file
    //
    //     filename = 0 - filename  is defined by the GetName and its
@@ -4581,6 +4582,12 @@ void TPad::Print(const char *filenam, Option_t *option)
    //==============Save pad/canvas as a XML file================================
    if (strstr(opt,"xml")) {
       // Plugin XML driver
+      if (gDirectory) gDirectory->SaveObjectAs(this,psname.Data(),"");
+      return;
+   }
+
+   //==============Save pad/canvas as a JSON file================================
+   if (strstr(opt,"json")) {
       if (gDirectory) gDirectory->SaveObjectAs(this,psname.Data(),"");
       return;
    }
@@ -5147,6 +5154,7 @@ void TPad::SaveAs(const char *filename, Option_t * /*option*/) const
    //   if filename contains .C or .cxx, a C++ macro file is produced
    //   if filename contains .root, a Root file is produced
    //   if filename contains .xml, a XML file is produced
+   //   if filename contains .json, a JSON file is produced
    //
    //   See comments in TPad::Print for the Postscript formats
 
@@ -5180,6 +5188,8 @@ void TPad::SaveAs(const char *filename, Option_t * /*option*/) const
    }
    else if (psname.EndsWith(".xml"))
       ((TPad*)this)->Print(psname,"xml");
+   else if (psname.EndsWith(".json"))
+      ((TPad*)this)->Print(psname,"json");
    else if (psname.EndsWith(".eps"))
       ((TPad*)this)->Print(psname,"eps");
    else if (psname.EndsWith(".pdf"))
