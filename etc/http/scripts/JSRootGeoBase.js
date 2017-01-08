@@ -13,9 +13,12 @@
       if (typeof THREE == 'undefined')
          throw new Error('THREE is not defined', 'JSRootGeoBase.js');
 
-      factory(JSROOT);
+      if (typeof ThreeBSP == 'undefined')
+         throw new Error('ThreeBSP is not defined', 'JSRootGeoBase.js');
+
+      factory(JSROOT, THREE, ThreeBSP);
    }
-} (function( JSROOT ) {
+} (function( JSROOT, THREE, ThreeBSP ) {
    // === functions to create THREE.Geometry for TGeo shapes ========================
 
    /** @namespace JSROOT.GEO */
@@ -57,6 +60,24 @@
    JSROOT.GEO.ToggleBit = function(volume, f) {
       if (volume.fGeoAtt !== undefined)
          volume.fGeoAtt = volume.fGeoAtt ^ (f & 0xffffff);
+   }
+
+   /** @memberOf JSROOT.GEO
+    * implementation of TGeoVolume::InvisibleAll */
+   JSROOT.GEO.InvisibleAll = function(flag) {
+      if (flag===undefined) flag = true;
+
+      JSROOT.GEO.SetBit(this, JSROOT.GEO.BITS.kVisThis, !flag);
+      JSROOT.GEO.SetBit(this, JSROOT.GEO.BITS.kVisDaughters, !flag);
+      JSROOT.GEO.SetBit(this, JSROOT.GEO.BITS.kVisOneLevel, false);
+
+      if (this.fNodes)
+         for (var n=0;n<this.fNodes.arr.length;++n) {
+            var sub = this.fNodes.arr[n].fVolume;
+            JSROOT.GEO.SetBit(sub, JSROOT.GEO.BITS.kVisThis, !flag);
+            // JSROOT.GEO.SetBit(sub, JSROOT.GEO.BITS.kVisDaughters, !flag);
+            //JSROOT.GEO.SetBit(sub, JSROOT.GEO.BITS.kVisOneLevel, false);
+         }
    }
 
    /** method used to avoid duplication of warnings
@@ -1957,9 +1978,9 @@
 
          } else {
             // let three.js calculate our faces
-            console.log('trinagulate ' + shape.fName);
+            //console.log('trinagulate ' + shape.fName);
             cut_faces = THREE.ShapeUtils.triangulateShape(pnts, []);
-            console.log('trinagulate done ' + cut_faces.length);
+            //console.log('trinagulate done ' + cut_faces.length);
          }
          numfaces += cut_faces.length*2;
       }
@@ -2564,7 +2585,7 @@
             matrix.set(node.fTrans[0],  node.fTrans[4],  node.fTrans[8],  0,
                        node.fTrans[1],  node.fTrans[5],  node.fTrans[9],  0,
                        node.fTrans[2],  node.fTrans[6],  node.fTrans[10], 0,
-                                    0,               0,                0, 1);
+                                    0,               0,               0, 1);
             // second - set position with proper sign
             matrix.setPosition({ x: node.fTrans[12], y: node.fTrans[13], z: node.fTrans[14] });
          }
@@ -2573,44 +2594,59 @@
          matrix = JSROOT.GEO.createMatrix(node.fMatrix);
       else
       if ((node._typename == "TGeoNodeOffset") && (node.fFinder !== null)) {
-         // if (node.fFinder._typename === 'TGeoPatternTrapZ') { }
+         var kPatternReflected = JSROOT.BIT(14);
+         if ((node.fFinder.fBits & kPatternReflected) !== 0)
+            JSROOT.GEO.warn('Unsupported reflected pattern ' + node.fFinder._typename);
+
          // if (node.fFinder._typename === 'TGeoPatternCylR') { }
          // if (node.fFinder._typename === 'TGeoPatternSphR') { }
          // if (node.fFinder._typename === 'TGeoPatternSphTheta') { }
          // if (node.fFinder._typename === 'TGeoPatternSphPhi') { }
          // if (node.fFinder._typename === 'TGeoPatternHoneycomb') { }
-         if ((node.fFinder._typename === 'TGeoPatternX') ||
-             (node.fFinder._typename === 'TGeoPatternY') ||
-             (node.fFinder._typename === 'TGeoPatternZ') ||
-             (node.fFinder._typename === 'TGeoPatternParaX') ||
-             (node.fFinder._typename === 'TGeoPatternParaY') ||
-             (node.fFinder._typename === 'TGeoPatternParaZ')) {
-            var _shift = node.fFinder.fStart + (node.fIndex + 0.5) * node.fFinder.fStep;
+         switch(node.fFinder._typename) {
+           case 'TGeoPatternX':
+           case 'TGeoPatternY':
+           case 'TGeoPatternZ':
+           case 'TGeoPatternParaX':
+           case 'TGeoPatternParaY':
+           case 'TGeoPatternParaZ':
+              var _shift = node.fFinder.fStart + (node.fIndex + 0.5) * node.fFinder.fStep;
 
-            matrix = new THREE.Matrix4();
+              matrix = new THREE.Matrix4();
 
-            switch (node.fFinder._typename.charAt(node.fFinder._typename.length - 1)) {
-               case 'X': matrix.setPosition(new THREE.Vector3(_shift, 0, 0)); break;
-               case 'Y': matrix.setPosition(new THREE.Vector3(0, _shift, 0)); break;
-               case 'Z': matrix.setPosition(new THREE.Vector3(0, 0, _shift)); break;
-            }
-         } else
-         if (node.fFinder._typename === 'TGeoPatternCylPhi') {
-            var phi = (Math.PI/180)*(node.fFinder.fStart+(node.fIndex+0.5)*node.fFinder.fStep);
-            var _cos = Math.cos(phi), _sin = Math.sin(phi);
+              switch (node.fFinder._typename.charAt(node.fFinder._typename.length - 1)) {
+                 case 'X': matrix.setPosition(new THREE.Vector3(_shift, 0, 0)); break;
+                 case 'Y': matrix.setPosition(new THREE.Vector3(0, _shift, 0)); break;
+                 case 'Z': matrix.setPosition(new THREE.Vector3(0, 0, _shift)); break;
+              }
+              break;
 
-            matrix = new THREE.Matrix4();
+           case 'TGeoPatternCylPhi':
+              var phi = (Math.PI/180)*(node.fFinder.fStart+(node.fIndex+0.5)*node.fFinder.fStep);
+              var _cos = Math.cos(phi), _sin = Math.sin(phi);
 
-            matrix.set(_cos, -_sin, 0,  0,
-                      _sin,  _cos, 0,  0,
-                         0,     0, 1,  0,
-                         0,     0, 0,  1);
-         } else
-         if (node.fFinder._typename === 'TGeoPatternCylR') {
-            // seems to be, require no transformation
-            matrix = new THREE.Matrix4();
-         } else {
-           JSROOT.GEO.warn('Unsupported pattern type ' + node.fFinder._typename);
+              matrix = new THREE.Matrix4();
+
+              matrix.set(_cos, -_sin, 0,  0,
+                         _sin,  _cos, 0,  0,
+                            0,     0, 1,  0,
+                            0,     0, 0,  1);
+              break;
+
+           case 'TGeoPatternCylR':
+               // seems to be, require no transformation
+               matrix = new THREE.Matrix4();
+               break;
+
+           case 'TGeoPatternTrapZ':
+              var dz = node.fFinder.fStart + (node.fIndex+0.5)*node.fFinder.fStep;
+              matrix = new THREE.Matrix4();
+              matrix.setPosition(new THREE.Vector3(node.fFinder.fTxz*dz, node.fFinder.fTyz*dz, dz)); break;
+              break;
+
+           default:
+              JSROOT.GEO.warn('Unsupported pattern type ' + node.fFinder._typename);
+              break;
          }
       }
 
@@ -2629,7 +2665,8 @@
           matrix1 = JSROOT.GEO.createMatrix(shape.fNode.fLeftMat),
           matrix2 = JSROOT.GEO.createMatrix(shape.fNode.fRightMat);
 
-      if (faces_limit === 0) faces_limit = 10000;
+      // seems to be, IE has smaller stack for functions calls and ThreeCSG fails with large shapes
+      if (faces_limit === 0) faces_limit = (JSROOT.browser && JSROOT.browser.isIE) ? 7000 : 10000;
                         else return_bsp = true;
 
       if (matrix1 && (matrix1.determinant() < -0.9))
@@ -2643,10 +2680,10 @@
       geom2 = JSROOT.GEO.createGeometry(shape.fNode.fRight, faces_limit/2);
 
       if (geom1 instanceof THREE.Geometry) geom1.computeVertexNormals();
-      bsp1 = new ThreeBSP(geom1, matrix1, JSROOT.GEO.CompressComp ? 0 : undefined);
+      bsp1 = new ThreeBSP.Geometry(geom1, matrix1, JSROOT.GEO.CompressComp ? 0 : undefined);
 
       if (geom2 instanceof THREE.Geometry) geom2.computeVertexNormals();
-      bsp2 = new ThreeBSP(geom2, matrix2, bsp1.maxid);
+      bsp2 = new ThreeBSP.Geometry(geom2, matrix2, bsp1.maxid);
 
       // take over maxid from both geometries
       bsp1.maxid = bsp2.maxid;
@@ -2664,7 +2701,7 @@
                + ' left: ' + shape.fNode.fLeft._typename +  ' ' + JSROOT.GEO.numGeometryFaces(geom1) + ' faces'
                + ' right: ' + shape.fNode.fRight._typename + ' ' + JSROOT.GEO.numGeometryFaces(geom2) + ' faces'
                + '  use first');
-         bsp1 = new ThreeBSP(geom1, matrix1);
+         bsp1 = new ThreeBSP.Geometry(geom1, matrix1);
       }
 
       return return_bsp ? { polygons: bsp1.toPolygons() } : bsp1.toBufferGeometry();
@@ -2826,7 +2863,7 @@
    JSROOT.GEO.numGeometryFaces = function(geom) {
       if (!geom) return 0;
 
-      if (geom instanceof ThreeBSP)
+      if (geom instanceof ThreeBSP.Geometry)
          return geom.tree.numPolygons();
 
       if (geom.type == 'BufferGeometry') {
@@ -2844,7 +2881,7 @@
    JSROOT.GEO.numGeometryVertices = function(geom) {
       if (!geom) return 0;
 
-      if (geom instanceof ThreeBSP)
+      if (geom instanceof ThreeBSP.Geometry)
          return geom.tree.numPolygons() * 3;
 
       if (geom.type == 'BufferGeometry') {
@@ -2863,6 +2900,7 @@
 
    JSROOT.GEO.ClonedNodes = function(obj, clones) {
       this.toplevel = true; // indicate if object creates top-level structure with Nodes and Volumes folder
+      this.name_prefix = ""; // name prefix used for nodes names
 
       if (obj) {
          if (obj._geoh) this.toplevel = false;
@@ -2882,29 +2920,57 @@
       }
       return null;
    }
+   
+   JSROOT.GEO.ClonedNodes.prototype.Cleanup = function(drawnodes, drawshapes) {
+      // function to cleanup as much as possible structures
+      // drawnodes and drawshapes are arrays created during building of geometry
 
-   JSROOT.GEO.ClonedNodes.prototype.CreateClones = function(obj, sublevel) {
+      if (drawnodes) {
+         for (var n=0;n<drawnodes.length;++n) {
+            delete drawnodes[n].stack;
+            drawnodes[n] = undefined;
+         }
+      }
+   
+      if (drawshapes) {
+         for (var n=0;n<drawshapes.length;++n) {
+            delete drawshapes[n].geom;
+            drawshapes[n] = undefined;
+         }
+      }
+      
+      if (this.nodes)
+         for (var n=0;n<this.nodes.length;++n)
+            delete this.nodes[n].chlds;
+      
+      delete this.nodes;
+      delete this.origin;
+      
+      delete this.sortmap;
+      
+   }
+
+   JSROOT.GEO.ClonedNodes.prototype.CreateClones = function(obj, sublevel, kind) {
        if (!sublevel) {
           this.origin = [];
           sublevel = 1;
+          kind = JSROOT.GEO.NodeKind(obj);
        }
 
-       var kind = JSROOT.GEO.NodeKind(obj);
-       if ((kind < 0) || ('_refid' in obj)) return;
+       if ((kind < 0) || !obj || ('_refid' in obj)) return;
 
        obj._refid = this.origin.length;
        this.origin.push(obj);
 
        var chlds = null;
-       if (kind === 0) {
+       if (kind===0)
           chlds = (obj.fVolume && obj.fVolume.fNodes) ? obj.fVolume.fNodes.arr : null;
-       } else {
+       else
           chlds = obj.fElements ? obj.fElements.arr : null;
-       }
 
        if (chlds !== null)
           for (var i = 0; i < chlds.length; ++i)
-            this.CreateClones(chlds[i], sublevel+1);
+             this.CreateClones(chlds[i], sublevel+1, kind);
 
        if (sublevel > 1) return;
 
@@ -2915,7 +2981,7 @@
        // first create nodes objects
        for (var n=0; n<this.origin.length; ++n) {
           var obj = this.origin[n];
-          var node = { id: n, kind: JSROOT.GEO.NodeKind(obj), vol: 0, nfaces: 0, numvischld: 1, idshift: 0 };
+          var node = { id: n, kind: kind, vol: 0, nfaces: 0, numvischld: 1, idshift: 0 };
           this.nodes.push(node);
           sortarr.push(node); // array use to produce sortmap
        }
@@ -2926,17 +2992,16 @@
 
           var chlds = null, shape = null;
 
-          if (clone.kind === 0) {
-             if (obj.fVolume) {
-                shape = obj.fVolume.fShape;
-                if (obj.fVolume.fNodes) chlds = obj.fVolume.fNodes.arr;
-             }
-          } else {
+          if (kind===1) {
              shape = obj.fShape;
              if (obj.fElements) chlds = obj.fElements.arr;
+          } else
+          if (obj.fVolume) {
+             shape = obj.fVolume.fShape;
+             if (obj.fVolume.fNodes) chlds = obj.fVolume.fNodes.arr;
           }
 
-          var matrix = JSROOT.GEO.getNodeMatrix(clone.kind, obj);
+          var matrix = JSROOT.GEO.getNodeMatrix(kind, obj);
           if (matrix) {
              clone.matrix = matrix.elements; // take only matrix elements, matrix will be constructed in worker
              if (clone.matrix[0] === 1) {
@@ -3134,9 +3199,9 @@
 
    JSROOT.GEO.ClonedNodes.prototype.ResolveStack = function(stack, withmatrix) {
 
-      var res = { id: 0, obj: null, node: this.nodes[0], name: "Nodes" };
+      var res = { id: 0, obj: null, node: this.nodes[0], name: this.name_prefix };
 
-      if (!this.toplevel || (this.nodes.length === 1) || (res.node.kind === 1)) res.name = "";
+      // if (!this.toplevel || (this.nodes.length === 1) || (res.node.kind === 1)) res.name = "";
 
       if (withmatrix) {
          res.matrix = new THREE.Matrix4();
@@ -3168,11 +3233,13 @@
    JSROOT.GEO.ClonedNodes.prototype.FindStackByName = function(fullname) {
       if (!this.origin) return null;
 
-      var names = fullname.split('/');
+      var names = fullname.split('/'),
+          currid = 0, stack = [],
+          top = this.origin[0];
 
-      var currid = 0, stack = [];
+      if (!top || (top.fName!==names[0])) return null;
 
-      for (var n=0;n<names.length;++n) {
+      for (var n=1;n<names.length;++n) {
          var node = this.nodes[currid];
          if (!node.chlds) return null;
 
@@ -3183,7 +3250,7 @@
          }
 
          // no new entry - not found stack
-         if (stack.length == n) return null;
+         if (stack.length === n - 1) return null;
       }
 
       return stack;
@@ -3294,9 +3361,11 @@
    }
 
 
-   JSROOT.GEO.ClonedNodes.prototype.CollectVisibles = function(maxnumfaces, frustum) {
+   JSROOT.GEO.ClonedNodes.prototype.CollectVisibles = function(maxnumfaces, frustum, maxnumnodes) {
       // function collects visible nodes, using maxlimit
       // one can use map to define cut based on the volume or serious of cuts
+
+      if (!maxnumnodes) maxnumnodes = maxnumfaces/100;
 
       var arg = {
          facecnt: 0,
@@ -3317,10 +3386,11 @@
 
       if (arg.facecnt > maxnumfaces) {
 
-         var bignumfaces = maxnumfaces * (frustum ? 0.8 : 1.0);
+         var bignumfaces = maxnumfaces * (frustum ? 0.8 : 1.0),
+             bignumnodes = maxnumnodes * (frustum ? 0.8 : 1.0);
 
          // define minimal volume, which always to shown
-         var boundary = this.GetVolumeBoundary(arg.viscnt, bignumfaces, bignumfaces/100);
+         var boundary = this.GetVolumeBoundary(arg.viscnt, bignumfaces, bignumnodes);
 
          minVol = boundary.min;
          maxVol = boundary.max;
@@ -3344,7 +3414,7 @@
              this.ScanVisible(arg);
 
              if (arg.totalcam > maxnumfaces*0.2)
-                camVol = this.GetVolumeBoundary(arg.viscnt, maxnumfaces*0.2, maxnumfaces*0.2/100).min;
+                camVol = this.GetVolumeBoundary(arg.viscnt, maxnumfaces*0.2, maxnumnodes*0.2).min;
              else
                 camVol = 0;
 

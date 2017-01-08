@@ -1,55 +1,129 @@
 # JSROOT changelog
 
+
+## Changes in 4.8.1
+1. Support new JSON format, produced with newest TBufferJSON
+   - object references stored as {"$ref":12}
+   - pair objects for std::map marked with "$pair" : "pair<type1,type2>" data member
+   - old JSON format will be recognized automatically and supported as well 
+2. Fix - better selection of Y range for log scale
+3. Provide JSROOT.parse_multi function to correctly parse response of multi.json request,
+   support it in the JSROOT.NewHttpRequest method as well.  
+4. Fix - correctly calculate integral for TH1
+5. Partially support new TFormula with complex C code inside 
+
+
+## Changes in 4.8.0
+1. Many improvements in the I/O part 
+   - support most of STL containers
+   - support TMap and TClonesArray containers
+   - all kind of multidimensional arrays 
+   - correct tratement of foreign classes
+   - supports different versions of class in the same file
+   - support memebers like ClassName* fField; //[fCnt]
+   - support const char*
+   - support fixed-size array of TString, TObject and TNamed 
+2. Many new draw options for different classes are supported:
+    - TGraph  - 'z', 'x', '||', '[]', '>', '|>', '5', 'X+', 'Y+'
+    - TH1     - '*', 'L', 'LF2', 'B', 'B1', 'TEXT', 'E0', 'E3', 'E4', 'EX0', 'X+', 'Y+'
+    - TH2     - 'E', 'col1', 'box', 'box1', 'surf3', 'surf7', 'base0'
+    - TH2     - 'same' with 'box', 'col', 'cont', 'lego', 'surf'
+    - TH3     - 'scat', use by default
+    - TF1/TF2 - 'nosave' to ignore saved buffer
+    - TCanvas - logx/y/z, gridx/y, tickx/y 
+    - THStack - 'lego' and other 3D draw options
+3. Implement drawing of TProfile2D, TF2, TGraph2D, TGraph2DErrors and TMarker
+4. Fix - correctly place TGAxis relative to frame (when exists) 
+5. When superimpose items, one can specify individual options
+     ...&item=histo1+histo2&opt=hist+e1
+     ...&item=[histo1,histo2]&opt=[hist,e1]
+6. Support loading of TStyle object, providing in URL
+     ...&style=item_name  or ...&style=json_file_name 
+   All values are copied directly to JSROOT.gStyle object.  
+7. Add callback argument into JSROOT.draw() function. 
+   Function will be called after drawing of object is completed.
+   Painter for drawn object will be provided as first argument (or null in case of error). 
+8. Improve cleanup of JSROOT objects 
+
+
+## Changes in 4.7.1
+1. Workaround for MathJax output - scaling not always works in Firefox
+2. Fix - bin scaling for box draw option for TH2 and TH3 histograms 
+3. Fix - increase points limits for contour plots
+4. Fix - position of 3D canvas in webkit browsers
+5. Fix - use abs bin content in RMS calculations
+6. Fix - support char star* and object arrays in I/O
+7. Fix - correct decoding of TAxis time offset
+8. Fix - checksum reading for foreign classes
+
+
+## Changes in 4.7.0
+1. Implement simple TTree::Draw over single leaf (#80)
+   Support basic types, fixed-size arrays and several vector types 
+2. Display of TEveTrack(s) and TEvePointSet(s) over drawn geometry (drag and drop)
+   Also browsing, toggling, highlight of tracks and hits are done.
+3. Let set default geo colors as TGeoManager::DefaultColors() does  
+4. Let use original ROOT macros to configure visibility of geometry volumes. Like:
+     &file=files/alice2.root&item=Geometry;1&opt=macro:macros/geomAlice.C   
+   One can set default colors or colors/transperency for selected volumes.
+   Also volume, selected for drawing in the macro, will be used in the JSROOT
+5. Support drawing of TH2Poly class with 'col' and 'lego' options
+6. Implement 'CONT', 'ARR' and 'SURF' draw options for TH2 class 
+7. Support basic drawing of TPolyLine class 
+8. Interactive axis zooming in 3D with mouse, very much like to 2D
+9. Zooming and tool buttons via keyboards  
+
+
 ## Changes in 4.6.0
 1. Improvements in TGeo drawings
    - support of large (~10M volumes) models, only most significant volumes are shown
    - one could activate several clip planes (only with WebGL)
    - interaction with object browser to change visibility flags or focus on selected volume
    - support of floating browser for TGeo objects 
-   - intensive use of HTML Worker to offload computation tasks and keep interactivity
+   - intensive use of HTML Worker to offload computation tasks and keep interactivity   
    - enable more details when changing camera position/zoom
    - better and faster build of composite shapes
 2. Improvements in histograms 3D drawing
    - all lego options: lego1..lego4, combined with 'fb', 'bb', '0' or 'z'
    - support axis labels on lego plots
-   - support lego plots for TH1
+   - support lego plots for TH1 
 3. Improvements in all 3D graphics
    - upgrade three.js to r79
    - use of THREE.BufferGeometry for all components
    - significant (up to factor 10) performance improvement
 4. Implement box and hbox draw options for TH1 class
-5. Implement drawing of axes ticks on opposite side (when fTickx/y specified)
+5. Implement drawing of axes ticks on opposite side (when fTickx/y specified)  
 6. Preliminary support of candle plot (many options to be implemented)
-7. Update draw attributes (fill/line/position) when monitor objects
+7. Update draw attributes (fill/line/position) when monitor objects  
 
 
 ## Changes in 4.5.3
 1. Fix - position of TFrame in canvas/pad
 2. Fix - use histogram fMinimum/fMaximum when creating color palette
-3. Fix - correctly draw empty th2 bins when zmin<0 is specified
-4. Fix - limit th2 text output size
-5. Fix - use histogram fMinimum/fMaximum when drawing z axis in lego plot
+3. Fix - correctly draw empty th2 bins when zmin<0 is specified  
+4. Fix - limit th2 text output size 
+5. Fix - use histogram fMinimum/fMaximum when drawing z axis in lego plot 
 6. Fix - error in TGeoCtub shape creation
-7. Fix - error in pcon/pgon shapes when Rmin===0
+7. Fix - error in pcon/pgon shapes when Rmin===0 
 
 
 ## Changes in 4.5.1
 1. Fix - correctly handle ^2..^9 in TFormula equations
-2. Fix - support TMath::Gaus in TFormula
-3. Fix - correctly display ^2 and ^3 in SVG text output
+2. Fix - support TMath::Gaus in TFormula 
+3. Fix - correctly display ^2 and ^3 in SVG text output 
 4. Fix - do not show tooltips for empty TProfile bins
 5. Fix - statbox toggling was not working on subpads
 6. Fix - positioning of 3D objects in Webkit browsers in complex layouts
-7. Fix - difference in TF1 between ROOT5/6 (#54)
-
+7. Fix - difference in TF1 between ROOT5/6 (#54)  
+ 
 
 ## Changes in 4.5.0
 1. Zooming with mouse wheel
 2. Context menus for many different objects attributes are provided
-3. Context menu for every drawn object can be activated via toolbar button
+3. Context menu for every drawn object can be activated via toolbar button 
 4. Support browsing of TTask and derived classes (#40)
-5. Apply user range for drawing TH1/TH2 histograms, also when superimposed (#44)
-6. Implement scaling factor like x10^3 on the vertical axes
+5. Apply user range for drawing TH1/TH2 histograms, also when superimposed (#44) 
+6. Implement scaling factor like x10^3 on the vertical axes 
 7. Provide shortcut buttons for each subpad
 8. Implement simple drawing for TBox, TWbox, TSliderBox classes
 

@@ -10,5 +10,6 @@ cd /D %THIS%\..
 set ROOTSYS=%CD%
 cd /D %OLDPATH%
 set PATH=%ROOTSYS%\bin;%PATH%
+set PYTHONPATH=%ROOTSYS%\bin;%PYTHONPATH%
 set OLDPATH=
 set THIS=

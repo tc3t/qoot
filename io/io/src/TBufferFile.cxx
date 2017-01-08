@@ -73,7 +73,7 @@ static inline ULong_t Void_Hash(const void *ptr)
 }
 
 //______________________________________________________________________________
-static inline bool Class_Has_StreamerInfo(const TClass* cl) 
+static inline bool Class_Has_StreamerInfo(const TClass* cl)
 {
    // Thread-safe check on StreamerInfos of a TClass
 
@@ -290,11 +290,13 @@ void TBufferFile::WriteTString(const TString &s)
 }
 
 //_______________________________________________________________________
-void TBufferFile::ReadStdString(std::string &s)
+void TBufferFile::ReadStdString(std::string *obj)
 {
    // Read std::string from TBuffer.
 
-   std::string *obj = &s;
+   if (obj == 0) {
+      Error("TBufferFile::ReadStdString","The std::string address is nullptr but should not");
+   }
    Int_t   nbig;
    UChar_t nwh;
    *this >> nwh;
@@ -318,12 +320,16 @@ void TBufferFile::ReadStdString(std::string &s)
 }
 
 //_______________________________________________________________________
-void TBufferFile::WriteStdString(const std::string &s)
+void TBufferFile::WriteStdString(const std::string *obj)
 {
    // Write std::string to TBuffer.
 
-   if (s==0) return;
-   const std::string *obj = &s;
+   if (obj==0) {
+      *this << (UChar_t)0;
+      WriteFastArray("",0);
+      return;
+   }
+
    UChar_t nwh;
    Int_t nbig = obj->length();
    if (nbig > 254) {
@@ -335,6 +341,40 @@ void TBufferFile::WriteStdString(const std::string &s)
       *this << nwh;
    }
    WriteFastArray(obj->data(),nbig);
+}
+
+
+//______________________________________________________________________________
+void TBufferFile::ReadCharStar(char* &s)
+{
+   // Read char* from TBuffer.
+
+   delete [] s;
+   s = 0;
+
+   Int_t nch;
+   *this >> nch;
+   if (nch > 0) {
+      s = new char[nch+1];
+      ReadFastArray(s, nch);
+      s[nch] = 0;
+   }
+}
+
+//______________________________________________________________________________
+void TBufferFile::WriteCharStar(char *s)
+{
+   // Write char* into TBuffer.
+
+   Int_t nch = 0;
+   if (s) {
+      nch = strlen(s);
+      *this  << nch;
+      WriteFastArray(s,nch);
+   } else {
+      *this << nch;
+   }
+
 }
 
 //______________________________________________________________________________
@@ -463,7 +503,7 @@ void TBufferFile::ReadFloat16(Float_t *f, TStreamerElement *ele)
       Int_t nbits = 0;
       if (ele) nbits = (Int_t)ele->GetXmin();
       if (!nbits) nbits = 12;
-      ReadWithNbits(f, nbits);      
+      ReadWithNbits(f, nbits);
    }
 }
 
@@ -484,7 +524,7 @@ void TBufferFile::ReadDouble32(Double_t *d, TStreamerElement *ele)
          *this >> afloat;
          d[0] = (Double_t)afloat;
       } else {
-         ReadWithNbits(d, nbits);      
+         ReadWithNbits(d, nbits);
       }
    }
 }
@@ -496,13 +536,13 @@ void TBufferFile::ReadWithFactor(Float_t *ptr, Double_t factor, Double_t minvalu
    // see comments about Double32_t encoding at TBufferFile::WriteDouble32().
 
    //a range was specified. We read an integer and convert it back to a double.
-   UInt_t aint; 
-   frombuf(this->fBufCur,&aint); 
+   UInt_t aint;
+   frombuf(this->fBufCur,&aint);
    ptr[0] = (Float_t)(aint/factor + minvalue);
 }
 
 //______________________________________________________________________________
-void TBufferFile::ReadWithNbits(Float_t *ptr, Int_t nbits) 
+void TBufferFile::ReadWithNbits(Float_t *ptr, Int_t nbits)
 {
    // Read a Float16_t from the buffer when the number of bits is specified (explicitly or not)
    // see comments about Float16_t encoding at TBufferFile::WriteFloat16().
@@ -525,19 +565,19 @@ void TBufferFile::ReadWithNbits(Float_t *ptr, Int_t nbits)
 }
 
 //______________________________________________________________________________
-void TBufferFile::ReadWithFactor(Double_t *ptr, Double_t factor, Double_t minvalue) 
+void TBufferFile::ReadWithFactor(Double_t *ptr, Double_t factor, Double_t minvalue)
 {
    // Read a Double32_t from the buffer when the factor and minimun value have been specified
    // see comments about Double32_t encoding at TBufferFile::WriteDouble32().
 
    //a range was specified. We read an integer and convert it back to a double.
-   UInt_t aint; 
-   frombuf(this->fBufCur,&aint); 
+   UInt_t aint;
+   frombuf(this->fBufCur,&aint);
    ptr[0] = (Double_t)(aint/factor + minvalue);
 }
 
 //______________________________________________________________________________
-void TBufferFile::ReadWithNbits(Double_t *ptr, Int_t nbits) 
+void TBufferFile::ReadWithNbits(Double_t *ptr, Int_t nbits)
 {
    // Read a Double32_t from the buffer when the number of bits is specified (explicitly or not)
    // see comments about Double32_t encoding at TBufferFile::WriteDouble32().
@@ -1717,7 +1757,7 @@ void TBufferFile::ReadFastArray(void **start, const TClass *cl, Int_t n,
          }
       }
 
-   } else { 
+   } else {
       //case //-> in comment
 
       for (Int_t j=0; j<n; j++){
@@ -2886,7 +2926,7 @@ Version_t TBufferFile::ReadVersion(UInt_t *startpos, UInt_t *bcnt, const TClass 
 #else
    frombuf(this->fBufCur,&v.vers[0]);
    frombuf(this->fBufCur,&v.vers[1]);
-#endif      
+#endif
 
    // no bytecount, backup and read version
    if (!(v.cnt & kByteCountMask)) {
@@ -3035,7 +3075,7 @@ Version_t TBufferFile::ReadVersionForMemberWise(const TClass *cl)
                   if (checksum==cl->GetCheckSum() || cl->MatchLegacyCheckSum(checksum)) {
                      version = cl->GetClassVersion();
                   } else {
-                     // If we can not find the streamerInfo this means that 
+                     // If we can not find the streamerInfo this means that
                      // we do not actully need it (the collection is always empty
                      // in this file), so no need to issue a warning.
                      return 0;
@@ -3044,7 +3084,7 @@ Version_t TBufferFile::ReadVersionForMemberWise(const TClass *cl)
             }
          } else { // of if (cl) {
             UInt_t checksum = 0;
-            frombuf(this->fBufCur,&checksum);            
+            frombuf(this->fBufCur,&checksum);
          }
       }  else if (version == 1 && fParent && ((TFile*)fParent)->GetVersion()<40000 && cl && cl->GetClassVersion() != 0) {
          // We could have a file created using a Foreign class before
@@ -3059,7 +3099,7 @@ Version_t TBufferFile::ReadVersionForMemberWise(const TClass *cl)
                if (vinfo) {
                   version = vinfo->GetClassVersion();
                } else {
-                  // If we can not find the streamerInfo this means that 
+                  // If we can not find the streamerInfo this means that
                   // we do not actully need it (the collection is always empty
                   // in this file), so no need to issue a warning.
                   return 0;
@@ -3648,7 +3688,7 @@ Int_t TBufferFile::WriteClones(TClonesArray *a, Int_t nobjects)
    //return info->WriteBufferAux(*this,arr,-1,nobjects,0,1);
    char **end = arr + nobjects;
    // No need to tell call ForceWriteInfo as it by ForceWriteInfoClones.
-   return ApplySequenceVecPtr(*(info->GetWriteMemberWiseActions(kTRUE)),arr,end);   
+   return ApplySequenceVecPtr(*(info->GetWriteMemberWiseActions(kTRUE)),arr,end);
 }
 
 //______________________________________________________________________________
@@ -3709,7 +3749,7 @@ Int_t TBufferFile::ReadClassBuffer(const TClass *cl, void *pointer, Int_t versio
       CheckByteCount(start, count, cl);
       return 0;
    }
-   
+
    //---------------------------------------------------------------------------
    // The ondisk class has been specified so get foreign streamer info
    //---------------------------------------------------------------------------
@@ -3718,7 +3758,7 @@ Int_t TBufferFile::ReadClassBuffer(const TClass *cl, void *pointer, Int_t versio
       sinfo = (TStreamerInfo*)cl->GetConversionStreamerInfo( onFileClass, version );
       if( !sinfo ) {
          Error("ReadClassBuffer",
-               "Could not find the right streamer info to convert %s version %d into a %s, object skipped at offset %d", 
+               "Could not find the right streamer info to convert %s version %d into a %s, object skipped at offset %d",
                onFileClass->GetName(), version, cl->GetName(), Length() );
          CheckByteCount(start, count, onFileClass);
          return 0;
@@ -3754,7 +3794,7 @@ Int_t TBufferFile::ReadClassBuffer(const TClass *cl, void *pointer, Int_t versio
             Error("ReadClassBuffer", "Could not find the StreamerInfo for version %d of the class %s, object skipped at offset %d",
                   version, cl->GetName(), Length() );
             CheckByteCount(start, count, cl);
-            return 0;            
+            return 0;
          }
       } else if (!sinfo->IsCompiled()) {  // Note this read is protected by the above lock.
          // Streamer info has not been compiled, but exists.
@@ -3816,7 +3856,7 @@ Int_t TBufferFile::ReadClassBuffer(const TClass *cl, void *pointer, const TClass
    //---------------------------------------------------------------------------
    // Get local streamer info
    //---------------------------------------------------------------------------
-   else { 
+   else {
       // The StreamerInfo should exist at this point.
       TStreamerInfo *guess = (TStreamerInfo*)cl->GetLastReadInfo();
       if (guess && guess->GetClassVersion() == version) {
@@ -3949,7 +3989,7 @@ Int_t TBufferFile::WriteClassBuffer(const TClass *cl, void *pointer)
 }
 
 //______________________________________________________________________________
-Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &sequence, void *obj) 
+Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &sequence, void *obj)
 {
    // Read one collection of objects from the buffer using the StreamerInfoLoopAction.
    // The collection needs to be a split TClonesArray or a split vector of pointers.
@@ -3959,7 +3999,7 @@ Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &se
       TStreamerInfoActions::ActionContainer_t::const_iterator end = sequence.fActions.end();
       for(TStreamerInfoActions::ActionContainer_t::const_iterator iter = sequence.fActions.begin();
           iter != end;
-          ++iter) {      
+          ++iter) {
          (*iter).PrintDebug(*this,obj);
          (*iter)(*this,obj);
       }
@@ -3969,7 +4009,7 @@ Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &se
       TStreamerInfoActions::ActionContainer_t::const_iterator end = sequence.fActions.end();
       for(TStreamerInfoActions::ActionContainer_t::const_iterator iter = sequence.fActions.begin();
           iter != end;
-          ++iter) {      
+          ++iter) {
          (*iter)(*this,obj);
       }
    }
@@ -3978,7 +4018,7 @@ Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &se
 }
 
 //______________________________________________________________________________
-Int_t TBufferFile::ApplySequenceVecPtr(const TStreamerInfoActions::TActionSequence &sequence, void *start_collection, void *end_collection) 
+Int_t TBufferFile::ApplySequenceVecPtr(const TStreamerInfoActions::TActionSequence &sequence, void *start_collection, void *end_collection)
 {
    // Read one collection of objects from the buffer using the StreamerInfoLoopAction.
    // The collection needs to be a split TClonesArray or a split vector of pointers.
@@ -3988,7 +4028,7 @@ Int_t TBufferFile::ApplySequenceVecPtr(const TStreamerInfoActions::TActionSequen
       TStreamerInfoActions::ActionContainer_t::const_iterator end = sequence.fActions.end();
       for(TStreamerInfoActions::ActionContainer_t::const_iterator iter = sequence.fActions.begin();
           iter != end;
-          ++iter) {      
+          ++iter) {
          (*iter).PrintDebug(*this,*(char**)start_collection);  // Warning: This limits us to TClonesArray and vector of pointers.
          (*iter)(*this,start_collection,end_collection);
       }
@@ -3998,7 +4038,7 @@ Int_t TBufferFile::ApplySequenceVecPtr(const TStreamerInfoActions::TActionSequen
       TStreamerInfoActions::ActionContainer_t::const_iterator end = sequence.fActions.end();
       for(TStreamerInfoActions::ActionContainer_t::const_iterator iter = sequence.fActions.begin();
           iter != end;
-          ++iter) {      
+          ++iter) {
          (*iter)(*this,start_collection,end_collection);
       }
    }
@@ -4007,7 +4047,7 @@ Int_t TBufferFile::ApplySequenceVecPtr(const TStreamerInfoActions::TActionSequen
 }
 
 //______________________________________________________________________________
-Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &sequence, void *start_collection, void *end_collection) 
+Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &sequence, void *start_collection, void *end_collection)
 {
    // Read one collection of objects from the buffer using the StreamerInfoLoopAction.
 
@@ -4022,7 +4062,7 @@ Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &se
       TStreamerInfoActions::ActionContainer_t::const_iterator end = sequence.fActions.end();
       for(TStreamerInfoActions::ActionContainer_t::const_iterator iter = sequence.fActions.begin();
           iter != end;
-          ++iter) {      
+          ++iter) {
          (*iter).PrintDebug(*this,arr0);
          (*iter)(*this,start_collection,end_collection,loopconfig);
       }
@@ -4032,7 +4072,7 @@ Int_t TBufferFile::ApplySequence(const TStreamerInfoActions::TActionSequence &se
       TStreamerInfoActions::ActionContainer_t::const_iterator end = sequence.fActions.end();
       for(TStreamerInfoActions::ActionContainer_t::const_iterator iter = sequence.fActions.begin();
           iter != end;
-          ++iter) {      
+          ++iter) {
          (*iter)(*this,start_collection,end_collection,loopconfig);
       }
    }
