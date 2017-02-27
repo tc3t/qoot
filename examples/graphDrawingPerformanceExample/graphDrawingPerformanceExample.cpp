@@ -5,14 +5,24 @@
     Note: This file includes code adapted from TGraphPainter.cxx, which is under LGPL-license.
 */
 
+#include <RTypes.h>
+
+#if defined(QOOT_32BIT_COLOR_T) 
+    #define BUILDING_WITH_QOOT  1
+#else
+    #define BUILDING_WITH_QOOT  0
+#endif
+
 #include <QApplication>
 #include <QGridLayout>
 #include <QTextEdit>
 #include <QPushButton>
-#include <TQtWidget.h>
+#if BUILDING_WITH_QOOT
+    #include <TQtWidget.h>
+    #include <TGQt.h>
+#endif
 #include <TGraph.h>
 #include <TEnv.h>
-#include <TGQt.h>
 #include <TApplication.h>
 #include <TImage.h>
 #include <TH1D.h>
@@ -32,6 +42,22 @@
 #include <TMath.h>
 #include <TStyle.h>
 
+#if !BUILDING_WITH_QOOT
+    #include "canvas.h"
+
+    class QtCanvas : public QRootCanvas
+    {
+    public:
+        typedef QRootCanvas BaseClass;
+        QtCanvas(QWidget* pParent) : BaseClass(pParent)
+        {}
+
+        TCanvas* GetCanvas() { return getCanvas(); }
+    };
+#else
+    typedef TQtWidget QtCanvas;
+#endif // !BUILDING_WITH_QOOT
+
 class TestGraph : public TGraph
 {
 public:
@@ -40,6 +66,49 @@ public:
     TestGraph() :
         m_paintMethod(0)
     {}
+
+#if !BUILDING_WITH_QOOT
+    void DrawOnPad(TVirtualPad* pPad, Option_t* option)
+    {
+        if (pPad == nullptr && gPad == nullptr)
+            AppendPad(option);
+        else
+        {
+            auto pOldgPad = gPad;
+            pPad->cd();
+            AppendPad(option);
+            if (pOldgPad)
+                pOldgPad->cd();
+        }
+    }
+
+    Int_t InsertPointAt(Int_t pos, Double_t x, Double_t y)
+    {
+        // Insert point at pos pushing existing points one step right. Resizes array so that pos is valid if possible.
+        // If pos < 0, adds point to beginning.
+        // Returns index of the newly added point, -1 if no point was inserted.
+
+        if (pos < 0)
+            pos = 0;
+        if (pos == std::numeric_limits<Int_t>::max()) // To avoid integer overflow in pos + 1 later.
+            return -1;
+
+        if (pos >= fNpoints)
+            SetPoint(pos, x, y);
+        else
+        {
+            const auto nOldSize = fNpoints;
+            SetPoint(fNpoints, 0, 0); // Insert point using SetPoint() to get it's allocation behaviour.
+            CopyPoints(nullptr, pos, nOldSize, pos + 1);
+            // To avoid redefinitions in descendant classes
+            FillZero(pos, pos + 1);
+        }
+        fX[pos] = x;
+        fY[pos] = y;
+        return pos;
+    }
+
+#endif // !BUILDING_WITH_QOOT
 
     void SetPaintMethod(int i)
     {
@@ -555,7 +624,7 @@ public:
 
         pMainLayout->addLayout(pControlPanelLayout, 0, 0);
 
-        m_spCanvasWidget.reset(new TQtWidget(this));
+        m_spCanvasWidget.reset(new QtCanvas(this));
         pMainLayout->addWidget(m_spCanvasWidget.get(), 0, 1);
 
         pMainLayout->setColumnStretch(0, 1);
@@ -731,7 +800,7 @@ public:
     GraphUpdateMethod m_updateMethod;
     double m_counter;
     bool m_bStopped;
-    std::unique_ptr<TQtWidget> m_spCanvasWidget;
+    std::unique_ptr<QtCanvas> m_spCanvasWidget;
     std::vector<TestGraph> m_graphs;
     std::unique_ptr<QLineEdit> m_spFpsDisplay;
     std::unique_ptr<QSpinBox> m_spPadRows;
@@ -743,9 +812,10 @@ public:
 
 int main(int argc, char* argv[])
 {
+#if !BUILDING_WITH_QOOT
+    TApplication rootapp("TGraph draw example", &argc, argv);
+#endif
     QApplication a(argc, argv);
-
-    gEnv->SetValue("Gui.Factory", "qtgui");
 
     MainWindow mainWnd;
 
