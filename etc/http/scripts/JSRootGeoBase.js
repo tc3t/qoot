@@ -2614,7 +2614,7 @@
 
               matrix = new THREE.Matrix4();
 
-              switch (node.fFinder._typename.charAt(node.fFinder._typename.length - 1)) {
+              switch (node.fFinder._typename.charAt[node.fFinder._typename.length-1]) {
                  case 'X': matrix.setPosition(new THREE.Vector3(_shift, 0, 0)); break;
                  case 'Y': matrix.setPosition(new THREE.Vector3(0, _shift, 0)); break;
                  case 'Z': matrix.setPosition(new THREE.Vector3(0, 0, _shift)); break;
@@ -2903,7 +2903,7 @@
       this.name_prefix = ""; // name prefix used for nodes names
 
       if (obj) {
-         if (obj._geoh) this.toplevel = false;
+         if (obj.$geoh) this.toplevel = false;
          this.CreateClones(obj);
       } else
       if (clones) this.nodes = clones;
@@ -2920,7 +2920,7 @@
       }
       return null;
    }
-   
+
    JSROOT.GEO.ClonedNodes.prototype.Cleanup = function(drawnodes, drawshapes) {
       // function to cleanup as much as possible structures
       // drawnodes and drawshapes are arrays created during building of geometry
@@ -2931,23 +2931,23 @@
             drawnodes[n] = undefined;
          }
       }
-   
+
       if (drawshapes) {
          for (var n=0;n<drawshapes.length;++n) {
             delete drawshapes[n].geom;
             drawshapes[n] = undefined;
          }
       }
-      
+
       if (this.nodes)
          for (var n=0;n<this.nodes.length;++n)
             delete this.nodes[n].chlds;
-      
+
       delete this.nodes;
       delete this.origin;
-      
+
       delete this.sortmap;
-      
+
    }
 
    JSROOT.GEO.ClonedNodes.prototype.CreateClones = function(obj, sublevel, kind) {
@@ -3016,9 +3016,9 @@
              clone.fDY = shape.fDY;
              clone.fDZ = shape.fDZ;
              clone.vol = shape.fDX*shape.fDY*shape.fDZ;
-             if (shape._nfaces === undefined)
-                shape._nfaces = JSROOT.GEO.createGeometry(shape, -1);
-             clone.nfaces = shape._nfaces;
+             if (shape.$nfaces === undefined)
+                shape.$nfaces = JSROOT.GEO.createGeometry(shape, -1);
+             clone.nfaces = shape.$nfaces;
              if (clone.nfaces <= 0) clone.vol = 0;
 
              // if (clone.nfaces < -10) console.log('Problem  with node ' + obj.fName + ':' + obj.fMother.fName);
