@@ -125,6 +125,56 @@ if(builtin_lzma)
 endif()
 
 
+#---Check for LZ4--------------------------------------------------------------------
+if(NOT builtin_lz4)
+  message(STATUS "Looking for LZ4")
+  find_package(LZ4)
+  if(LZ4_FOUND)
+  else()
+    message(STATUS "LZ4 not found. Switching on builtin_lz4 option")
+    set(builtin_lz4 ON CACHE BOOL "" FORCE)
+  endif()
+endif()
+# Note: the above if-statement may change the value of builtin_lz4 to ON.
+if(builtin_lz4)
+  set(lz4_version v1.7.5)
+  message(STATUS "Building LZ4 version ${lz4_version} included in ROOT itself")
+  if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+    set(LZ4_CFLAGS "-Wno-format-nonliteral")
+  elseif( CMAKE_CXX_COMPILER_ID STREQUAL Intel)
+    set(LZ4_CFLAGS "-wd188 -wd181 -wd1292 -wd10006 -wd10156 -wd2259 -wd981 -wd128 -wd3179")
+  elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    set(LZ4_CFLAGS "/Zl")
+  endif()
+  set(LZ4_LIBRARIES ${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}lz4${CMAKE_STATIC_LIBRARY_SUFFIX})
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    file(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/include" NATIVE_INCLUDEDIR)
+    ExternalProject_Add(
+      LZ4
+      URL http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/sources/lz4-${lz4_version}.tar.gz
+      URL_MD5 c9610c5ce97eb431dddddf0073d919b9
+      INSTALL_DIR ${CMAKE_BINARY_DIR}
+      CONFIGURE_COMMAND cl /c "${LZ4_CFLAGS}" lib/lz4.c lib/lz4hc.c lib/lz4frame.c lib/xxhash.c
+      BUILD_COMMAND lib /NODEFAULTLIB lz4.obj lz4hc.obj lz4frame.obj xxhash.obj /OUT:${LZ4_LIBRARIES}
+      INSTALL_COMMAND xcopy "lib\\*.h" "${NATIVE_INCLUDEDIR}\\" /Y 
+      LOG_DOWNLOAD 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1 BUILD_IN_SOURCE 1
+    )
+  else()
+    ExternalProject_Add(
+      LZ4
+      URL http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/sources/lz4-${lz4_version}.tar.gz
+      URL_MD5 c9610c5ce97eb431dddddf0073d919b9
+      INSTALL_DIR ${CMAKE_BINARY_DIR}
+      CONFIGURE_COMMAND  /bin/sh -c "PREFIX=<INSTALL_DIR> make cmake"
+      BUILD_COMMAND /bin/sh -c "PREFIX=<INSTALL_DIR> MOREFLAGS=-fPIC make"
+      INSTALL_COMMAND /bin/sh -c "PREFIX=<INSTALL_DIR> make install"
+      LOG_DOWNLOAD 1 LOG_CONFIGURE 1 LOG_BUILD 1 LOG_INSTALL 1 BUILD_IN_SOURCE 1
+    )
+  endif()
+  set(LZ4_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include)
+endif()
+
+
 #---Check for X11 which is mandatory lib on Unix--------------------------------------
 if(x11)
   message(STATUS "Looking for X11")

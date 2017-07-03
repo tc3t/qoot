@@ -1,5 +1,20 @@
 # JSROOT changelog
 
+## Changes in 5.1.2
+1. Fix - support newest TFormula in TF1 (#127)
+2. Fix - ignore NaN value in saved TF1 buffer
+3. Fix - correctly treat transparency in geo painter
+4. Fix - disable useFontCache for SVG mathjax output
+5. Fix - produce PNG image for objects with special symbols in names
+
+
+## Changes in 5.1.1
+1. Fix - invoke callback in JSROOT.draw() at proper time
+2. Fix - support TGeoHMatrix, produced after GDML conversion
+3. Fix - support also TGeoScale and TGeoGenTrans matrixes
+4. Fix - update histograms with all provided functions (#125)
+
+
 ## Changes in 5.1.0
 1. New 'float' browser kind overlays with objects drawing
 2. Browser can be enabled after drawing with 'nobrowser' mode

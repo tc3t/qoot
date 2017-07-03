@@ -1384,8 +1384,8 @@
 
       // set attributes for debugging
       if (this.draw_object!==null) {
-         this.draw_g.attr('objname', this.draw_object.fName || "name");
-         this.draw_g.attr('objtype', this.draw_object._typename || "type");
+         this.draw_g.attr('objname', encodeURI(this.draw_object.fName || "name"));
+         this.draw_g.attr('objtype', encodeURI(this.draw_object._typename || "type"));
       }
 
       return this.draw_g;
@@ -1864,9 +1864,9 @@
 
          var id = "pat_" + this.pattern + "_" + this.colorindx;
 
-         var defs = svg.select('defs');
+         var defs = svg.select('.canvas_defs');
          if (defs.empty())
-            defs = svg.insert("svg:defs",":first-child");
+            defs = svg.insert("svg:defs",":first-child").attr("class","canvas_defs");
 
          var line_color = this.color;
          this.color = "url(#" + id + ")";
@@ -2594,10 +2594,10 @@
          if (!pobj) continue;
 
          if (selobj && (pobj === selobj)) return painters[n];
-
-         if (selname && (pobj.fName === selname)) return painters[n];
-
-         if (seltype && (pobj._typename === seltype)) return painters[n];
+         if (!selname && !seltype) continue;
+         if (selname && (pobj.fName !== selname)) continue;
+         if (seltype && (pobj._typename !== seltype)) continue;
+         return painters[n];
       }
 
       return null;
@@ -5966,13 +5966,12 @@
             histo.fBinEntries = obj.fBinEntries;
          }
 
-         if (obj.fFunctions)
+         if (obj.fFunctions && !this.options.Same && this.options.Func)
             for (var n=0;n<obj.fFunctions.arr.length;++n) {
                var func = obj.fFunctions.arr[n];
-               if ((func._typename == "TPaveStats") && (func.fName == 'stats')) {
-                  var funcpainter = this.FindPainterFor(null,'stats');
-                  if (funcpainter) funcpainter.UpdateObject(func);
-               }
+               if (!func || !func._typename || !func.fName) continue;
+               var funcpainter = this.FindPainterFor(null, func.fName, func._typename);
+               if (funcpainter) funcpainter.UpdateObject(func);
             }
       }
 
@@ -10044,10 +10043,8 @@
          if (handle && handle.expand) {
             JSROOT.AssertPrerequisites(handle.prereq, function() {
                _item._expand = JSROOT.findFunction(handle.expand);
-               if (_item._expand)
-                  DoExpandItem(_item, _obj, _name);
-               else
-                  delete _item._expand;
+               if (_item._expand) return DoExpandItem(_item, _obj, _name);
+               JSROOT.CallBack(call_back);
             });
             return true;
          }
@@ -10083,13 +10080,13 @@
       }
 
       if (hitem) {
-         // item marked as it cannot be expanded
-         if (hitem._more === false) return JSROOT.CallBack(call_back);
+         // item marked as it cannot be expanded, also top item cannot be changed
+         if ((hitem._more === false) || (!hitem._parent && hitem._childs)) return JSROOT.CallBack(call_back);
 
          if (hitem._childs && hitem._isopen) {
             hitem._isopen = false;
             if (!silent) hpainter.UpdateTreeNode(hitem, d3cont);
-            return;
+            return JSROOT.CallBack(call_back);
          }
 
          if (hitem._obj && DoExpandItem(hitem, hitem._obj, itemname)) return;

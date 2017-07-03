@@ -1339,7 +1339,7 @@ static TVirtualStreamerInfo *GetBaseClass(TStreamerElement *element)
                }
             }
             if (cl) {
-               if (NeedToEmulate(cl,0) || branchname[strlen(branchname)-1] == '.' || branch->GetSplitLevel()) {
+               if (NeedToEmulate(cl,0) || branch->GetListOfBranches()->GetEntries() || branch->GetSplitLevel() || fMaxUnrolling) {
                   TBranchElement *be = dynamic_cast<TBranchElement*>(branch);
                   TVirtualStreamerInfo *beinfo = (be && isclones == TBranchProxyClassDescriptor::kOut)
                      ? be->GetInfo() : cl->GetStreamerInfo(); // the 2nd hand need to be fixed
@@ -1374,6 +1374,12 @@ static TVirtualStreamerInfo *GetBaseClass(TStreamerElement *element)
 
                      AddDescriptor( new TBranchProxyDescriptor( dataMemberName, type, branchname ) );
                   }
+               } else {
+                  // We have a top level non split.
+                  AddDescriptor( new TBranchProxyDescriptor( branch->GetName(),
+                                                             type,
+                                                             branch->GetName(),
+                                                             true, false, false ) );
                }
             } else {
 
