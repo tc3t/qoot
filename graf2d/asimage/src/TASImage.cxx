@@ -1130,16 +1130,10 @@ void TASImage::FromPad(TVirtualPad *pad, Int_t x, Int_t y, UInt_t w, UInt_t h)
       return;
    }
 
-   if (w == 0) {
-      w = TMath::Abs(pad->UtoPixel(1.));
-   }
-
-   if (h == 0) {
-      h = pad->VtoPixel(0.);
-   }
-   // syncronization
+   // X11 Synchronization
    gVirtualX->Update(1);
    if (!gThreadXAR) {
+      gSystem->Sleep(100);
       gSystem->ProcessEvents();
       gSystem->Sleep(10);
       gSystem->ProcessEvents();
@@ -1151,6 +1145,9 @@ void TASImage::FromPad(TVirtualPad *pad, Int_t x, Int_t y, UInt_t w, UInt_t h)
 
    Window_t wd = (Window_t)gVirtualX->GetCurrentWindow();
    if (!wd) return;
+
+   if (w == 0) w = TMath::Abs(pad->UtoPixel(1.));
+   if (h == 0) h = pad->VtoPixel(0.);
 
    static int x11 = -1;
    if (x11 < 0) x11 = gVirtualX->InheritsFrom("TGX11");
@@ -6682,9 +6679,10 @@ void TASImage::FromWindow(Drawable_t wid, Int_t x, Int_t y, UInt_t w, UInt_t h)
    x = x < 0 ? 0 : x;
    y = y < 0 ? 0 : y;
 
-   // syncronization
+   // X11 Syncronization
    gVirtualX->Update(1);
    if (!gThreadXAR) {
+      gSystem->Sleep(100);
       gSystem->ProcessEvents();
       gSystem->Sleep(10);
       gSystem->ProcessEvents();
