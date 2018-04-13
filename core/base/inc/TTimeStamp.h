@@ -50,7 +50,7 @@
 #if !defined(__CINT__) && (defined(R__MACOSX) || defined(R__OBSD))
 #include <sys/time.h>
 #endif
-#if defined(__CINT__) || defined(R__WIN32)
+#if defined(__CINT__) || (defined(R__WIN32) && (!defined(_MSC_VER) || _MSC_VER < 1900))
 // Explicit definition of timespec 'cause "rootcint" won't look in
 // appropriate <time.h>. time_t appears to be defined as "typedef long time_t;"
 // in CINT version of <time.h>.  This isn't required by the standard:

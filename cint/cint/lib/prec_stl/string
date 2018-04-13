@@ -112,7 +112,7 @@ class string {
 
   #if (G__MSC_VER<1400)
 		const_iterator(const_pointer _Ptr);
-  #else
+  #elif (G__MSC_VER<1900)
                 const_iterator(const_pointer _Ptr, const string* _Pstring );
   #endif
 
@@ -154,7 +154,7 @@ class string {
 		iterator();
   #if (G__MSC_VER<1400)
 		iterator(pointer _ptr);
-  #else
+  #elif (G__MSC_VER<1900)
                 iterator(pointer _ptr, const string *_Pstring);
   #endif
 		reference operator*() const;
