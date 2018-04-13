@@ -242,7 +242,7 @@ public:
     virtual void      SetMarkerType( Int_t type, Int_t n, TPoint *xy );
     virtual void      SetTitle(const char *title);
     virtual void      CopyPixmap(const QPixmap &p, Int_t px1, Int_t py1);
-    virtual void      SetTextDecoder(const char * /*textDeocerName*/){;}  // for the future
+    virtual void      SetTextDecoder(const char * textDecoderName);
     virtual const QTextCodec *GetTextDecoder();
 #endif
 // obsolete methods

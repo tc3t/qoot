@@ -937,7 +937,7 @@ Bool_t TGQt::Init(void* /*display*/)
    fQClientFilter = new TQtClientFilter();
 
    //  Query the default font for Widget decoration.
-   fFontTextCode = "ISO8859-1";
+   fFontTextCode = "ISO8859-1"; // Latin-1
    const char *default_font = gEnv->GetValue("Gui.DefaultFont", "qt-default");
       //gEnv->GetValue("Gui.DefaultFont",  "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
    QFont *dfFont = (QFont *)LoadQueryFont(default_font);
@@ -946,7 +946,7 @@ Bool_t TGQt::Init(void* /*display*/)
    //  define the font code page
    QString fontName(default_font);
    fFontTextCode = fontName.section('-',13). toUpper();
-   if  ( fFontTextCode.isEmpty() ) fFontTextCode = "ISO8859-5";
+   //if  ( fFontTextCode.isEmpty() ) fFontTextCode = "ISO8859-5";
 #ifndef R__QTWIN32
    // Check whether "Symbol" font is available
     QFontDatabase fdb;
@@ -1730,6 +1730,18 @@ void  TGQt::GetRGB(int index, float &r, float &g, float &b)
       color.getRgbF(&R,&G,&B);
       r = R; g = G; b = G;
    }
+}
+
+//______________________________________________________________________________
+void TGQt::SetTextDecoder(const char * textDecoderName)
+{
+    if (fCodec != nullptr) {
+        // Reason for warning is that someone might be (legitly?) storing the old codec pointer 
+        // returned by GetTextDecoder() and changing codec of TGQt might cause inconsistency in the application.
+        Warning("SetTextDecoder", "Setting new codec while one already exists; this is not guaranteed to work");
+    }
+    fCodec = nullptr;
+    fFontTextCode = textDecoderName;
 }
 
 //______________________________________________________________________________

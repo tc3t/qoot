@@ -234,6 +234,11 @@ int main(int argc, char* argv[])
     p->Draw();
     p->cd();
 
+#if 0 // Enable this to make gQt interpret const char* params passed to graph titles etc. as UTF-8 bytes)
+    if (gQt)
+        gQt->SetTextDecoder("UTF-8");
+#endif
+
     // Create histogram with transparent filling.
     {
         TH1F* pHist = new TH1F("h", "Transparent histogram example", 100, -3, 3);
