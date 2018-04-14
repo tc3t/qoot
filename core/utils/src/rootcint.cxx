@@ -175,6 +175,11 @@
 #include <mach-o/dyld.h>
 #endif
 
+#if defined(_MSC_VER) && _MSC_VER >= 1900 // 1900 == MSVC_2015
+    #define P_tmpdir   "/P_tmpdir/" // Not sure what this should be, using "\\" didn't seem to work as it caused failures in CINT-build due to
+                                    // some kind of double paths (i.e. paths like C:\path\someTempfile.tmp\c:\path\something)
+#endif
+
 #if defined(R__WIN32)
 #include "cygpath.h"
 #endif
